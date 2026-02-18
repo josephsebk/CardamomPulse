@@ -1,0 +1,2 @@
+date,actual_avg_price_inr_per_kg,predicted_avg_price_inr_per_kg,model_run_date,horizon_days,model_version
+2026-02-05,,3050,2026-02-04,1,gbm_v1

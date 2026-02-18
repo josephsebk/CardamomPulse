@@ -1,0 +1,983 @@
+source,reporter,partner,period,cmdCode,cmdDesc,flowCode,qty_kg,netWgt_kg,value_usd,qtyUnitCode
+Guatemala_Export,Guatemala,World,2014,0908,"Nutmeg, mace and cardamoms",X,39052543.0,39052543.0,240568041.0,8
+Guatemala_Export,Guatemala,World,2019,0908,"Nutmeg, mace and cardamoms",X,36890154.0,36890154.0,650444980.0,8
+Guatemala_Export,Guatemala,World,2021,0908,"Nutmeg, mace and cardamoms",X,37590221.235,37590221.235,659139679.0,8
+Guatemala_Export,Guatemala,World,2024,0908,"Nutmeg, mace and cardamoms",X,28519525.0,28519525.0,499787831.0,8
+Guatemala_Export,Guatemala,World,2017,0908,"Nutmeg, mace and cardamoms",X,35819103.0,35819103.0,367005374.0,8
+Guatemala_Export,Guatemala,World,2020,0908,"Nutmeg, mace and cardamoms",X,65282663.0,65282663.0,1136598891.0,8
+Guatemala_Export,Guatemala,World,2015,0908,"Nutmeg, mace and cardamoms",X,33436311.0,33436311.0,243108603.0,8
+Guatemala_Export,Guatemala,World,2022,0908,"Nutmeg, mace and cardamoms",X,53230963.006,53230963.006,418531449.0,8
+Guatemala_Export,Guatemala,World,2023,0908,"Nutmeg, mace and cardamoms",X,52700061.0,52700061.0,368837251.0,8
+Guatemala_Export,Guatemala,World,2016,0908,"Nutmeg, mace and cardamoms",X,35948264.0,35948264.0,230140668.0,8
+Guatemala_Export,Guatemala,World,2018,0908,"Nutmeg, mace and cardamoms",X,36818373.0,36818373.0,433752307.0,8
+Guatemala_Export,Guatemala,Afghanistan,2014,0908,"Nutmeg, mace and cardamoms",X,21700.0,21700.0,181314.0,8
+Guatemala_Export,Guatemala,Afghanistan,2019,0908,"Nutmeg, mace and cardamoms",X,75725.0,75725.0,1479312.0,8
+Guatemala_Export,Guatemala,Afghanistan,2021,0908,"Nutmeg, mace and cardamoms",X,86125.0,86125.0,1248410.0,8
+Guatemala_Export,Guatemala,Afghanistan,2017,0908,"Nutmeg, mace and cardamoms",X,66185.0,66185.0,741803.0,8
+Guatemala_Export,Guatemala,Afghanistan,2015,0908,"Nutmeg, mace and cardamoms",X,10850.0,10850.0,83337.0,8
+Guatemala_Export,Guatemala,Afghanistan,2022,0908,"Nutmeg, mace and cardamoms",X,624550.0,624550.0,5854654.0,8
+Guatemala_Export,Guatemala,Afghanistan,2023,0908,"Nutmeg, mace and cardamoms",X,510519.0,510519.0,3059145.0,8
+Guatemala_Export,Guatemala,Afghanistan,2018,0908,"Nutmeg, mace and cardamoms",X,43400.0,43400.0,557188.0,8
+Guatemala_Export,Guatemala,Argentina,2020,0908,"Nutmeg, mace and cardamoms",X,1624.0,1624.0,50500.0,8
+Guatemala_Export,Guatemala,Australia,2014,0908,"Nutmeg, mace and cardamoms",X,100773.0,100773.0,806039.0,8
+Guatemala_Export,Guatemala,Australia,2019,0908,"Nutmeg, mace and cardamoms",X,112853.0,112853.0,2218750.0,8
+Guatemala_Export,Guatemala,Australia,2024,0908,"Nutmeg, mace and cardamoms",X,53851.0,53851.0,959170.0,8
+Guatemala_Export,Guatemala,Australia,2017,0908,"Nutmeg, mace and cardamoms",X,111382.0,111382.0,1406611.0,8
+Guatemala_Export,Guatemala,Australia,2021,0908,"Nutmeg, mace and cardamoms",X,100632.0,100632.0,2280675.0,8
+Guatemala_Export,Guatemala,Australia,2020,0908,"Nutmeg, mace and cardamoms",X,138401.0,138401.0,3739344.0,8
+Guatemala_Export,Guatemala,Australia,2015,0908,"Nutmeg, mace and cardamoms",X,84077.0,84077.0,675800.0,8
+Guatemala_Export,Guatemala,Australia,2022,0908,"Nutmeg, mace and cardamoms",X,46813.0,46813.0,468504.0,8
+Guatemala_Export,Guatemala,Australia,2023,0908,"Nutmeg, mace and cardamoms",X,108173.0,108173.0,1236040.0,8
+Guatemala_Export,Guatemala,Australia,2018,0908,"Nutmeg, mace and cardamoms",X,144589.0,144589.0,1851244.0,8
+Guatemala_Export,Guatemala,Australia,2016,0908,"Nutmeg, mace and cardamoms",X,129382.0,129382.0,1109351.0,8
+Guatemala_Export,Guatemala,Austria,2020,0908,"Nutmeg, mace and cardamoms",X,148.0,148.0,2220.0,8
+Guatemala_Export,Guatemala,Austria,2021,0908,"Nutmeg, mace and cardamoms",X,22016.0,22016.0,464193.0,8
+Guatemala_Export,Guatemala,Bahrain,2019,0908,"Nutmeg, mace and cardamoms",X,143077.0,143077.0,2590084.0,8
+Guatemala_Export,Guatemala,Bahrain,2021,0908,"Nutmeg, mace and cardamoms",X,139696.0,139696.0,1910593.0,8
+Guatemala_Export,Guatemala,Bahrain,2015,0908,"Nutmeg, mace and cardamoms",X,76170.0,76170.0,679100.0,8
+Guatemala_Export,Guatemala,Bahrain,2024,0908,"Nutmeg, mace and cardamoms",X,19612.0,19612.0,306560.0,8
+Guatemala_Export,Guatemala,Bahrain,2016,0908,"Nutmeg, mace and cardamoms",X,97434.0,97434.0,794014.0,8
+Guatemala_Export,Guatemala,Bahrain,2018,0908,"Nutmeg, mace and cardamoms",X,125025.0,125025.0,1466723.0,8
+Guatemala_Export,Guatemala,Bahrain,2023,0908,"Nutmeg, mace and cardamoms",X,364310.0,364310.0,3149465.0,8
+Guatemala_Export,Guatemala,Bahrain,2022,0908,"Nutmeg, mace and cardamoms",X,159135.0,159135.0,1227030.0,8
+Guatemala_Export,Guatemala,Bahrain,2020,0908,"Nutmeg, mace and cardamoms",X,202271.0,202271.0,4822428.0,8
+Guatemala_Export,Guatemala,Bahrain,2017,0908,"Nutmeg, mace and cardamoms",X,104299.0,104299.0,897457.0,8
+Guatemala_Export,Guatemala,Bahrain,2014,0908,"Nutmeg, mace and cardamoms",X,88928.0,88928.0,536240.0,8
+Guatemala_Export,Guatemala,Bangladesh,2016,0908,"Nutmeg, mace and cardamoms",X,2823879.0,2823879.0,16124385.0,8
+Guatemala_Export,Guatemala,Bangladesh,2018,0908,"Nutmeg, mace and cardamoms",X,3511744.0,3511744.0,37444107.0,8
+Guatemala_Export,Guatemala,Bangladesh,2023,0908,"Nutmeg, mace and cardamoms",X,3225483.0,3225483.0,18599251.0,8
+Guatemala_Export,Guatemala,Bangladesh,2024,0908,"Nutmeg, mace and cardamoms",X,1561390.0,1561390.0,24839010.0,8
+Guatemala_Export,Guatemala,Bangladesh,2022,0908,"Nutmeg, mace and cardamoms",X,3518416.0,3518416.0,27104868.0,8
+Guatemala_Export,Guatemala,Bangladesh,2015,0908,"Nutmeg, mace and cardamoms",X,1935592.0,1935592.0,12195635.0,8
+Guatemala_Export,Guatemala,Bangladesh,2021,0908,"Nutmeg, mace and cardamoms",X,1988439.0,1988439.0,31128546.0,8
+Guatemala_Export,Guatemala,Bangladesh,2020,0908,"Nutmeg, mace and cardamoms",X,7345300.0,7345300.0,94908461.0,8
+Guatemala_Export,Guatemala,Bangladesh,2017,0908,"Nutmeg, mace and cardamoms",X,3270981.0,3270981.0,30433743.0,8
+Guatemala_Export,Guatemala,Bangladesh,2014,0908,"Nutmeg, mace and cardamoms",X,1951342.0,1951342.0,11218836.0,8
+Guatemala_Export,Guatemala,Bangladesh,2019,0908,"Nutmeg, mace and cardamoms",X,2866025.0,2866025.0,50013039.0,8
+Guatemala_Export,Guatemala,Barbados,2020,0908,"Nutmeg, mace and cardamoms",X,450.0,450.0,11382.0,8
+Guatemala_Export,Guatemala,Barbados,2015,0908,"Nutmeg, mace and cardamoms",X,430.0,430.0,650.0,8
+Guatemala_Export,Guatemala,Barbados,2017,0908,"Nutmeg, mace and cardamoms",X,427.0,427.0,5055.0,8
+Guatemala_Export,Guatemala,Barbados,2019,0908,"Nutmeg, mace and cardamoms",X,342.0,342.0,2654.0,8
+Guatemala_Export,Guatemala,Belgium,2018,0908,"Nutmeg, mace and cardamoms",X,31000.0,31000.0,368467.0,8
+Guatemala_Export,Guatemala,Belgium,2016,0908,"Nutmeg, mace and cardamoms",X,5090.0,5090.0,60626.0,8
+Guatemala_Export,Guatemala,Belgium,2021,0908,"Nutmeg, mace and cardamoms",X,10750.0,10750.0,97748.0,8
+Guatemala_Export,Guatemala,Belgium,2022,0908,"Nutmeg, mace and cardamoms",X,2246.0,2246.0,31949.0,8
+Guatemala_Export,Guatemala,Brazil,2016,0908,"Nutmeg, mace and cardamoms",X,14076.0,14076.0,56000.0,8
+Guatemala_Export,Guatemala,Brazil,2023,0908,"Nutmeg, mace and cardamoms",X,50.0,50.0,650.0,8
+Guatemala_Export,Guatemala,Brazil,2020,0908,"Nutmeg, mace and cardamoms",X,5489.0,5489.0,124090.0,8
+Guatemala_Export,Guatemala,Brazil,2021,0908,"Nutmeg, mace and cardamoms",X,8546.0,8546.0,93990.0,8
+Guatemala_Export,Guatemala,Brazil,2017,0908,"Nutmeg, mace and cardamoms",X,17632.0,17632.0,119451.0,8
+Guatemala_Export,Guatemala,Brazil,2014,0908,"Nutmeg, mace and cardamoms",X,20829.0,20829.0,63255.0,8
+Guatemala_Export,Guatemala,Brazil,2019,0908,"Nutmeg, mace and cardamoms",X,14391.0,14391.0,46750.0,8
+Guatemala_Export,Guatemala,Belize,2021,0908,"Nutmeg, mace and cardamoms",X,2.0,2.0,31.0,8
+Guatemala_Export,Guatemala,Br. Virgin Isds,2017,0908,"Nutmeg, mace and cardamoms",X,34912.0,34912.0,197000.0,8
+Guatemala_Export,Guatemala,Br. Virgin Isds,2019,0908,"Nutmeg, mace and cardamoms",X,56308.0,56308.0,700000.0,8
+Guatemala_Export,Guatemala,Bulgaria,2021,0908,"Nutmeg, mace and cardamoms",X,725.0,725.0,19900.0,8
+Guatemala_Export,Guatemala,Bulgaria,2015,0908,"Nutmeg, mace and cardamoms",X,10850.0,10850.0,72075.0,8
+Guatemala_Export,Guatemala,Myanmar,2019,0908,"Nutmeg, mace and cardamoms",X,45512.0,45512.0,631454.0,8
+Guatemala_Export,Guatemala,Myanmar,2017,0908,"Nutmeg, mace and cardamoms",X,98038.0,98038.0,792301.0,8
+Guatemala_Export,Guatemala,Myanmar,2014,0908,"Nutmeg, mace and cardamoms",X,175303.0,175303.0,711471.0,8
+Guatemala_Export,Guatemala,Myanmar,2022,0908,"Nutmeg, mace and cardamoms",X,82566.0,82566.0,538500.0,8
+Guatemala_Export,Guatemala,Myanmar,2015,0908,"Nutmeg, mace and cardamoms",X,98667.0,98667.0,668651.0,8
+Guatemala_Export,Guatemala,Myanmar,2024,0908,"Nutmeg, mace and cardamoms",X,47904.0,47904.0,768000.0,8
+Guatemala_Export,Guatemala,Myanmar,2021,0908,"Nutmeg, mace and cardamoms",X,89820.0,89820.0,1404495.0,8
+Guatemala_Export,Guatemala,Myanmar,2020,0908,"Nutmeg, mace and cardamoms",X,53768.0,53768.0,1342070.0,8
+Guatemala_Export,Guatemala,Myanmar,2018,0908,"Nutmeg, mace and cardamoms",X,35200.0,35200.0,477000.0,8
+Guatemala_Export,Guatemala,Myanmar,2016,0908,"Nutmeg, mace and cardamoms",X,192252.0,192252.0,836759.0,8
+Guatemala_Export,Guatemala,Myanmar,2023,0908,"Nutmeg, mace and cardamoms",X,16312.0,16312.0,112650.0,8
+Guatemala_Export,Guatemala,Canada,2019,0908,"Nutmeg, mace and cardamoms",X,188798.0,188798.0,3392281.0,8
+Guatemala_Export,Guatemala,Canada,2017,0908,"Nutmeg, mace and cardamoms",X,127153.0,127153.0,1608205.0,8
+Guatemala_Export,Guatemala,Canada,2014,0908,"Nutmeg, mace and cardamoms",X,81735.0,81735.0,575924.0,8
+Guatemala_Export,Guatemala,Canada,2015,0908,"Nutmeg, mace and cardamoms",X,64073.0,64073.0,597500.0,8
+Guatemala_Export,Guatemala,Canada,2024,0908,"Nutmeg, mace and cardamoms",X,95339.0,95339.0,2083904.0,8
+Guatemala_Export,Guatemala,Canada,2021,0908,"Nutmeg, mace and cardamoms",X,135190.0,135190.0,2775703.0,8
+Guatemala_Export,Guatemala,Canada,2022,0908,"Nutmeg, mace and cardamoms",X,235133.0,235133.0,3030561.0,8
+Guatemala_Export,Guatemala,Canada,2020,0908,"Nutmeg, mace and cardamoms",X,162650.0,162650.0,4293528.0,8
+Guatemala_Export,Guatemala,Canada,2018,0908,"Nutmeg, mace and cardamoms",X,157569.0,157569.0,2194281.0,8
+Guatemala_Export,Guatemala,Canada,2016,0908,"Nutmeg, mace and cardamoms",X,102660.0,102660.0,858065.0,8
+Guatemala_Export,Guatemala,Canada,2023,0908,"Nutmeg, mace and cardamoms",X,158273.0,158273.0,1530754.0,8
+Guatemala_Export,Guatemala,Sri Lanka,2014,0908,"Nutmeg, mace and cardamoms",X,9249.0,9249.0,13350.0,8
+Guatemala_Export,Guatemala,Sri Lanka,2015,0908,"Nutmeg, mace and cardamoms",X,10000.0,10000.0,12950.0,8
+Guatemala_Export,Guatemala,Chile,2014,0908,"Nutmeg, mace and cardamoms",X,242.0,242.0,3200.0,8
+Guatemala_Export,Guatemala,Chile,2016,0908,"Nutmeg, mace and cardamoms",X,248.0,248.0,3651.0,8
+Guatemala_Export,Guatemala,Chile,2021,0908,"Nutmeg, mace and cardamoms",X,443.0,443.0,9576.0,8
+Guatemala_Export,Guatemala,China,2015,0908,"Nutmeg, mace and cardamoms",X,4047.0,4047.0,26880.0,8
+Guatemala_Export,Guatemala,China,2021,0908,"Nutmeg, mace and cardamoms",X,7675.0,7675.0,170950.0,8
+Guatemala_Export,Guatemala,China,2020,0908,"Nutmeg, mace and cardamoms",X,8043.0,8043.0,206533.0,8
+Guatemala_Export,Guatemala,Costa Rica,2023,0908,"Nutmeg, mace and cardamoms",X,4029.0,4029.0,19939.0,8
+Guatemala_Export,Guatemala,Costa Rica,2017,0908,"Nutmeg, mace and cardamoms",X,1091.0,1091.0,11623.0,8
+Guatemala_Export,Guatemala,Costa Rica,2024,0908,"Nutmeg, mace and cardamoms",X,2933.0,2933.0,15003.0,8
+Guatemala_Export,Guatemala,Costa Rica,2019,0908,"Nutmeg, mace and cardamoms",X,5603.0,5603.0,9824.0,8
+Guatemala_Export,Guatemala,Costa Rica,2015,0908,"Nutmeg, mace and cardamoms",X,964.0,964.0,5305.0,8
+Guatemala_Export,Guatemala,Costa Rica,2014,0908,"Nutmeg, mace and cardamoms",X,2678.0,2678.0,4286.0,8
+Guatemala_Export,Guatemala,Costa Rica,2022,0908,"Nutmeg, mace and cardamoms",X,5255.0,5255.0,21159.0,8
+Guatemala_Export,Guatemala,Costa Rica,2016,0908,"Nutmeg, mace and cardamoms",X,2896.0,2896.0,17469.0,8
+Guatemala_Export,Guatemala,Costa Rica,2021,0908,"Nutmeg, mace and cardamoms",X,6100.0,6100.0,13593.0,8
+Guatemala_Export,Guatemala,Costa Rica,2020,0908,"Nutmeg, mace and cardamoms",X,3124.0,3124.0,46492.0,8
+Guatemala_Export,Guatemala,Costa Rica,2018,0908,"Nutmeg, mace and cardamoms",X,1005.0,1005.0,11999.0,8
+Guatemala_Export,Guatemala,Czechia,2019,0908,"Nutmeg, mace and cardamoms",X,55.0,55.0,1374.0,8
+Guatemala_Export,Guatemala,Czechia,2020,0908,"Nutmeg, mace and cardamoms",X,50.0,50.0,2598.0,8
+Guatemala_Export,Guatemala,Czechia,2021,0908,"Nutmeg, mace and cardamoms",X,55.0,55.0,2000.0,8
+Guatemala_Export,Guatemala,El Salvador,2017,0908,"Nutmeg, mace and cardamoms",X,2428.0,2428.0,6907.0,8
+Guatemala_Export,Guatemala,El Salvador,2015,0908,"Nutmeg, mace and cardamoms",X,2483.0,2483.0,4749.0,8
+Guatemala_Export,Guatemala,El Salvador,2014,0908,"Nutmeg, mace and cardamoms",X,1904.0,1904.0,3596.0,8
+Guatemala_Export,Guatemala,El Salvador,2022,0908,"Nutmeg, mace and cardamoms",X,3249.0,3249.0,13245.0,8
+Guatemala_Export,Guatemala,El Salvador,2021,0908,"Nutmeg, mace and cardamoms",X,2613.0,2613.0,8638.0,8
+Guatemala_Export,Guatemala,El Salvador,2020,0908,"Nutmeg, mace and cardamoms",X,1815.0,1815.0,4512.0,8
+Guatemala_Export,Guatemala,El Salvador,2019,0908,"Nutmeg, mace and cardamoms",X,1676.0,1676.0,7501.0,8
+Guatemala_Export,Guatemala,El Salvador,2023,0908,"Nutmeg, mace and cardamoms",X,2316.0,2316.0,10449.0,8
+Guatemala_Export,Guatemala,El Salvador,2018,0908,"Nutmeg, mace and cardamoms",X,1852.0,1852.0,7735.0,8
+Guatemala_Export,Guatemala,El Salvador,2024,0908,"Nutmeg, mace and cardamoms",X,2074.0,2074.0,9099.0,8
+Guatemala_Export,Guatemala,El Salvador,2016,0908,"Nutmeg, mace and cardamoms",X,24980.0,24980.0,13676.0,8
+Guatemala_Export,Guatemala,Eritrea,2024,0908,"Nutmeg, mace and cardamoms",X,35968.0,35968.0,360300.0,8
+Guatemala_Export,Guatemala,Estonia,2023,0908,"Nutmeg, mace and cardamoms",X,2.0,2.0,62.0,8
+Guatemala_Export,Guatemala,Finland,2019,0908,"Nutmeg, mace and cardamoms",X,99132.0,99132.0,2321697.0,8
+Guatemala_Export,Guatemala,Finland,2017,0908,"Nutmeg, mace and cardamoms",X,80644.0,80644.0,952775.0,8
+Guatemala_Export,Guatemala,Finland,2020,0908,"Nutmeg, mace and cardamoms",X,60282.0,60282.0,1795645.0,8
+Guatemala_Export,Guatemala,Finland,2018,0908,"Nutmeg, mace and cardamoms",X,64512.0,64512.0,967038.0,8
+Guatemala_Export,Guatemala,Finland,2021,0908,"Nutmeg, mace and cardamoms",X,96422.0,96422.0,2459500.0,8
+Guatemala_Export,Guatemala,Finland,2015,0908,"Nutmeg, mace and cardamoms",X,74592.0,74592.0,387483.0,8
+Guatemala_Export,Guatemala,Finland,2024,0908,"Nutmeg, mace and cardamoms",X,160686.0,160686.0,3104500.0,8
+Guatemala_Export,Guatemala,Finland,2016,0908,"Nutmeg, mace and cardamoms",X,120459.0,120459.0,756405.0,8
+Guatemala_Export,Guatemala,Finland,2014,0908,"Nutmeg, mace and cardamoms",X,114912.0,114912.0,630822.0,8
+Guatemala_Export,Guatemala,Finland,2023,0908,"Nutmeg, mace and cardamoms",X,126590.0,126590.0,1011800.0,8
+Guatemala_Export,Guatemala,Finland,2022,0908,"Nutmeg, mace and cardamoms",X,174765.0,174765.0,2732500.0,8
+Guatemala_Export,Guatemala,France,2017,0908,"Nutmeg, mace and cardamoms",X,85204.0,85204.0,861982.0,8
+Guatemala_Export,Guatemala,France,2019,0908,"Nutmeg, mace and cardamoms",X,93458.0,93458.0,1277491.0,8
+Guatemala_Export,Guatemala,France,2020,0908,"Nutmeg, mace and cardamoms",X,99927.0,99927.0,2274066.0,8
+Guatemala_Export,Guatemala,France,2018,0908,"Nutmeg, mace and cardamoms",X,92926.0,92926.0,1291710.0,8
+Guatemala_Export,Guatemala,France,2021,0908,"Nutmeg, mace and cardamoms",X,126009.0,126009.0,2860128.0,8
+Guatemala_Export,Guatemala,France,2015,0908,"Nutmeg, mace and cardamoms",X,115373.0,115373.0,720399.0,8
+Guatemala_Export,Guatemala,France,2024,0908,"Nutmeg, mace and cardamoms",X,54774.0,54774.0,1045421.0,8
+Guatemala_Export,Guatemala,France,2016,0908,"Nutmeg, mace and cardamoms",X,80027.0,80027.0,342100.0,8
+Guatemala_Export,Guatemala,France,2014,0908,"Nutmeg, mace and cardamoms",X,141348.0,141348.0,714333.0,8
+Guatemala_Export,Guatemala,France,2023,0908,"Nutmeg, mace and cardamoms",X,68798.0,68798.0,561880.0,8
+Guatemala_Export,Guatemala,France,2022,0908,"Nutmeg, mace and cardamoms",X,100683.0,100683.0,1743155.0,8
+Guatemala_Export,Guatemala,State of Palestine,2023,0908,"Nutmeg, mace and cardamoms",X,7380.0,7380.0,50802.0,8
+Guatemala_Export,Guatemala,Germany,2017,0908,"Nutmeg, mace and cardamoms",X,388460.0,388460.0,3380829.0,8
+Guatemala_Export,Guatemala,Germany,2015,0908,"Nutmeg, mace and cardamoms",X,361296.0,361296.0,2370061.0,8
+Guatemala_Export,Guatemala,Germany,2024,0908,"Nutmeg, mace and cardamoms",X,392122.0,392122.0,5520562.0,8
+Guatemala_Export,Guatemala,Germany,2022,0908,"Nutmeg, mace and cardamoms",X,622678.0,622678.0,7324855.0,8
+Guatemala_Export,Guatemala,Germany,2014,0908,"Nutmeg, mace and cardamoms",X,403521.0,403521.0,1841549.0,8
+Guatemala_Export,Guatemala,Germany,2016,0908,"Nutmeg, mace and cardamoms",X,375134.0,375134.0,2340164.0,8
+Guatemala_Export,Guatemala,Germany,2018,0908,"Nutmeg, mace and cardamoms",X,590583.0,590583.0,5719757.0,8
+Guatemala_Export,Guatemala,Germany,2021,0908,"Nutmeg, mace and cardamoms",X,778355.0,778355.0,14315685.0,8
+Guatemala_Export,Guatemala,Germany,2020,0908,"Nutmeg, mace and cardamoms",X,439207.0,439207.0,8326124.0,8
+Guatemala_Export,Guatemala,Germany,2019,0908,"Nutmeg, mace and cardamoms",X,375223.0,375223.0,6501360.0,8
+Guatemala_Export,Guatemala,Germany,2023,0908,"Nutmeg, mace and cardamoms",X,502565.0,502565.0,3405543.0,8
+Guatemala_Export,Guatemala,Greece,2022,0908,"Nutmeg, mace and cardamoms",X,9669.0,9669.0,82320.0,8
+Guatemala_Export,Guatemala,Greece,2017,0908,"Nutmeg, mace and cardamoms",X,2480.0,2480.0,26375.0,8
+Guatemala_Export,Guatemala,Greece,2021,0908,"Nutmeg, mace and cardamoms",X,5231.0,5231.0,64500.0,8
+Guatemala_Export,Guatemala,Greece,2020,0908,"Nutmeg, mace and cardamoms",X,4624.0,4624.0,78500.0,8
+Guatemala_Export,Guatemala,Greece,2023,0908,"Nutmeg, mace and cardamoms",X,10862.0,10862.0,86216.0,8
+Guatemala_Export,Guatemala,Honduras,2017,0908,"Nutmeg, mace and cardamoms",X,2698.0,2698.0,17130.0,8
+Guatemala_Export,Guatemala,Honduras,2018,0908,"Nutmeg, mace and cardamoms",X,10683.0,10683.0,12066.0,8
+Guatemala_Export,Guatemala,Honduras,2021,0908,"Nutmeg, mace and cardamoms",X,3351.235,3351.235,20968.0,8
+Guatemala_Export,Guatemala,Honduras,2020,0908,"Nutmeg, mace and cardamoms",X,21536.0,21536.0,16803.0,8
+Guatemala_Export,Guatemala,Honduras,2019,0908,"Nutmeg, mace and cardamoms",X,13559.0,13559.0,11800.0,8
+Guatemala_Export,Guatemala,Honduras,2022,0908,"Nutmeg, mace and cardamoms",X,36224.006,36224.006,27094.0,8
+Guatemala_Export,Guatemala,Honduras,2014,0908,"Nutmeg, mace and cardamoms",X,2826.0,2826.0,22228.0,8
+Guatemala_Export,Guatemala,Honduras,2016,0908,"Nutmeg, mace and cardamoms",X,60447.0,60447.0,27955.0,8
+Guatemala_Export,Guatemala,Honduras,2023,0908,"Nutmeg, mace and cardamoms",X,21812.0,21812.0,27116.0,8
+Guatemala_Export,Guatemala,Honduras,2024,0908,"Nutmeg, mace and cardamoms",X,22816.0,22816.0,39629.0,8
+Guatemala_Export,Guatemala,Honduras,2015,0908,"Nutmeg, mace and cardamoms",X,2296.0,2296.0,20258.0,8
+Guatemala_Export,Guatemala,Hungary,2014,0908,"Nutmeg, mace and cardamoms",X,80.0,80.0,218.0,8
+Guatemala_Export,Guatemala,Indonesia,2022,0908,"Nutmeg, mace and cardamoms",X,15050.0,15050.0,170677.0,8
+Guatemala_Export,Guatemala,Indonesia,2017,0908,"Nutmeg, mace and cardamoms",X,10800.0,10800.0,115481.0,8
+Guatemala_Export,Guatemala,Indonesia,2014,0908,"Nutmeg, mace and cardamoms",X,10040.0,10040.0,13500.0,8
+Guatemala_Export,Guatemala,Indonesia,2020,0908,"Nutmeg, mace and cardamoms",X,21600.0,21600.0,370000.0,8
+Guatemala_Export,Guatemala,Indonesia,2016,0908,"Nutmeg, mace and cardamoms",X,21674.0,21674.0,126374.0,8
+Guatemala_Export,Guatemala,Indonesia,2018,0908,"Nutmeg, mace and cardamoms",X,20515.0,20515.0,164587.0,8
+Guatemala_Export,Guatemala,Indonesia,2023,0908,"Nutmeg, mace and cardamoms",X,32300.0,32300.0,252500.0,8
+Guatemala_Export,Guatemala,Iran,2017,0908,"Nutmeg, mace and cardamoms",X,10166.0,10166.0,12500.0,8
+Guatemala_Export,Guatemala,Iran,2016,0908,"Nutmeg, mace and cardamoms",X,94667.0,94667.0,695248.0,8
+Guatemala_Export,Guatemala,Iran,2015,0908,"Nutmeg, mace and cardamoms",X,6256.0,6256.0,6680.0,8
+Guatemala_Export,Guatemala,Iraq,2017,0908,"Nutmeg, mace and cardamoms",X,675687.0,675687.0,7422064.0,8
+Guatemala_Export,Guatemala,Iraq,2016,0908,"Nutmeg, mace and cardamoms",X,1503635.0,1503635.0,8716595.0,8
+Guatemala_Export,Guatemala,Iraq,2020,0908,"Nutmeg, mace and cardamoms",X,287953.0,287953.0,6575209.0,8
+Guatemala_Export,Guatemala,Iraq,2022,0908,"Nutmeg, mace and cardamoms",X,507803.0,507803.0,2872248.0,8
+Guatemala_Export,Guatemala,Iraq,2018,0908,"Nutmeg, mace and cardamoms",X,502811.0,502811.0,5732329.0,8
+Guatemala_Export,Guatemala,Iraq,2019,0908,"Nutmeg, mace and cardamoms",X,344973.0,344973.0,6652610.0,8
+Guatemala_Export,Guatemala,Iraq,2024,0908,"Nutmeg, mace and cardamoms",X,245005.0,245005.0,3713165.0,8
+Guatemala_Export,Guatemala,Iraq,2015,0908,"Nutmeg, mace and cardamoms",X,241055.0,241055.0,1504433.0,8
+Guatemala_Export,Guatemala,Iraq,2021,0908,"Nutmeg, mace and cardamoms",X,280886.0,280886.0,3109007.0,8
+Guatemala_Export,Guatemala,Iraq,2023,0908,"Nutmeg, mace and cardamoms",X,637789.0,637789.0,3549143.0,8
+Guatemala_Export,Guatemala,Israel,2016,0908,"Nutmeg, mace and cardamoms",X,1073691.0,1073691.0,4397993.0,8
+Guatemala_Export,Guatemala,Israel,2018,0908,"Nutmeg, mace and cardamoms",X,941849.0,941849.0,9696023.0,8
+Guatemala_Export,Guatemala,Israel,2021,0908,"Nutmeg, mace and cardamoms",X,1480880.0,1480880.0,17872786.0,8
+Guatemala_Export,Guatemala,Israel,2023,0908,"Nutmeg, mace and cardamoms",X,1718519.0,1718519.0,7917414.0,8
+Guatemala_Export,Guatemala,Israel,2015,0908,"Nutmeg, mace and cardamoms",X,495909.0,495909.0,2237591.0,8
+Guatemala_Export,Guatemala,Israel,2024,0908,"Nutmeg, mace and cardamoms",X,240885.0,240885.0,2664900.0,8
+Guatemala_Export,Guatemala,Israel,2022,0908,"Nutmeg, mace and cardamoms",X,2653933.0,2653933.0,15098465.0,8
+Guatemala_Export,Guatemala,Israel,2019,0908,"Nutmeg, mace and cardamoms",X,777282.0,777282.0,11650055.0,8
+Guatemala_Export,Guatemala,Israel,2020,0908,"Nutmeg, mace and cardamoms",X,1014052.0,1014052.0,15575032.0,8
+Guatemala_Export,Guatemala,Israel,2014,0908,"Nutmeg, mace and cardamoms",X,1239313.0,1239313.0,4374349.0,8
+Guatemala_Export,Guatemala,Israel,2017,0908,"Nutmeg, mace and cardamoms",X,580621.0,580621.0,4323184.0,8
+Guatemala_Export,Guatemala,Italy,2023,0908,"Nutmeg, mace and cardamoms",X,40380.0,40380.0,377750.0,8
+Guatemala_Export,Guatemala,Italy,2015,0908,"Nutmeg, mace and cardamoms",X,69.0,69.0,17274.0,8
+Guatemala_Export,Guatemala,Italy,2018,0908,"Nutmeg, mace and cardamoms",X,14100.0,14100.0,153150.0,8
+Guatemala_Export,Guatemala,Italy,2024,0908,"Nutmeg, mace and cardamoms",X,88089.0,88089.0,1599600.0,8
+Guatemala_Export,Guatemala,Italy,2020,0908,"Nutmeg, mace and cardamoms",X,10794.0,10794.0,340637.0,8
+Guatemala_Export,Guatemala,Italy,2014,0908,"Nutmeg, mace and cardamoms",X,76.0,76.0,18786.0,8
+Guatemala_Export,Guatemala,Italy,2016,0908,"Nutmeg, mace and cardamoms",X,7568.0,7568.0,72161.0,8
+Guatemala_Export,Guatemala,Italy,2017,0908,"Nutmeg, mace and cardamoms",X,58.0,58.0,15000.0,8
+Guatemala_Export,Guatemala,Italy,2022,0908,"Nutmeg, mace and cardamoms",X,32250.0,32250.0,464000.0,8
+Guatemala_Export,Guatemala,Italy,2021,0908,"Nutmeg, mace and cardamoms",X,10775.0,10775.0,247000.0,8
+Guatemala_Export,Guatemala,Japan,2016,0908,"Nutmeg, mace and cardamoms",X,270593.0,270593.0,1972253.0,8
+Guatemala_Export,Guatemala,Japan,2017,0908,"Nutmeg, mace and cardamoms",X,345415.0,345415.0,4219175.0,8
+Guatemala_Export,Guatemala,Japan,2020,0908,"Nutmeg, mace and cardamoms",X,1799625.0,1799625.0,45636126.0,8
+Guatemala_Export,Guatemala,Japan,2014,0908,"Nutmeg, mace and cardamoms",X,310782.0,310782.0,2014387.0,8
+Guatemala_Export,Guatemala,Japan,2015,0908,"Nutmeg, mace and cardamoms",X,240447.0,240447.0,1691713.0,8
+Guatemala_Export,Guatemala,Japan,2018,0908,"Nutmeg, mace and cardamoms",X,300153.0,300153.0,4232817.0,8
+Guatemala_Export,Guatemala,Japan,2022,0908,"Nutmeg, mace and cardamoms",X,465866.0,465866.0,7641261.0,8
+Guatemala_Export,Guatemala,Japan,2024,0908,"Nutmeg, mace and cardamoms",X,384637.0,384637.0,7827490.0,8
+Guatemala_Export,Guatemala,Japan,2019,0908,"Nutmeg, mace and cardamoms",X,388306.0,388306.0,7952660.0,8
+Guatemala_Export,Guatemala,Japan,2021,0908,"Nutmeg, mace and cardamoms",X,467586.0,467586.0,11243050.0,8
+Guatemala_Export,Guatemala,Japan,2023,0908,"Nutmeg, mace and cardamoms",X,208544.0,208544.0,2234110.0,8
+Guatemala_Export,Guatemala,Jordan,2020,0908,"Nutmeg, mace and cardamoms",X,890831.0,890831.0,13138412.0,8
+Guatemala_Export,Guatemala,Jordan,2016,0908,"Nutmeg, mace and cardamoms",X,2079802.0,2079802.0,11241292.0,8
+Guatemala_Export,Guatemala,Jordan,2017,0908,"Nutmeg, mace and cardamoms",X,1446381.0,1446381.0,14368336.0,8
+Guatemala_Export,Guatemala,Jordan,2015,0908,"Nutmeg, mace and cardamoms",X,1411921.0,1411921.0,9766610.0,8
+Guatemala_Export,Guatemala,Jordan,2014,0908,"Nutmeg, mace and cardamoms",X,2305890.0,2305890.0,10830913.0,8
+Guatemala_Export,Guatemala,Jordan,2022,0908,"Nutmeg, mace and cardamoms",X,7676992.0,7676992.0,44148544.0,8
+Guatemala_Export,Guatemala,Jordan,2018,0908,"Nutmeg, mace and cardamoms",X,1231345.0,1231345.0,12925128.0,8
+Guatemala_Export,Guatemala,Jordan,2024,0908,"Nutmeg, mace and cardamoms",X,2658263.0,2658263.0,32950700.0,8
+Guatemala_Export,Guatemala,Jordan,2019,0908,"Nutmeg, mace and cardamoms",X,1248673.0,1248673.0,19627497.0,8
+Guatemala_Export,Guatemala,Jordan,2021,0908,"Nutmeg, mace and cardamoms",X,2274633.0,2274633.0,25880640.0,8
+Guatemala_Export,Guatemala,Jordan,2023,0908,"Nutmeg, mace and cardamoms",X,7214744.0,7214744.0,36075379.0,8
+Guatemala_Export,Guatemala,Kenya,2020,0908,"Nutmeg, mace and cardamoms",X,10775.0,10775.0,196750.0,8
+Guatemala_Export,Guatemala,Kenya,2022,0908,"Nutmeg, mace and cardamoms",X,19480.0,19480.0,109267.0,8
+Guatemala_Export,Guatemala,Kenya,2023,0908,"Nutmeg, mace and cardamoms",X,11096.0,11096.0,36992.0,8
+Guatemala_Export,Guatemala,Kenya,2016,0908,"Nutmeg, mace and cardamoms",X,15158.0,15158.0,41098.0,8
+Guatemala_Export,Guatemala,Rep. of Korea,2021,0908,"Nutmeg, mace and cardamoms",X,3751.0,3751.0,78898.0,8
+Guatemala_Export,Guatemala,Rep. of Korea,2022,0908,"Nutmeg, mace and cardamoms",X,7415.0,7415.0,100330.0,8
+Guatemala_Export,Guatemala,Rep. of Korea,2019,0908,"Nutmeg, mace and cardamoms",X,6331.0,6331.0,89772.0,8
+Guatemala_Export,Guatemala,Rep. of Korea,2024,0908,"Nutmeg, mace and cardamoms",X,1765.0,1765.0,54740.0,8
+Guatemala_Export,Guatemala,Rep. of Korea,2018,0908,"Nutmeg, mace and cardamoms",X,5044.0,5044.0,48614.0,8
+Guatemala_Export,Guatemala,Rep. of Korea,2014,0908,"Nutmeg, mace and cardamoms",X,9650.0,9650.0,67736.0,8
+Guatemala_Export,Guatemala,Rep. of Korea,2015,0908,"Nutmeg, mace and cardamoms",X,8718.0,8718.0,60170.0,8
+Guatemala_Export,Guatemala,Rep. of Korea,2017,0908,"Nutmeg, mace and cardamoms",X,9825.0,9825.0,103975.0,8
+Guatemala_Export,Guatemala,Rep. of Korea,2020,0908,"Nutmeg, mace and cardamoms",X,11868.0,11868.0,330848.0,8
+Guatemala_Export,Guatemala,Rep. of Korea,2016,0908,"Nutmeg, mace and cardamoms",X,5044.0,5044.0,15000.0,8
+Guatemala_Export,Guatemala,Kuwait,2019,0908,"Nutmeg, mace and cardamoms",X,889097.0,889097.0,18244406.0,8
+Guatemala_Export,Guatemala,Kuwait,2024,0908,"Nutmeg, mace and cardamoms",X,348639.0,348639.0,7372490.0,8
+Guatemala_Export,Guatemala,Kuwait,2014,0908,"Nutmeg, mace and cardamoms",X,661643.0,661643.0,4993943.0,8
+Guatemala_Export,Guatemala,Kuwait,2021,0908,"Nutmeg, mace and cardamoms",X,565196.0,565196.0,9388555.0,8
+Guatemala_Export,Guatemala,Kuwait,2017,0908,"Nutmeg, mace and cardamoms",X,833074.0,833074.0,9884935.0,8
+Guatemala_Export,Guatemala,Kuwait,2015,0908,"Nutmeg, mace and cardamoms",X,753160.0,753160.0,6305307.0,8
+Guatemala_Export,Guatemala,Kuwait,2020,0908,"Nutmeg, mace and cardamoms",X,690841.0,690841.0,16927514.0,8
+Guatemala_Export,Guatemala,Kuwait,2016,0908,"Nutmeg, mace and cardamoms",X,743304.0,743304.0,6098242.0,8
+Guatemala_Export,Guatemala,Kuwait,2023,0908,"Nutmeg, mace and cardamoms",X,485064.0,485064.0,4833300.0,8
+Guatemala_Export,Guatemala,Kuwait,2018,0908,"Nutmeg, mace and cardamoms",X,996141.0,996141.0,12464612.0,8
+Guatemala_Export,Guatemala,Kuwait,2022,0908,"Nutmeg, mace and cardamoms",X,628910.0,628910.0,6351603.0,8
+Guatemala_Export,Guatemala,Lebanon,2020,0908,"Nutmeg, mace and cardamoms",X,229196.0,229196.0,4527120.0,8
+Guatemala_Export,Guatemala,Lebanon,2015,0908,"Nutmeg, mace and cardamoms",X,203914.0,203914.0,1179196.0,8
+Guatemala_Export,Guatemala,Lebanon,2016,0908,"Nutmeg, mace and cardamoms",X,264918.0,264918.0,1424611.0,8
+Guatemala_Export,Guatemala,Lebanon,2021,0908,"Nutmeg, mace and cardamoms",X,120588.0,120588.0,2415450.0,8
+Guatemala_Export,Guatemala,Lebanon,2022,0908,"Nutmeg, mace and cardamoms",X,409925.0,409925.0,3098554.0,8
+Guatemala_Export,Guatemala,Lebanon,2014,0908,"Nutmeg, mace and cardamoms",X,275964.0,275964.0,1215560.0,8
+Guatemala_Export,Guatemala,Lebanon,2023,0908,"Nutmeg, mace and cardamoms",X,393982.0,393982.0,2079065.0,8
+Guatemala_Export,Guatemala,Lebanon,2018,0908,"Nutmeg, mace and cardamoms",X,254883.0,254883.0,3149086.0,8
+Guatemala_Export,Guatemala,Lebanon,2019,0908,"Nutmeg, mace and cardamoms",X,153298.0,153298.0,2687078.0,8
+Guatemala_Export,Guatemala,Lebanon,2024,0908,"Nutmeg, mace and cardamoms",X,250314.0,250314.0,3922060.0,8
+Guatemala_Export,Guatemala,Lebanon,2017,0908,"Nutmeg, mace and cardamoms",X,239754.0,239754.0,2469571.0,8
+Guatemala_Export,Guatemala,Latvia,2024,0908,"Nutmeg, mace and cardamoms",X,20160.0,20160.0,343600.0,8
+Guatemala_Export,Guatemala,Libya,2015,0908,"Nutmeg, mace and cardamoms",X,86046.0,86046.0,486406.0,8
+Guatemala_Export,Guatemala,Libya,2020,0908,"Nutmeg, mace and cardamoms",X,9900.0,9900.0,90000.0,8
+Guatemala_Export,Guatemala,Libya,2016,0908,"Nutmeg, mace and cardamoms",X,69862.0,69862.0,437318.0,8
+Guatemala_Export,Guatemala,Libya,2021,0908,"Nutmeg, mace and cardamoms",X,67561.0,67561.0,997528.0,8
+Guatemala_Export,Guatemala,Libya,2022,0908,"Nutmeg, mace and cardamoms",X,139908.0,139908.0,831058.0,8
+Guatemala_Export,Guatemala,Libya,2014,0908,"Nutmeg, mace and cardamoms",X,61980.0,61980.0,417598.0,8
+Guatemala_Export,Guatemala,Libya,2023,0908,"Nutmeg, mace and cardamoms",X,23942.0,23942.0,213000.0,8
+Guatemala_Export,Guatemala,Libya,2018,0908,"Nutmeg, mace and cardamoms",X,10862.0,10862.0,138353.0,8
+Guatemala_Export,Guatemala,Libya,2019,0908,"Nutmeg, mace and cardamoms",X,58519.0,58519.0,1079650.0,8
+Guatemala_Export,Guatemala,Libya,2024,0908,"Nutmeg, mace and cardamoms",X,10862.0,10862.0,130000.0,8
+Guatemala_Export,Guatemala,Libya,2017,0908,"Nutmeg, mace and cardamoms",X,32371.0,32371.0,361640.0,8
+Guatemala_Export,Guatemala,Lithuania,2021,0908,"Nutmeg, mace and cardamoms",X,5617.0,5617.0,39000.0,8
+Guatemala_Export,Guatemala,Lithuania,2017,0908,"Nutmeg, mace and cardamoms",X,2977.0,2977.0,3600.0,8
+Guatemala_Export,Guatemala,"China, Macao SAR",2018,0908,"Nutmeg, mace and cardamoms",X,6465.0,6465.0,86201.0,8
+Guatemala_Export,Guatemala,"China, Macao SAR",2019,0908,"Nutmeg, mace and cardamoms",X,21045.0,21045.0,325000.0,8
+Guatemala_Export,Guatemala,Malaysia,2016,0908,"Nutmeg, mace and cardamoms",X,334769.0,334769.0,2614129.0,8
+Guatemala_Export,Guatemala,Malaysia,2022,0908,"Nutmeg, mace and cardamoms",X,228632.0,228632.0,1765095.0,8
+Guatemala_Export,Guatemala,Malaysia,2014,0908,"Nutmeg, mace and cardamoms",X,323527.0,323527.0,1771693.0,8
+Guatemala_Export,Guatemala,Malaysia,2024,0908,"Nutmeg, mace and cardamoms",X,159919.0,159919.0,2545200.0,8
+Guatemala_Export,Guatemala,Malaysia,2017,0908,"Nutmeg, mace and cardamoms",X,168059.0,168059.0,1593599.0,8
+Guatemala_Export,Guatemala,Malaysia,2019,0908,"Nutmeg, mace and cardamoms",X,216537.0,216537.0,3469318.0,8
+Guatemala_Export,Guatemala,Malaysia,2018,0908,"Nutmeg, mace and cardamoms",X,311567.0,311567.0,3510470.0,8
+Guatemala_Export,Guatemala,Malaysia,2023,0908,"Nutmeg, mace and cardamoms",X,384085.0,384085.0,3092110.0,8
+Guatemala_Export,Guatemala,Malaysia,2021,0908,"Nutmeg, mace and cardamoms",X,167855.0,167855.0,2604118.0,8
+Guatemala_Export,Guatemala,Malaysia,2015,0908,"Nutmeg, mace and cardamoms",X,191061.0,191061.0,1447528.0,8
+Guatemala_Export,Guatemala,Malaysia,2020,0908,"Nutmeg, mace and cardamoms",X,179317.0,179317.0,3250079.0,8
+Guatemala_Export,Guatemala,Mauritius,2019,0908,"Nutmeg, mace and cardamoms",X,541.0,541.0,13776.0,8
+Guatemala_Export,Guatemala,Mauritius,2017,0908,"Nutmeg, mace and cardamoms",X,10405.0,10405.0,28750.0,8
+Guatemala_Export,Guatemala,Mauritius,2015,0908,"Nutmeg, mace and cardamoms",X,10000.0,10000.0,9900.0,8
+Guatemala_Export,Guatemala,Mauritius,2016,0908,"Nutmeg, mace and cardamoms",X,18406.0,18406.0,60100.0,8
+Guatemala_Export,Guatemala,Mauritius,2020,0908,"Nutmeg, mace and cardamoms",X,2151.0,2151.0,42561.0,8
+Guatemala_Export,Guatemala,Mexico,2024,0908,"Nutmeg, mace and cardamoms",X,7689.0,7689.0,51446.0,8
+Guatemala_Export,Guatemala,Mexico,2023,0908,"Nutmeg, mace and cardamoms",X,4282.0,4282.0,50698.0,8
+Guatemala_Export,Guatemala,Mexico,2021,0908,"Nutmeg, mace and cardamoms",X,12049.0,12049.0,349438.0,8
+Guatemala_Export,Guatemala,Mexico,2022,0908,"Nutmeg, mace and cardamoms",X,4940.0,4940.0,125573.0,8
+Guatemala_Export,Guatemala,Mexico,2020,0908,"Nutmeg, mace and cardamoms",X,5456.0,5456.0,106250.0,8
+Guatemala_Export,Guatemala,Mexico,2015,0908,"Nutmeg, mace and cardamoms",X,2192.0,2192.0,7924.0,8
+Guatemala_Export,Guatemala,Mexico,2016,0908,"Nutmeg, mace and cardamoms",X,17230.0,17230.0,38423.0,8
+Guatemala_Export,Guatemala,Mexico,2017,0908,"Nutmeg, mace and cardamoms",X,1207.0,1207.0,16347.0,8
+Guatemala_Export,Guatemala,Mexico,2019,0908,"Nutmeg, mace and cardamoms",X,6308.0,6308.0,146671.0,8
+Guatemala_Export,Guatemala,Mexico,2014,0908,"Nutmeg, mace and cardamoms",X,202.0,202.0,1306.0,8
+Guatemala_Export,Guatemala,"Other Asia, nes",2018,0908,"Nutmeg, mace and cardamoms",X,3042.0,3042.0,35800.0,8
+Guatemala_Export,Guatemala,"Other Asia, nes",2022,0908,"Nutmeg, mace and cardamoms",X,4860.0,4860.0,44567.0,8
+Guatemala_Export,Guatemala,"Other Asia, nes",2023,0908,"Nutmeg, mace and cardamoms",X,5579.0,5579.0,67278.0,8
+Guatemala_Export,Guatemala,"Other Asia, nes",2021,0908,"Nutmeg, mace and cardamoms",X,3505.0,3505.0,53725.0,8
+Guatemala_Export,Guatemala,"Other Asia, nes",2024,0908,"Nutmeg, mace and cardamoms",X,1331.0,1331.0,13000.0,8
+Guatemala_Export,Guatemala,"Other Asia, nes",2016,0908,"Nutmeg, mace and cardamoms",X,508.0,508.0,5334.0,8
+Guatemala_Export,Guatemala,"Other Asia, nes",2020,0908,"Nutmeg, mace and cardamoms",X,3865.0,3865.0,74680.0,8
+Guatemala_Export,Guatemala,"Other Asia, nes",2019,0908,"Nutmeg, mace and cardamoms",X,3473.0,3473.0,56260.0,8
+Guatemala_Export,Guatemala,"Other Asia, nes",2017,0908,"Nutmeg, mace and cardamoms",X,1538.0,1538.0,16875.0,8
+Guatemala_Export,Guatemala,Morocco,2018,0908,"Nutmeg, mace and cardamoms",X,32831.0,32831.0,425918.0,8
+Guatemala_Export,Guatemala,Morocco,2022,0908,"Nutmeg, mace and cardamoms",X,36979.0,36979.0,260499.0,8
+Guatemala_Export,Guatemala,Morocco,2023,0908,"Nutmeg, mace and cardamoms",X,41606.0,41606.0,297500.0,8
+Guatemala_Export,Guatemala,Morocco,2024,0908,"Nutmeg, mace and cardamoms",X,10034.0,10034.0,150750.0,8
+Guatemala_Export,Guatemala,Morocco,2021,0908,"Nutmeg, mace and cardamoms",X,28015.0,28015.0,580400.0,8
+Guatemala_Export,Guatemala,Morocco,2015,0908,"Nutmeg, mace and cardamoms",X,10750.0,10750.0,14500.0,8
+Guatemala_Export,Guatemala,Morocco,2016,0908,"Nutmeg, mace and cardamoms",X,44928.0,44928.0,370243.0,8
+Guatemala_Export,Guatemala,Morocco,2020,0908,"Nutmeg, mace and cardamoms",X,9731.0,9731.0,145500.0,8
+Guatemala_Export,Guatemala,Morocco,2019,0908,"Nutmeg, mace and cardamoms",X,52837.0,52837.0,503983.0,8
+Guatemala_Export,Guatemala,Morocco,2017,0908,"Nutmeg, mace and cardamoms",X,11232.0,11232.0,117737.0,8
+Guatemala_Export,Guatemala,Oman,2018,0908,"Nutmeg, mace and cardamoms",X,267901.0,267901.0,3183546.0,8
+Guatemala_Export,Guatemala,Oman,2023,0908,"Nutmeg, mace and cardamoms",X,32768.0,32768.0,248400.0,8
+Guatemala_Export,Guatemala,Oman,2015,0908,"Nutmeg, mace and cardamoms",X,64405.0,64405.0,631543.0,8
+Guatemala_Export,Guatemala,Oman,2021,0908,"Nutmeg, mace and cardamoms",X,163108.0,163108.0,2521050.0,8
+Guatemala_Export,Guatemala,Oman,2020,0908,"Nutmeg, mace and cardamoms",X,106798.0,106798.0,2714850.0,8
+Guatemala_Export,Guatemala,Oman,2017,0908,"Nutmeg, mace and cardamoms",X,44643.0,44643.0,496198.0,8
+Guatemala_Export,Guatemala,Oman,2014,0908,"Nutmeg, mace and cardamoms",X,10850.0,10850.0,95867.0,8
+Guatemala_Export,Guatemala,Oman,2019,0908,"Nutmeg, mace and cardamoms",X,222760.0,222760.0,4015910.0,8
+Guatemala_Export,Guatemala,Oman,2022,0908,"Nutmeg, mace and cardamoms",X,143854.0,143854.0,1389293.0,8
+Guatemala_Export,Guatemala,Oman,2016,0908,"Nutmeg, mace and cardamoms",X,110693.0,110693.0,918068.0,8
+Guatemala_Export,Guatemala,Oman,2024,0908,"Nutmeg, mace and cardamoms",X,72551.0,72551.0,1259300.0,8
+Guatemala_Export,Guatemala,Nepal,2022,0908,"Nutmeg, mace and cardamoms",X,344845.0,344845.0,2870261.0,8
+Guatemala_Export,Guatemala,Nepal,2014,0908,"Nutmeg, mace and cardamoms",X,701995.0,701995.0,3955626.0,8
+Guatemala_Export,Guatemala,Nepal,2017,0908,"Nutmeg, mace and cardamoms",X,1014800.0,1014800.0,9614859.0,8
+Guatemala_Export,Guatemala,Nepal,2019,0908,"Nutmeg, mace and cardamoms",X,108250.0,108250.0,1731300.0,8
+Guatemala_Export,Guatemala,Nepal,2020,0908,"Nutmeg, mace and cardamoms",X,15135.0,15135.0,235900.0,8
+Guatemala_Export,Guatemala,Nepal,2018,0908,"Nutmeg, mace and cardamoms",X,65100.0,65100.0,722786.0,8
+Guatemala_Export,Guatemala,Nepal,2016,0908,"Nutmeg, mace and cardamoms",X,962395.0,962395.0,5689312.0,8
+Guatemala_Export,Guatemala,Nepal,2021,0908,"Nutmeg, mace and cardamoms",X,66260.0,66260.0,751060.0,8
+Guatemala_Export,Guatemala,Nepal,2023,0908,"Nutmeg, mace and cardamoms",X,1023900.0,1023900.0,6298250.0,8
+Guatemala_Export,Guatemala,Nepal,2015,0908,"Nutmeg, mace and cardamoms",X,291765.0,291765.0,1827029.0,8
+Guatemala_Export,Guatemala,Netherlands,2014,0908,"Nutmeg, mace and cardamoms",X,837145.0,837145.0,3284376.0,8
+Guatemala_Export,Guatemala,Netherlands,2022,0908,"Nutmeg, mace and cardamoms",X,1130910.0,1130910.0,8440658.0,8
+Guatemala_Export,Guatemala,Netherlands,2019,0908,"Nutmeg, mace and cardamoms",X,1107092.0,1107092.0,16087268.0,8
+Guatemala_Export,Guatemala,Netherlands,2020,0908,"Nutmeg, mace and cardamoms",X,1119120.0,1119120.0,19960312.0,8
+Guatemala_Export,Guatemala,Netherlands,2017,0908,"Nutmeg, mace and cardamoms",X,551584.0,551584.0,4304058.0,8
+Guatemala_Export,Guatemala,Netherlands,2018,0908,"Nutmeg, mace and cardamoms",X,880134.0,880134.0,9825057.0,8
+Guatemala_Export,Guatemala,Netherlands,2023,0908,"Nutmeg, mace and cardamoms",X,1636650.0,1636650.0,8745628.0,8
+Guatemala_Export,Guatemala,Netherlands,2021,0908,"Nutmeg, mace and cardamoms",X,766344.0,766344.0,10678384.0,8
+Guatemala_Export,Guatemala,Netherlands,2016,0908,"Nutmeg, mace and cardamoms",X,759244.0,759244.0,3335615.0,8
+Guatemala_Export,Guatemala,Netherlands,2024,0908,"Nutmeg, mace and cardamoms",X,472056.0,472056.0,6114620.0,8
+Guatemala_Export,Guatemala,Netherlands,2015,0908,"Nutmeg, mace and cardamoms",X,454966.0,454966.0,1635622.0,8
+Guatemala_Export,Guatemala,Nicaragua,2016,0908,"Nutmeg, mace and cardamoms",X,100.0,100.0,1156.0,8
+Guatemala_Export,Guatemala,Norway,2015,0908,"Nutmeg, mace and cardamoms",X,13307.0,13307.0,35536.0,8
+Guatemala_Export,Guatemala,Norway,2023,0908,"Nutmeg, mace and cardamoms",X,18144.0,18144.0,80500.0,8
+Guatemala_Export,Guatemala,Norway,2024,0908,"Nutmeg, mace and cardamoms",X,10080.0,10080.0,112500.0,8
+Guatemala_Export,Guatemala,Norway,2022,0908,"Nutmeg, mace and cardamoms",X,126.0,126.0,3204.0,8
+Guatemala_Export,Guatemala,Norway,2014,0908,"Nutmeg, mace and cardamoms",X,11196.0,11196.0,47876.0,8
+Guatemala_Export,Guatemala,Pakistan,2015,0908,"Nutmeg, mace and cardamoms",X,1310857.0,1310857.0,8872351.0,8
+Guatemala_Export,Guatemala,Pakistan,2017,0908,"Nutmeg, mace and cardamoms",X,2195798.0,2195798.0,20940244.0,8
+Guatemala_Export,Guatemala,Pakistan,2023,0908,"Nutmeg, mace and cardamoms",X,965836.0,965836.0,7956600.0,8
+Guatemala_Export,Guatemala,Pakistan,2016,0908,"Nutmeg, mace and cardamoms",X,2044759.0,2044759.0,13724341.0,8
+Guatemala_Export,Guatemala,Pakistan,2024,0908,"Nutmeg, mace and cardamoms",X,971692.0,971692.0,16119815.0,8
+Guatemala_Export,Guatemala,Pakistan,2022,0908,"Nutmeg, mace and cardamoms",X,2166330.0,2166330.0,17540996.0,8
+Guatemala_Export,Guatemala,Pakistan,2021,0908,"Nutmeg, mace and cardamoms",X,1390367.0,1390367.0,20803047.0,8
+Guatemala_Export,Guatemala,Pakistan,2018,0908,"Nutmeg, mace and cardamoms",X,2715127.0,2715127.0,31273396.0,8
+Guatemala_Export,Guatemala,Pakistan,2020,0908,"Nutmeg, mace and cardamoms",X,1502980.0,1502980.0,28731410.0,8
+Guatemala_Export,Guatemala,Pakistan,2019,0908,"Nutmeg, mace and cardamoms",X,2311904.0,2311904.0,40684397.0,8
+Guatemala_Export,Guatemala,Pakistan,2014,0908,"Nutmeg, mace and cardamoms",X,1702584.0,1702584.0,9013753.0,8
+Guatemala_Export,Guatemala,Panama,2023,0908,"Nutmeg, mace and cardamoms",X,31.0,31.0,70.0,8
+Guatemala_Export,Guatemala,Panama,2022,0908,"Nutmeg, mace and cardamoms",X,22.0,22.0,104.0,8
+Guatemala_Export,Guatemala,Peru,2017,0908,"Nutmeg, mace and cardamoms",X,430.0,430.0,7492.0,8
+Guatemala_Export,Guatemala,Peru,2015,0908,"Nutmeg, mace and cardamoms",X,92.0,92.0,161.0,8
+Guatemala_Export,Guatemala,Peru,2019,0908,"Nutmeg, mace and cardamoms",X,2210.0,2210.0,30000.0,8
+Guatemala_Export,Guatemala,Poland,2018,0908,"Nutmeg, mace and cardamoms",X,15060.0,15060.0,145900.0,8
+Guatemala_Export,Guatemala,Poland,2023,0908,"Nutmeg, mace and cardamoms",X,10060.0,10060.0,38500.0,8
+Guatemala_Export,Guatemala,Poland,2019,0908,"Nutmeg, mace and cardamoms",X,10060.0,10060.0,219000.0,8
+Guatemala_Export,Guatemala,Poland,2014,0908,"Nutmeg, mace and cardamoms",X,19245.0,19245.0,48431.0,8
+Guatemala_Export,Guatemala,Poland,2015,0908,"Nutmeg, mace and cardamoms",X,16531.0,16531.0,11109.0,8
+Guatemala_Export,Guatemala,Qatar,2018,0908,"Nutmeg, mace and cardamoms",X,433132.0,433132.0,6173216.0,8
+Guatemala_Export,Guatemala,Qatar,2024,0908,"Nutmeg, mace and cardamoms",X,275647.0,275647.0,5402980.0,8
+Guatemala_Export,Guatemala,Qatar,2016,0908,"Nutmeg, mace and cardamoms",X,95547.0,95547.0,949236.0,8
+Guatemala_Export,Guatemala,Qatar,2023,0908,"Nutmeg, mace and cardamoms",X,300681.0,300681.0,3466820.0,8
+Guatemala_Export,Guatemala,Qatar,2022,0908,"Nutmeg, mace and cardamoms",X,392527.0,392527.0,3996578.0,8
+Guatemala_Export,Guatemala,Qatar,2019,0908,"Nutmeg, mace and cardamoms",X,533942.0,533942.0,10830322.0,8
+Guatemala_Export,Guatemala,Qatar,2014,0908,"Nutmeg, mace and cardamoms",X,11232.0,11232.0,95913.0,8
+Guatemala_Export,Guatemala,Qatar,2017,0908,"Nutmeg, mace and cardamoms",X,221463.0,221463.0,2911043.0,8
+Guatemala_Export,Guatemala,Qatar,2020,0908,"Nutmeg, mace and cardamoms",X,387646.0,387646.0,10023583.0,8
+Guatemala_Export,Guatemala,Qatar,2015,0908,"Nutmeg, mace and cardamoms",X,127570.0,127570.0,1276314.0,8
+Guatemala_Export,Guatemala,Qatar,2021,0908,"Nutmeg, mace and cardamoms",X,299552.0,299552.0,5799635.0,8
+Guatemala_Export,Guatemala,Romania,2015,0908,"Nutmeg, mace and cardamoms",X,1500.0,1500.0,900.0,8
+Guatemala_Export,Guatemala,Russian Federation,2024,0908,"Nutmeg, mace and cardamoms",X,23980.0,23980.0,311750.0,8
+Guatemala_Export,Guatemala,Russian Federation,2016,0908,"Nutmeg, mace and cardamoms",X,15292.0,15292.0,57838.0,8
+Guatemala_Export,Guatemala,Russian Federation,2019,0908,"Nutmeg, mace and cardamoms",X,68894.0,68894.0,491930.0,8
+Guatemala_Export,Guatemala,Russian Federation,2022,0908,"Nutmeg, mace and cardamoms",X,69345.0,69345.0,585711.0,8
+Guatemala_Export,Guatemala,Russian Federation,2014,0908,"Nutmeg, mace and cardamoms",X,50950.0,50950.0,169669.0,8
+Guatemala_Export,Guatemala,Russian Federation,2020,0908,"Nutmeg, mace and cardamoms",X,1152920.0,1152920.0,13738000.0,8
+Guatemala_Export,Guatemala,Russian Federation,2015,0908,"Nutmeg, mace and cardamoms",X,40912.0,40912.0,160967.0,8
+Guatemala_Export,Guatemala,Russian Federation,2021,0908,"Nutmeg, mace and cardamoms",X,1065636.0,1065636.0,31395901.0,8
+Guatemala_Export,Guatemala,Russian Federation,2018,0908,"Nutmeg, mace and cardamoms",X,85980.0,85980.0,676809.0,8
+Guatemala_Export,Guatemala,Russian Federation,2017,0908,"Nutmeg, mace and cardamoms",X,33005.0,33005.0,134500.0,8
+Guatemala_Export,Guatemala,Russian Federation,2023,0908,"Nutmeg, mace and cardamoms",X,34008.0,34008.0,239470.0,8
+Guatemala_Export,Guatemala,Saudi Arabia,2021,0908,"Nutmeg, mace and cardamoms",X,9833658.0,9833658.0,177771318.0,8
+Guatemala_Export,Guatemala,Saudi Arabia,2024,0908,"Nutmeg, mace and cardamoms",X,8059769.0,8059769.0,178031401.0,8
+Guatemala_Export,Guatemala,Saudi Arabia,2015,0908,"Nutmeg, mace and cardamoms",X,7883215.0,7883215.0,70605497.0,8
+Guatemala_Export,Guatemala,Saudi Arabia,2020,0908,"Nutmeg, mace and cardamoms",X,14373226.0,14373226.0,315285543.0,8
+Guatemala_Export,Guatemala,Saudi Arabia,2018,0908,"Nutmeg, mace and cardamoms",X,9514239.0,9514239.0,123170026.0,8
+Guatemala_Export,Guatemala,Saudi Arabia,2014,0908,"Nutmeg, mace and cardamoms",X,8711483.0,8711483.0,72955055.0,8
+Guatemala_Export,Guatemala,Saudi Arabia,2017,0908,"Nutmeg, mace and cardamoms",X,9290787.0,9290787.0,108593757.0,8
+Guatemala_Export,Guatemala,Saudi Arabia,2022,0908,"Nutmeg, mace and cardamoms",X,11412611.0,11412611.0,104439786.0,8
+Guatemala_Export,Guatemala,Saudi Arabia,2023,0908,"Nutmeg, mace and cardamoms",X,11243892.0,11243892.0,114019512.0,8
+Guatemala_Export,Guatemala,Saudi Arabia,2019,0908,"Nutmeg, mace and cardamoms",X,10182189.0,10182189.0,190561028.0,8
+Guatemala_Export,Guatemala,Saudi Arabia,2016,0908,"Nutmeg, mace and cardamoms",X,8936527.0,8936527.0,71143557.0,8
+Guatemala_Export,Guatemala,India,2021,0908,"Nutmeg, mace and cardamoms",X,391019.0,391019.0,6819923.0,8
+Guatemala_Export,Guatemala,India,2014,0908,"Nutmeg, mace and cardamoms",X,1967768.0,1967768.0,7807128.0,8
+Guatemala_Export,Guatemala,India,2024,0908,"Nutmeg, mace and cardamoms",X,80763.0,80763.0,1223400.0,8
+Guatemala_Export,Guatemala,India,2015,0908,"Nutmeg, mace and cardamoms",X,878225.0,878225.0,4608532.0,8
+Guatemala_Export,Guatemala,India,2020,0908,"Nutmeg, mace and cardamoms",X,404624.0,404624.0,9764585.0,8
+Guatemala_Export,Guatemala,India,2023,0908,"Nutmeg, mace and cardamoms",X,741212.0,741212.0,4448465.0,8
+Guatemala_Export,Guatemala,India,2017,0908,"Nutmeg, mace and cardamoms",X,1062235.0,1062235.0,8854682.0,8
+Guatemala_Export,Guatemala,India,2022,0908,"Nutmeg, mace and cardamoms",X,358691.0,358691.0,3775147.0,8
+Guatemala_Export,Guatemala,India,2018,0908,"Nutmeg, mace and cardamoms",X,444580.0,444580.0,5231918.0,8
+Guatemala_Export,Guatemala,India,2019,0908,"Nutmeg, mace and cardamoms",X,539721.0,539721.0,10176698.0,8
+Guatemala_Export,Guatemala,India,2016,0908,"Nutmeg, mace and cardamoms",X,806536.0,806536.0,3930364.0,8
+Guatemala_Export,Guatemala,Singapore,2020,0908,"Nutmeg, mace and cardamoms",X,980081.0,980081.0,16781490.0,8
+Guatemala_Export,Guatemala,Singapore,2021,0908,"Nutmeg, mace and cardamoms",X,1106599.0,1106599.0,15319160.0,8
+Guatemala_Export,Guatemala,Singapore,2024,0908,"Nutmeg, mace and cardamoms",X,497395.0,497395.0,7549600.0,8
+Guatemala_Export,Guatemala,Singapore,2014,0908,"Nutmeg, mace and cardamoms",X,1161801.0,1161801.0,6624969.0,8
+Guatemala_Export,Guatemala,Singapore,2015,0908,"Nutmeg, mace and cardamoms",X,473119.0,473119.0,3081139.0,8
+Guatemala_Export,Guatemala,Singapore,2023,0908,"Nutmeg, mace and cardamoms",X,1393450.0,1393450.0,7125152.0,8
+Guatemala_Export,Guatemala,Singapore,2017,0908,"Nutmeg, mace and cardamoms",X,959146.0,959146.0,8966650.0,8
+Guatemala_Export,Guatemala,Singapore,2019,0908,"Nutmeg, mace and cardamoms",X,1037954.0,1037954.0,18338180.0,8
+Guatemala_Export,Guatemala,Singapore,2022,0908,"Nutmeg, mace and cardamoms",X,1082641.0,1082641.0,7131249.0,8
+Guatemala_Export,Guatemala,Singapore,2018,0908,"Nutmeg, mace and cardamoms",X,1086369.0,1086369.0,12062202.0,8
+Guatemala_Export,Guatemala,Singapore,2016,0908,"Nutmeg, mace and cardamoms",X,724191.0,724191.0,4584920.0,8
+Guatemala_Export,Guatemala,Viet Nam,2019,0908,"Nutmeg, mace and cardamoms",X,8768.0,8768.0,114000.0,8
+Guatemala_Export,Guatemala,Viet Nam,2016,0908,"Nutmeg, mace and cardamoms",X,6555.0,6555.0,21000.0,8
+Guatemala_Export,Guatemala,Viet Nam,2018,0908,"Nutmeg, mace and cardamoms",X,6000.0,6000.0,64764.0,8
+Guatemala_Export,Guatemala,Slovenia,2016,0908,"Nutmeg, mace and cardamoms",X,10750.0,10750.0,24500.0,8
+Guatemala_Export,Guatemala,Slovenia,2023,0908,"Nutmeg, mace and cardamoms",X,8592.0,8592.0,32300.0,8
+Guatemala_Export,Guatemala,Slovenia,2021,0908,"Nutmeg, mace and cardamoms",X,8381.0,8381.0,92400.0,8
+Guatemala_Export,Guatemala,Somalia,2016,0908,"Nutmeg, mace and cardamoms",X,23897.0,23897.0,83755.0,8
+Guatemala_Export,Guatemala,Somalia,2017,0908,"Nutmeg, mace and cardamoms",X,23760.0,23760.0,303700.0,8
+Guatemala_Export,Guatemala,South Africa,2022,0908,"Nutmeg, mace and cardamoms",X,18258.0,18258.0,164951.0,8
+Guatemala_Export,Guatemala,South Africa,2015,0908,"Nutmeg, mace and cardamoms",X,20200.0,20200.0,109950.0,8
+Guatemala_Export,Guatemala,South Africa,2023,0908,"Nutmeg, mace and cardamoms",X,33370.0,33370.0,270000.0,8
+Guatemala_Export,Guatemala,South Africa,2014,0908,"Nutmeg, mace and cardamoms",X,11031.0,11031.0,24800.0,8
+Guatemala_Export,Guatemala,South Africa,2024,0908,"Nutmeg, mace and cardamoms",X,19395.0,19395.0,407750.0,8
+Guatemala_Export,Guatemala,South Africa,2016,0908,"Nutmeg, mace and cardamoms",X,10783.0,10783.0,78145.0,8
+Guatemala_Export,Guatemala,South Africa,2018,0908,"Nutmeg, mace and cardamoms",X,50002.0,50002.0,387585.0,8
+Guatemala_Export,Guatemala,South Africa,2019,0908,"Nutmeg, mace and cardamoms",X,33990.0,33990.0,288547.0,8
+Guatemala_Export,Guatemala,South Africa,2020,0908,"Nutmeg, mace and cardamoms",X,15237.0,15237.0,316448.0,8
+Guatemala_Export,Guatemala,South Africa,2017,0908,"Nutmeg, mace and cardamoms",X,48273.0,48273.0,313964.0,8
+Guatemala_Export,Guatemala,South Africa,2021,0908,"Nutmeg, mace and cardamoms",X,24961.0,24961.0,398090.0,8
+Guatemala_Export,Guatemala,Spain,2016,0908,"Nutmeg, mace and cardamoms",X,71488.0,71488.0,278736.0,8
+Guatemala_Export,Guatemala,Spain,2023,0908,"Nutmeg, mace and cardamoms",X,79291.0,79291.0,378010.0,8
+Guatemala_Export,Guatemala,Spain,2018,0908,"Nutmeg, mace and cardamoms",X,25715.0,25715.0,170638.0,8
+Guatemala_Export,Guatemala,Spain,2022,0908,"Nutmeg, mace and cardamoms",X,97218.0,97218.0,779501.0,8
+Guatemala_Export,Guatemala,Spain,2024,0908,"Nutmeg, mace and cardamoms",X,31102.0,31102.0,386460.0,8
+Guatemala_Export,Guatemala,Spain,2019,0908,"Nutmeg, mace and cardamoms",X,109.0,109.0,4780.0,8
+Guatemala_Export,Guatemala,Spain,2017,0908,"Nutmeg, mace and cardamoms",X,33313.0,33313.0,181679.0,8
+Guatemala_Export,Guatemala,Spain,2020,0908,"Nutmeg, mace and cardamoms",X,34710.0,34710.0,434438.0,8
+Guatemala_Export,Guatemala,Spain,2014,0908,"Nutmeg, mace and cardamoms",X,127660.0,127660.0,36870.0,8
+Guatemala_Export,Guatemala,Spain,2015,0908,"Nutmeg, mace and cardamoms",X,15893.0,15893.0,111114.0,8
+Guatemala_Export,Guatemala,Spain,2021,0908,"Nutmeg, mace and cardamoms",X,85662.0,85662.0,893462.0,8
+Guatemala_Export,Guatemala,Sudan,2016,0908,"Nutmeg, mace and cardamoms",X,830652.0,830652.0,4411059.0,8
+Guatemala_Export,Guatemala,Sudan,2023,0908,"Nutmeg, mace and cardamoms",X,394984.0,394984.0,1612447.0,8
+Guatemala_Export,Guatemala,Sudan,2022,0908,"Nutmeg, mace and cardamoms",X,245580.0,245580.0,1505653.0,8
+Guatemala_Export,Guatemala,Sudan,2024,0908,"Nutmeg, mace and cardamoms",X,60750.0,60750.0,731700.0,8
+Guatemala_Export,Guatemala,Sudan,2019,0908,"Nutmeg, mace and cardamoms",X,51520.0,51520.0,819467.0,8
+Guatemala_Export,Guatemala,Sudan,2017,0908,"Nutmeg, mace and cardamoms",X,284520.0,284520.0,2119574.0,8
+Guatemala_Export,Guatemala,Sudan,2018,0908,"Nutmeg, mace and cardamoms",X,19530.0,19530.0,220396.0,8
+Guatemala_Export,Guatemala,Sudan,2020,0908,"Nutmeg, mace and cardamoms",X,50233.0,50233.0,899138.0,8
+Guatemala_Export,Guatemala,Sudan,2014,0908,"Nutmeg, mace and cardamoms",X,349081.0,349081.0,1740752.0,8
+Guatemala_Export,Guatemala,Sudan,2015,0908,"Nutmeg, mace and cardamoms",X,759197.0,759197.0,4166765.0,8
+Guatemala_Export,Guatemala,Sudan,2021,0908,"Nutmeg, mace and cardamoms",X,108896.0,108896.0,1357956.0,8
+Guatemala_Export,Guatemala,Sweden,2016,0908,"Nutmeg, mace and cardamoms",X,81026.0,81026.0,543777.0,8
+Guatemala_Export,Guatemala,Sweden,2024,0908,"Nutmeg, mace and cardamoms",X,125922.0,125922.0,2528500.0,8
+Guatemala_Export,Guatemala,Sweden,2022,0908,"Nutmeg, mace and cardamoms",X,169838.0,169838.0,2487120.0,8
+Guatemala_Export,Guatemala,Sweden,2023,0908,"Nutmeg, mace and cardamoms",X,105833.0,105833.0,721500.0,8
+Guatemala_Export,Guatemala,Sweden,2020,0908,"Nutmeg, mace and cardamoms",X,141823.0,141823.0,4093106.0,8
+Guatemala_Export,Guatemala,Sweden,2019,0908,"Nutmeg, mace and cardamoms",X,108900.0,108900.0,2595530.0,8
+Guatemala_Export,Guatemala,Sweden,2017,0908,"Nutmeg, mace and cardamoms",X,54250.0,54250.0,576644.0,8
+Guatemala_Export,Guatemala,Sweden,2018,0908,"Nutmeg, mace and cardamoms",X,72815.0,72815.0,1035514.0,8
+Guatemala_Export,Guatemala,Sweden,2015,0908,"Nutmeg, mace and cardamoms",X,143173.0,143173.0,1150271.0,8
+Guatemala_Export,Guatemala,Sweden,2014,0908,"Nutmeg, mace and cardamoms",X,217469.0,217469.0,1213808.0,8
+Guatemala_Export,Guatemala,Sweden,2021,0908,"Nutmeg, mace and cardamoms",X,140519.0,140519.0,3167287.0,8
+Guatemala_Export,Guatemala,Switzerland,2020,0908,"Nutmeg, mace and cardamoms",X,2352.0,2352.0,89850.0,8
+Guatemala_Export,Guatemala,Switzerland,2021,0908,"Nutmeg, mace and cardamoms",X,3370.0,3370.0,116005.0,8
+Guatemala_Export,Guatemala,Switzerland,2018,0908,"Nutmeg, mace and cardamoms",X,32.0,32.0,265.0,8
+Guatemala_Export,Guatemala,Switzerland,2024,0908,"Nutmeg, mace and cardamoms",X,3020.0,3020.0,65700.0,8
+Guatemala_Export,Guatemala,Syria,2021,0908,"Nutmeg, mace and cardamoms",X,1206450.0,1206450.0,14048247.0,8
+Guatemala_Export,Guatemala,Syria,2014,0908,"Nutmeg, mace and cardamoms",X,2007852.0,2007852.0,7664764.0,8
+Guatemala_Export,Guatemala,Syria,2015,0908,"Nutmeg, mace and cardamoms",X,1832666.0,1832666.0,8273146.0,8
+Guatemala_Export,Guatemala,Syria,2018,0908,"Nutmeg, mace and cardamoms",X,1345510.0,1345510.0,12544544.0,8
+Guatemala_Export,Guatemala,Syria,2017,0908,"Nutmeg, mace and cardamoms",X,961013.0,961013.0,7377107.0,8
+Guatemala_Export,Guatemala,Syria,2019,0908,"Nutmeg, mace and cardamoms",X,1166791.0,1166791.0,13245390.0,8
+Guatemala_Export,Guatemala,Syria,2023,0908,"Nutmeg, mace and cardamoms",X,1641129.0,1641129.0,8820978.0,8
+Guatemala_Export,Guatemala,Syria,2022,0908,"Nutmeg, mace and cardamoms",X,1358031.0,1358031.0,9074938.0,8
+Guatemala_Export,Guatemala,Syria,2024,0908,"Nutmeg, mace and cardamoms",X,616778.0,616778.0,8824248.0,8
+Guatemala_Export,Guatemala,Syria,2016,0908,"Nutmeg, mace and cardamoms",X,1620178.0,1620178.0,5654966.0,8
+Guatemala_Export,Guatemala,Syria,2020,0908,"Nutmeg, mace and cardamoms",X,498171.0,498171.0,7724770.0,8
+Guatemala_Export,Guatemala,United Arab Emirates,2018,0908,"Nutmeg, mace and cardamoms",X,7232845.0,7232845.0,83958964.0,8
+Guatemala_Export,Guatemala,United Arab Emirates,2014,0908,"Nutmeg, mace and cardamoms",X,10115348.0,10115348.0,66086162.0,8
+Guatemala_Export,Guatemala,United Arab Emirates,2019,0908,"Nutmeg, mace and cardamoms",X,8047127.0,8047127.0,144799570.0,8
+Guatemala_Export,Guatemala,United Arab Emirates,2023,0908,"Nutmeg, mace and cardamoms",X,12165694.0,12165694.0,84064800.0,8
+Guatemala_Export,Guatemala,United Arab Emirates,2024,0908,"Nutmeg, mace and cardamoms",X,7945380.0,7945380.0,133257021.0,8
+Guatemala_Export,Guatemala,United Arab Emirates,2020,0908,"Nutmeg, mace and cardamoms",X,15962490.0,15962490.0,236775233.0,8
+Guatemala_Export,Guatemala,United Arab Emirates,2016,0908,"Nutmeg, mace and cardamoms",X,5210304.0,5210304.0,34731670.0,8
+Guatemala_Export,Guatemala,United Arab Emirates,2022,0908,"Nutmeg, mace and cardamoms",X,9881769.0,9881769.0,72124906.0,8
+Guatemala_Export,Guatemala,United Arab Emirates,2017,0908,"Nutmeg, mace and cardamoms",X,7891707.0,7891707.0,79997407.0,8
+Guatemala_Export,Guatemala,United Arab Emirates,2021,0908,"Nutmeg, mace and cardamoms",X,6907456.0,6907456.0,107152488.0,8
+Guatemala_Export,Guatemala,United Arab Emirates,2015,0908,"Nutmeg, mace and cardamoms",X,10212083.0,10212083.0,77139516.0,8
+Guatemala_Export,Guatemala,Türkiye,2020,0908,"Nutmeg, mace and cardamoms",X,4744150.0,4744150.0,71195742.0,8
+Guatemala_Export,Guatemala,Türkiye,2024,0908,"Nutmeg, mace and cardamoms",X,869910.0,869910.0,6771447.0,8
+Guatemala_Export,Guatemala,Türkiye,2016,0908,"Nutmeg, mace and cardamoms",X,702836.0,702836.0,2364562.0,8
+Guatemala_Export,Guatemala,Türkiye,2023,0908,"Nutmeg, mace and cardamoms",X,2472789.0,2472789.0,9762090.0,8
+Guatemala_Export,Guatemala,Türkiye,2022,0908,"Nutmeg, mace and cardamoms",X,2664283.0,2664283.0,13000799.0,8
+Guatemala_Export,Guatemala,Türkiye,2017,0908,"Nutmeg, mace and cardamoms",X,360262.0,360262.0,2635207.0,8
+Guatemala_Export,Guatemala,Türkiye,2019,0908,"Nutmeg, mace and cardamoms",X,578611.0,578611.0,8734844.0,8
+Guatemala_Export,Guatemala,Türkiye,2014,0908,"Nutmeg, mace and cardamoms",X,83338.0,83338.0,371318.0,8
+Guatemala_Export,Guatemala,Türkiye,2021,0908,"Nutmeg, mace and cardamoms",X,744544.0,744544.0,8938009.0,8
+Guatemala_Export,Guatemala,Türkiye,2015,0908,"Nutmeg, mace and cardamoms",X,152443.0,152443.0,816832.0,8
+Guatemala_Export,Guatemala,Türkiye,2018,0908,"Nutmeg, mace and cardamoms",X,435541.0,435541.0,4172539.0,8
+Guatemala_Export,Guatemala,Uganda,2022,0908,"Nutmeg, mace and cardamoms",X,10072.0,10072.0,48000.0,8
+Guatemala_Export,Guatemala,Ukraine,2019,0908,"Nutmeg, mace and cardamoms",X,544.0,544.0,6031.0,8
+Guatemala_Export,Guatemala,Egypt,2020,0908,"Nutmeg, mace and cardamoms",X,8657230.0,8657230.0,134643866.0,8
+Guatemala_Export,Guatemala,Egypt,2024,0908,"Nutmeg, mace and cardamoms",X,403310.0,403310.0,5413368.0,8
+Guatemala_Export,Guatemala,Egypt,2016,0908,"Nutmeg, mace and cardamoms",X,1006256.0,1006256.0,6595763.0,8
+Guatemala_Export,Guatemala,Egypt,2023,0908,"Nutmeg, mace and cardamoms",X,1045130.0,1045130.0,6595048.0,8
+Guatemala_Export,Guatemala,Egypt,2019,0908,"Nutmeg, mace and cardamoms",X,1400209.0,1400209.0,23502189.0,8
+Guatemala_Export,Guatemala,Egypt,2017,0908,"Nutmeg, mace and cardamoms",X,969753.0,969753.0,10482906.0,8
+Guatemala_Export,Guatemala,Egypt,2022,0908,"Nutmeg, mace and cardamoms",X,1813983.0,1813983.0,18693520.0,8
+Guatemala_Export,Guatemala,Egypt,2014,0908,"Nutmeg, mace and cardamoms",X,1341960.0,1341960.0,8098981.0,8
+Guatemala_Export,Guatemala,Egypt,2015,0908,"Nutmeg, mace and cardamoms",X,947114.0,947114.0,5995347.0,8
+Guatemala_Export,Guatemala,Egypt,2018,0908,"Nutmeg, mace and cardamoms",X,1390566.0,1390566.0,16005838.0,8
+Guatemala_Export,Guatemala,Egypt,2021,0908,"Nutmeg, mace and cardamoms",X,2713511.0,2713511.0,84748976.0,8
+Guatemala_Export,Guatemala,United Kingdom,2024,0908,"Nutmeg, mace and cardamoms",X,509963.0,509963.0,10274702.0,8
+Guatemala_Export,Guatemala,United Kingdom,2016,0908,"Nutmeg, mace and cardamoms",X,505760.0,505760.0,3804562.0,8
+Guatemala_Export,Guatemala,United Kingdom,2019,0908,"Nutmeg, mace and cardamoms",X,577958.0,577958.0,9809044.0,8
+Guatemala_Export,Guatemala,United Kingdom,2022,0908,"Nutmeg, mace and cardamoms",X,491605.0,491605.0,4557844.0,8
+Guatemala_Export,Guatemala,United Kingdom,2018,0908,"Nutmeg, mace and cardamoms",X,618703.0,618703.0,7937860.0,8
+Guatemala_Export,Guatemala,United Kingdom,2021,0908,"Nutmeg, mace and cardamoms",X,634423.0,634423.0,12017236.0,8
+Guatemala_Export,Guatemala,United Kingdom,2015,0908,"Nutmeg, mace and cardamoms",X,535547.0,535547.0,4020210.0,8
+Guatemala_Export,Guatemala,United Kingdom,2014,0908,"Nutmeg, mace and cardamoms",X,478768.0,478768.0,3416381.0,8
+Guatemala_Export,Guatemala,United Kingdom,2023,0908,"Nutmeg, mace and cardamoms",X,334718.0,334718.0,2741990.0,8
+Guatemala_Export,Guatemala,United Kingdom,2017,0908,"Nutmeg, mace and cardamoms",X,456299.0,456299.0,5069849.0,8
+Guatemala_Export,Guatemala,United Kingdom,2020,0908,"Nutmeg, mace and cardamoms",X,615502.0,615502.0,13695987.0,8
+Guatemala_Export,Guatemala,United Rep. of Tanzania,2018,0908,"Nutmeg, mace and cardamoms",X,11232.0,11232.0,126046.0,8
+Guatemala_Export,Guatemala,USA,2021,0908,"Nutmeg, mace and cardamoms",X,832413.0,832413.0,18140628.0,8
+Guatemala_Export,Guatemala,USA,2015,0908,"Nutmeg, mace and cardamoms",X,732497.0,732497.0,5275006.0,8
+Guatemala_Export,Guatemala,USA,2018,0908,"Nutmeg, mace and cardamoms",X,660564.0,660564.0,9530095.0,8
+Guatemala_Export,Guatemala,USA,2016,0908,"Nutmeg, mace and cardamoms",X,785288.0,785288.0,5426990.0,8
+Guatemala_Export,Guatemala,USA,2022,0908,"Nutmeg, mace and cardamoms",X,923563.0,923563.0,12633235.0,8
+Guatemala_Export,Guatemala,USA,2014,0908,"Nutmeg, mace and cardamoms",X,752894.0,752894.0,4439639.0,8
+Guatemala_Export,Guatemala,USA,2019,0908,"Nutmeg, mace and cardamoms",X,520784.0,520784.0,9490448.0,8
+Guatemala_Export,Guatemala,USA,2023,0908,"Nutmeg, mace and cardamoms",X,665310.0,665310.0,7020502.0,8
+Guatemala_Export,Guatemala,USA,2017,0908,"Nutmeg, mace and cardamoms",X,577651.0,577651.0,6461358.0,8
+Guatemala_Export,Guatemala,USA,2020,0908,"Nutmeg, mace and cardamoms",X,746432.0,746432.0,18969156.0,8
+Guatemala_Export,Guatemala,USA,2024,0908,"Nutmeg, mace and cardamoms",X,593001.0,593001.0,12611270.0,8
+Guatemala_Export,Guatemala,Venezuela,2022,0908,"Nutmeg, mace and cardamoms",X,536.0,536.0,5860.0,8
+Guatemala_Export,Guatemala,Venezuela,2023,0908,"Nutmeg, mace and cardamoms",X,523.0,523.0,4318.0,8
+Guatemala_Export,Guatemala,Venezuela,2020,0908,"Nutmeg, mace and cardamoms",X,554.0,554.0,8120.0,8
+Guatemala_Export,Guatemala,Yemen,2016,0908,"Nutmeg, mace and cardamoms",X,32486.0,32486.0,119742.0,8
+Guatemala_Export,Guatemala,Yemen,2015,0908,"Nutmeg, mace and cardamoms",X,15776.0,15776.0,47681.0,8
+Guatemala_Export,Guatemala,Yemen,2014,0908,"Nutmeg, mace and cardamoms",X,64456.0,64456.0,329471.0,8
+Guatemala_Export,Guatemala,Yemen,2023,0908,"Nutmeg, mace and cardamoms",X,22680.0,22680.0,207900.0,8
+Guatemala_Export,Guatemala,Yemen,2019,0908,"Nutmeg, mace and cardamoms",X,10910.0,10910.0,165000.0,8
+Guatemala_Export,Guatemala,Yemen,2017,0908,"Nutmeg, mace and cardamoms",X,10827.0,10827.0,130480.0,8
+Guatemala_Export,Guatemala,Yemen,2020,0908,"Nutmeg, mace and cardamoms",X,33833.0,33833.0,1020150.0,8
+Guatemala_Export,Guatemala,"Areas, nes",2020,0908,"Nutmeg, mace and cardamoms",X,10752.0,10752.0,125200.0,8
+SaudiArabia_Import,Saudi Arabia,World,2014,0908,"Nutmeg, mace and cardamoms",M,11723000.0,11723000.0,116047896.0,8
+SaudiArabia_Import,Saudi Arabia,China,2014,0908,"Nutmeg, mace and cardamoms",M,21000.0,21000.0,161134.0,8
+SaudiArabia_Import,Saudi Arabia,Colombia,2014,0908,"Nutmeg, mace and cardamoms",M,3000.0,3000.0,27478.0,8
+SaudiArabia_Import,Saudi Arabia,Ethiopia,2014,0908,"Nutmeg, mace and cardamoms",M,78000.0,78000.0,319600.0,8
+SaudiArabia_Import,Saudi Arabia,Guatemala,2014,0908,"Nutmeg, mace and cardamoms",M,8311000.0,8311000.0,73644334.0,8
+SaudiArabia_Import,Saudi Arabia,Guyana,2014,0908,"Nutmeg, mace and cardamoms",M,20000.0,20000.0,105911.0,8
+SaudiArabia_Import,Saudi Arabia,Liberia,2014,0908,"Nutmeg, mace and cardamoms",M,6000.0,6000.0,87770.0,8
+SaudiArabia_Import,Saudi Arabia,India,2014,0908,"Nutmeg, mace and cardamoms",M,3225000.0,3225000.0,41477576.0,8
+SaudiArabia_Import,Saudi Arabia,Syria,2014,0908,"Nutmeg, mace and cardamoms",M,51000.0,51000.0,101109.0,8
+SaudiArabia_Import,Saudi Arabia,Egypt,2014,0908,"Nutmeg, mace and cardamoms",M,6000.0,6000.0,90705.0,8
+SaudiArabia_Import,Saudi Arabia,USA,2014,0908,"Nutmeg, mace and cardamoms",M,2000.0,2000.0,32280.0,8
+SaudiArabia_Import,Saudi Arabia,World,2015,0908,"Nutmeg, mace and cardamoms",M,11366295.0,11366295.0,126408568.574,8
+SaudiArabia_Import,Saudi Arabia,Ethiopia,2015,0908,"Nutmeg, mace and cardamoms",M,22500.0,22500.0,87889.216,8
+SaudiArabia_Import,Saudi Arabia,Guatemala,2015,0908,"Nutmeg, mace and cardamoms",M,7618214.0,7618214.0,75923702.406,8
+SaudiArabia_Import,Saudi Arabia,Pakistan,2015,0908,"Nutmeg, mace and cardamoms",M,9859.0,9859.0,40223.465,8
+SaudiArabia_Import,Saudi Arabia,India,2015,0908,"Nutmeg, mace and cardamoms",M,3715332.0,3715332.0,50312830.626,8
+SaudiArabia_Import,Saudi Arabia,USA,2015,0908,"Nutmeg, mace and cardamoms",M,390.0,390.0,43922.861,8
+SaudiArabia_Import,Saudi Arabia,World,2015,0908,"Nutmeg, mace and cardamoms",M,11366295.0,11366295.0,126408568.574,8
+SaudiArabia_Import,Saudi Arabia,Ethiopia,2015,0908,"Nutmeg, mace and cardamoms",M,22500.0,22500.0,87889.216,8
+SaudiArabia_Import,Saudi Arabia,Guatemala,2015,0908,"Nutmeg, mace and cardamoms",M,7618214.0,7618214.0,75923702.406,8
+SaudiArabia_Import,Saudi Arabia,Pakistan,2015,0908,"Nutmeg, mace and cardamoms",M,9859.0,9859.0,40223.465,8
+SaudiArabia_Import,Saudi Arabia,India,2015,0908,"Nutmeg, mace and cardamoms",M,3715332.0,3715332.0,50312830.626,8
+SaudiArabia_Import,Saudi Arabia,USA,2015,0908,"Nutmeg, mace and cardamoms",M,390.0,390.0,43922.861,8
+SaudiArabia_Import,Saudi Arabia,World,2016,0908,"Nutmeg, mace and cardamoms",M,12414000.0,12414000.0,112841474.385,8
+SaudiArabia_Import,Saudi Arabia,China,2016,0908,"Nutmeg, mace and cardamoms",M,9000.0,9000.0,95200.119,8
+SaudiArabia_Import,Saudi Arabia,Guatemala,2016,0908,"Nutmeg, mace and cardamoms",M,9273000.0,9273000.0,72962757.87,8
+SaudiArabia_Import,Saudi Arabia,India,2016,0908,"Nutmeg, mace and cardamoms",M,3132000.0,3132000.0,39783516.396,8
+SaudiArabia_Import,Saudi Arabia,World,2016,0908,"Nutmeg, mace and cardamoms",M,12414000.0,12414000.0,112841474.385,8
+SaudiArabia_Import,Saudi Arabia,China,2016,0908,"Nutmeg, mace and cardamoms",M,9000.0,9000.0,95200.119,8
+SaudiArabia_Import,Saudi Arabia,Guatemala,2016,0908,"Nutmeg, mace and cardamoms",M,9273000.0,9273000.0,72962757.87,8
+SaudiArabia_Import,Saudi Arabia,India,2016,0908,"Nutmeg, mace and cardamoms",M,3132000.0,3132000.0,39783516.396,8
+SaudiArabia_Import,Saudi Arabia,World,2017,0908,"Nutmeg, mace and cardamoms",M,12466479.0,12466479.0,181371740.409,8
+SaudiArabia_Import,Saudi Arabia,Guatemala,2017,0908,"Nutmeg, mace and cardamoms",M,9029190.0,9029190.0,117083906.474,8
+SaudiArabia_Import,Saudi Arabia,Guyana,2017,0908,"Nutmeg, mace and cardamoms",M,107000.0,107000.0,1390500.33,8
+SaudiArabia_Import,Saudi Arabia,India,2017,0908,"Nutmeg, mace and cardamoms",M,3303989.0,3303989.0,62686022.355,8
+SaudiArabia_Import,Saudi Arabia,USA,2017,0908,"Nutmeg, mace and cardamoms",M,26300.0,26300.0,211311.25,8
+SaudiArabia_Import,Saudi Arabia,World,2018,0908,"Nutmeg, mace and cardamoms",M,9302704.58,9302704.58,140563965.037,8
+SaudiArabia_Import,Saudi Arabia,Bahrain,2018,0908,"Nutmeg, mace and cardamoms",M,219.786,219.786,3068.0,8
+SaudiArabia_Import,Saudi Arabia,China,2018,0908,"Nutmeg, mace and cardamoms",M,116.238,116.238,2020.0,8
+SaudiArabia_Import,Saudi Arabia,Ethiopia,2018,0908,"Nutmeg, mace and cardamoms",M,1707.106,1707.106,23829.603,8
+SaudiArabia_Import,Saudi Arabia,Germany,2018,0908,"Nutmeg, mace and cardamoms",M,143.983,143.983,2009.867,8
+SaudiArabia_Import,Saudi Arabia,Guatemala,2018,0908,"Nutmeg, mace and cardamoms",M,7660330.586,7660330.586,116811506.868,8
+SaudiArabia_Import,Saudi Arabia,Guyana,2018,0908,"Nutmeg, mace and cardamoms",M,45696.378,45696.378,637878.746,8
+SaudiArabia_Import,Saudi Arabia,Jordan,2018,0908,"Nutmeg, mace and cardamoms",M,91.74,91.74,1346.4,8
+SaudiArabia_Import,Saudi Arabia,Lebanon,2018,0908,"Nutmeg, mace and cardamoms",M,27.544,27.544,478.667,8
+SaudiArabia_Import,Saudi Arabia,India,2018,0908,"Nutmeg, mace and cardamoms",M,1478773.639,1478773.639,21464967.75,8
+SaudiArabia_Import,Saudi Arabia,Spain,2018,0908,"Nutmeg, mace and cardamoms",M,58.986,58.986,1025.067,8
+SaudiArabia_Import,Saudi Arabia,Syria,2018,0908,"Nutmeg, mace and cardamoms",M,25.212,25.212,438.133,8
+SaudiArabia_Import,Saudi Arabia,United Arab Emirates,2018,0908,"Nutmeg, mace and cardamoms",M,3835.047,3835.047,55885.607,8
+SaudiArabia_Import,Saudi Arabia,USA,2018,0908,"Nutmeg, mace and cardamoms",M,111678.335,111678.335,1559510.328,8
+SaudiArabia_Import,Saudi Arabia,World,2019,0908,"Nutmeg, mace and cardamoms",M,9897844.004,9897844.004,188241803.294,8
+SaudiArabia_Import,Saudi Arabia,Bahrain,2019,0908,"Nutmeg, mace and cardamoms",M,25914.078,25914.078,501598.921,8
+SaudiArabia_Import,Saudi Arabia,China,2019,0908,"Nutmeg, mace and cardamoms",M,151.477,151.477,2868.0,8
+SaudiArabia_Import,Saudi Arabia,Colombia,2019,0908,"Nutmeg, mace and cardamoms",M,1083.539,1083.539,20402.933,8
+SaudiArabia_Import,Saudi Arabia,Ethiopia,2019,0908,"Nutmeg, mace and cardamoms",M,3613.744,3613.744,68834.665,8
+SaudiArabia_Import,Saudi Arabia,Germany,2019,0908,"Nutmeg, mace and cardamoms",M,562.683,562.683,10750.933,8
+SaudiArabia_Import,Saudi Arabia,Guatemala,2019,0908,"Nutmeg, mace and cardamoms",M,9710506.537,9710506.537,184693558.049,8
+SaudiArabia_Import,Saudi Arabia,Jordan,2019,0908,"Nutmeg, mace and cardamoms",M,70.675,70.675,1368.0,8
+SaudiArabia_Import,Saudi Arabia,India,2019,0908,"Nutmeg, mace and cardamoms",M,81374.858,81374.858,1534018.362,8
+SaudiArabia_Import,Saudi Arabia,Spain,2019,0908,"Nutmeg, mace and cardamoms",M,34.045,34.045,641.067,8
+SaudiArabia_Import,Saudi Arabia,United Arab Emirates,2019,0908,"Nutmeg, mace and cardamoms",M,16656.869,16656.869,317972.259,8
+SaudiArabia_Import,Saudi Arabia,USA,2019,0908,"Nutmeg, mace and cardamoms",M,57875.499,57875.499,1089790.106,8
+SaudiArabia_Import,Saudi Arabia,World,2020,0908,"Nutmeg, mace and cardamoms",M,11302811.0,11302811.0,319050465.357,8
+SaudiArabia_Import,Saudi Arabia,Bahrain,2020,0908,"Nutmeg, mace and cardamoms",M,25644.0,25644.0,1181848.77,8
+SaudiArabia_Import,Saudi Arabia,Colombia,2020,0908,"Nutmeg, mace and cardamoms",M,1868.0,1868.0,41991.999,8
+SaudiArabia_Import,Saudi Arabia,Ecuador,2020,0908,"Nutmeg, mace and cardamoms",M,6314.0,6314.0,91710.398,8
+SaudiArabia_Import,Saudi Arabia,Ethiopia,2020,0908,"Nutmeg, mace and cardamoms",M,44230.0,44230.0,258073.06,8
+SaudiArabia_Import,Saudi Arabia,Germany,2020,0908,"Nutmeg, mace and cardamoms",M,10.0,10.0,396.267,8
+SaudiArabia_Import,Saudi Arabia,Guatemala,2020,0908,"Nutmeg, mace and cardamoms",M,10625025.0,10625025.0,301000421.008,8
+SaudiArabia_Import,Saudi Arabia,Jordan,2020,0908,"Nutmeg, mace and cardamoms",M,1301.0,1301.0,3956.8,8
+SaudiArabia_Import,Saudi Arabia,Lebanon,2020,0908,"Nutmeg, mace and cardamoms",M,8.0,8.0,445.6,8
+SaudiArabia_Import,Saudi Arabia,Oman,2020,0908,"Nutmeg, mace and cardamoms",M,600.0,600.0,4900.267,8
+SaudiArabia_Import,Saudi Arabia,Pakistan,2020,0908,"Nutmeg, mace and cardamoms",M,597.0,597.0,7128.533,8
+SaudiArabia_Import,Saudi Arabia,India,2020,0908,"Nutmeg, mace and cardamoms",M,531687.0,531687.0,14768691.897,8
+SaudiArabia_Import,Saudi Arabia,Singapore,2020,0908,"Nutmeg, mace and cardamoms",M,8856.0,8856.0,207347.995,8
+SaudiArabia_Import,Saudi Arabia,Syria,2020,0908,"Nutmeg, mace and cardamoms",M,673.0,673.0,13886.666,8
+SaudiArabia_Import,Saudi Arabia,United Arab Emirates,2020,0908,"Nutmeg, mace and cardamoms",M,27014.0,27014.0,758896.514,8
+SaudiArabia_Import,Saudi Arabia,United Rep. of Tanzania,2020,0908,"Nutmeg, mace and cardamoms",M,1110.0,1110.0,21310.933,8
+SaudiArabia_Import,Saudi Arabia,USA,2020,0908,"Nutmeg, mace and cardamoms",M,27874.0,27874.0,689458.649,8
+SaudiArabia_Import,Saudi Arabia,World,2021,0908,"Nutmeg, mace and cardamoms",M,10246169.0,10246169.0,223269357.085,8
+SaudiArabia_Import,Saudi Arabia,Bahrain,2021,0908,"Nutmeg, mace and cardamoms",M,46701.0,46701.0,1424909.564,8
+SaudiArabia_Import,Saudi Arabia,Bangladesh,2021,0908,"Nutmeg, mace and cardamoms",M,409.0,409.0,7776.8,8
+SaudiArabia_Import,Saudi Arabia,Colombia,2021,0908,"Nutmeg, mace and cardamoms",M,335.0,335.0,6358.933,8
+SaudiArabia_Import,Saudi Arabia,Ecuador,2021,0908,"Nutmeg, mace and cardamoms",M,5705.0,5705.0,118427.197,8
+SaudiArabia_Import,Saudi Arabia,Ethiopia,2021,0908,"Nutmeg, mace and cardamoms",M,15983.0,15983.0,53648.799,8
+SaudiArabia_Import,Saudi Arabia,Germany,2021,0908,"Nutmeg, mace and cardamoms",M,572.0,572.0,12238.4,8
+SaudiArabia_Import,Saudi Arabia,Guatemala,2021,0908,"Nutmeg, mace and cardamoms",M,8458013.0,8458013.0,181513154.929,8
+SaudiArabia_Import,Saudi Arabia,Kenya,2021,0908,"Nutmeg, mace and cardamoms",M,572.0,572.0,450.4,8
+SaudiArabia_Import,Saudi Arabia,Oman,2021,0908,"Nutmeg, mace and cardamoms",M,600.0,600.0,1800.0,8
+SaudiArabia_Import,Saudi Arabia,Netherlands,2021,0908,"Nutmeg, mace and cardamoms",M,132.0,132.0,668.267,8
+SaudiArabia_Import,Saudi Arabia,Pakistan,2021,0908,"Nutmeg, mace and cardamoms",M,2393.0,2393.0,22958.399,8
+SaudiArabia_Import,Saudi Arabia,India,2021,0908,"Nutmeg, mace and cardamoms",M,1658542.0,1658542.0,38667981.7,8
+SaudiArabia_Import,Saudi Arabia,South Africa,2021,0908,"Nutmeg, mace and cardamoms",M,40.0,40.0,1249.333,8
+SaudiArabia_Import,Saudi Arabia,Spain,2021,0908,"Nutmeg, mace and cardamoms",M,634.0,634.0,3543.733,8
+SaudiArabia_Import,Saudi Arabia,Syria,2021,0908,"Nutmeg, mace and cardamoms",M,100.0,100.0,2000.0,8
+SaudiArabia_Import,Saudi Arabia,United Arab Emirates,2021,0908,"Nutmeg, mace and cardamoms",M,32761.0,32761.0,950785.043,8
+SaudiArabia_Import,Saudi Arabia,United Kingdom,2021,0908,"Nutmeg, mace and cardamoms",M,37.0,37.0,1204.8,8
+SaudiArabia_Import,Saudi Arabia,USA,2021,0908,"Nutmeg, mace and cardamoms",M,22640.0,22640.0,480200.788,8
+SaudiArabia_Import,Saudi Arabia,World,2022,0908,"Nutmeg, mace and cardamoms",M,12529777.0,12529777.0,161116144.772,8
+SaudiArabia_Import,Saudi Arabia,Bahrain,2022,0908,"Nutmeg, mace and cardamoms",M,52583.0,52583.0,1561099.961,8
+SaudiArabia_Import,Saudi Arabia,China,2022,0908,"Nutmeg, mace and cardamoms",M,7875.0,7875.0,70307.998,8
+SaudiArabia_Import,Saudi Arabia,Colombia,2022,0908,"Nutmeg, mace and cardamoms",M,573.0,573.0,18297.6,8
+SaudiArabia_Import,Saudi Arabia,Ethiopia,2022,0908,"Nutmeg, mace and cardamoms",M,37474.0,37474.0,98879.198,8
+SaudiArabia_Import,Saudi Arabia,Germany,2022,0908,"Nutmeg, mace and cardamoms",M,21.0,21.0,1878.667,8
+SaudiArabia_Import,Saudi Arabia,Guatemala,2022,0908,"Nutmeg, mace and cardamoms",M,10627423.0,10627423.0,130191110.079,8
+SaudiArabia_Import,Saudi Arabia,Jordan,2022,0908,"Nutmeg, mace and cardamoms",M,538.0,538.0,8282.933,8
+SaudiArabia_Import,Saudi Arabia,Kuwait,2022,0908,"Nutmeg, mace and cardamoms",M,6432.0,6432.0,137839.197,8
+SaudiArabia_Import,Saudi Arabia,Pakistan,2022,0908,"Nutmeg, mace and cardamoms",M,3830.0,3830.0,8468.8,8
+SaudiArabia_Import,Saudi Arabia,India,2022,0908,"Nutmeg, mace and cardamoms",M,1756506.0,1756506.0,28323695.025,8
+SaudiArabia_Import,Saudi Arabia,Spain,2022,0908,"Nutmeg, mace and cardamoms",M,200.0,200.0,5970.133,8
+SaudiArabia_Import,Saudi Arabia,United Arab Emirates,2022,0908,"Nutmeg, mace and cardamoms",M,8794.0,8794.0,161788.263,8
+SaudiArabia_Import,Saudi Arabia,United Rep. of Tanzania,2022,0908,"Nutmeg, mace and cardamoms",M,6000.0,6000.0,61610.132,8
+SaudiArabia_Import,Saudi Arabia,USA,2022,0908,"Nutmeg, mace and cardamoms",M,21528.0,21528.0,466916.788,8
+SaudiArabia_Import,Saudi Arabia,World,2023,0908,"Nutmeg, mace and cardamoms",M,13572071.169,13572071.169,139737245.04,8
+SaudiArabia_Import,Saudi Arabia,Bahrain,2023,0908,"Nutmeg, mace and cardamoms",M,54412.017,54412.017,712011.182,8
+SaudiArabia_Import,Saudi Arabia,Brazil,2023,0908,"Nutmeg, mace and cardamoms",M,70475.644,70475.644,1026362.374,8
+SaudiArabia_Import,Saudi Arabia,China,2023,0908,"Nutmeg, mace and cardamoms",M,20703.625,20703.625,301314.659,8
+SaudiArabia_Import,Saudi Arabia,Colombia,2023,0908,"Nutmeg, mace and cardamoms",M,1723.274,1723.274,17405.066,8
+SaudiArabia_Import,Saudi Arabia,Ecuador,2023,0908,"Nutmeg, mace and cardamoms",M,4699.195,4699.195,47461.865,8
+SaudiArabia_Import,Saudi Arabia,Ethiopia,2023,0908,"Nutmeg, mace and cardamoms",M,4306.165,4306.165,43492.266,8
+SaudiArabia_Import,Saudi Arabia,France,2023,0908,"Nutmeg, mace and cardamoms",M,48.264,48.264,487.467,8
+SaudiArabia_Import,Saudi Arabia,Greece,2023,0908,"Nutmeg, mace and cardamoms",M,28.752,28.752,290.4,8
+SaudiArabia_Import,Saudi Arabia,Guatemala,2023,0908,"Nutmeg, mace and cardamoms",M,11121848.418,11121848.418,114016339.816,8
+SaudiArabia_Import,Saudi Arabia,Kuwait,2023,0908,"Nutmeg, mace and cardamoms",M,27196.778,27196.778,274687.46,8
+SaudiArabia_Import,Saudi Arabia,Pakistan,2023,0908,"Nutmeg, mace and cardamoms",M,4290.306,4290.306,60156.798,8
+SaudiArabia_Import,Saudi Arabia,India,2023,0908,"Nutmeg, mace and cardamoms",M,2168152.305,2168152.305,22228904.244,8
+SaudiArabia_Import,Saudi Arabia,Viet Nam,2023,0908,"Nutmeg, mace and cardamoms",M,8459.078,8459.078,111469.331,8
+SaudiArabia_Import,Saudi Arabia,Spain,2023,0908,"Nutmeg, mace and cardamoms",M,101.661,101.661,1480.533,8
+SaudiArabia_Import,Saudi Arabia,United Arab Emirates,2023,0908,"Nutmeg, mace and cardamoms",M,85522.74,85522.74,894238.111,8
+SaudiArabia_Import,Saudi Arabia,Türkiye,2023,0908,"Nutmeg, mace and cardamoms",M,69.362,69.362,804.267,8
+SaudiArabia_Import,Saudi Arabia,USA,2023,0908,"Nutmeg, mace and cardamoms",M,33.584,33.584,339.2,8
+SaudiArabia_Import,Saudi Arabia,World,2024,0908,"Nutmeg, mace and cardamoms",M,11224832.385,11224832.385,250748864.131,8
+SaudiArabia_Import,Saudi Arabia,Bahrain,2024,0908,"Nutmeg, mace and cardamoms",M,159615.385,159615.385,5622801.993,8
+SaudiArabia_Import,Saudi Arabia,China,2024,0908,"Nutmeg, mace and cardamoms",M,6450.0,6450.0,55202.665,8
+SaudiArabia_Import,Saudi Arabia,Colombia,2024,0908,"Nutmeg, mace and cardamoms",M,174.0,174.0,3502.933,8
+SaudiArabia_Import,Saudi Arabia,Ecuador,2024,0908,"Nutmeg, mace and cardamoms",M,5900.0,5900.0,44250.132,8
+SaudiArabia_Import,Saudi Arabia,France,2024,0908,"Nutmeg, mace and cardamoms",M,4680.0,4680.0,98439.998,8
+SaudiArabia_Import,Saudi Arabia,Guatemala,2024,0908,"Nutmeg, mace and cardamoms",M,8825827.0,8825827.0,189757826.189,8
+SaudiArabia_Import,Saudi Arabia,Kuwait,2024,0908,"Nutmeg, mace and cardamoms",M,1050.0,1050.0,1175.733,8
+SaudiArabia_Import,Saudi Arabia,Pakistan,2024,0908,"Nutmeg, mace and cardamoms",M,307.0,307.0,838.133,8
+SaudiArabia_Import,Saudi Arabia,India,2024,0908,"Nutmeg, mace and cardamoms",M,2174429.0,2174429.0,54393927.707,8
+SaudiArabia_Import,Saudi Arabia,Viet Nam,2024,0908,"Nutmeg, mace and cardamoms",M,432.0,432.0,7679.2,8
+SaudiArabia_Import,Saudi Arabia,Spain,2024,0908,"Nutmeg, mace and cardamoms",M,50.0,50.0,1527.467,8
+SaudiArabia_Import,Saudi Arabia,United Arab Emirates,2024,0908,"Nutmeg, mace and cardamoms",M,45918.0,45918.0,761691.981,8
+UAE_Import,United Arab Emirates,World,2014,0908,"Nutmeg, mace and cardamoms",M,0.0,,89621947.615,-1
+UAE_Import,United Arab Emirates,Bahrain,2014,0908,"Nutmeg, mace and cardamoms",M,450.0,450.0,7607.146,8
+UAE_Import,United Arab Emirates,Sri Lanka,2014,0908,"Nutmeg, mace and cardamoms",M,262811.0,262811.0,2131427.515,8
+UAE_Import,United Arab Emirates,China,2014,0908,"Nutmeg, mace and cardamoms",M,1001.98,1001.98,17466.222,8
+UAE_Import,United Arab Emirates,Colombia,2014,0908,"Nutmeg, mace and cardamoms",M,20023.0,20023.0,168153.379,8
+UAE_Import,United Arab Emirates,Ethiopia,2014,0908,"Nutmeg, mace and cardamoms",M,492.0,492.0,1403.61,8
+UAE_Import,United Arab Emirates,Guatemala,2014,0908,"Nutmeg, mace and cardamoms",M,0.0,,73996784.166,-1
+UAE_Import,United Arab Emirates,Indonesia,2014,0908,"Nutmeg, mace and cardamoms",M,14938.0,14938.0,64974.751,8
+UAE_Import,United Arab Emirates,Philippines,2014,0908,"Nutmeg, mace and cardamoms",M,1.0,1.0,8.61,8
+UAE_Import,United Arab Emirates,Qatar,2014,0908,"Nutmeg, mace and cardamoms",M,135.0,135.0,544.588,8
+UAE_Import,United Arab Emirates,Senegal,2014,0908,"Nutmeg, mace and cardamoms",M,1040.0,1040.0,4790.272,8
+UAE_Import,United Arab Emirates,India,2014,0908,"Nutmeg, mace and cardamoms",M,1478846.0,1478846.0,12974130.369,8
+UAE_Import,United Arab Emirates,Viet Nam,2014,0908,"Nutmeg, mace and cardamoms",M,10200.0,10200.0,65000.804,8
+UAE_Import,United Arab Emirates,South Africa,2014,0908,"Nutmeg, mace and cardamoms",M,81.8,81.8,2460.432,8
+UAE_Import,United Arab Emirates,Spain,2014,0908,"Nutmeg, mace and cardamoms",M,168.0,168.0,1614.009,8
+UAE_Import,United Arab Emirates,United Kingdom,2014,0908,"Nutmeg, mace and cardamoms",M,1068.58,1068.58,23792.238,8
+UAE_Import,United Arab Emirates,USA,2014,0908,"Nutmeg, mace and cardamoms",M,22752.68,22752.68,161789.503,8
+UAE_Import,United Arab Emirates,World,2015,0908,"Nutmeg, mace and cardamoms",M,14053809.09,14053809.09,113426288.616,8
+UAE_Import,United Arab Emirates,Afghanistan,2015,0908,"Nutmeg, mace and cardamoms",M,1608.0,1608.0,2275.027,8
+UAE_Import,United Arab Emirates,Bahrain,2015,0908,"Nutmeg, mace and cardamoms",M,966.0,966.0,13600.96,8
+UAE_Import,United Arab Emirates,Bangladesh,2015,0908,"Nutmeg, mace and cardamoms",M,500.0,500.0,1590.488,8
+UAE_Import,United Arab Emirates,Sri Lanka,2015,0908,"Nutmeg, mace and cardamoms",M,199748.57,199748.57,1527015.826,8
+UAE_Import,United Arab Emirates,China,2015,0908,"Nutmeg, mace and cardamoms",M,51772.5,51772.5,116805.81,8
+UAE_Import,United Arab Emirates,Colombia,2015,0908,"Nutmeg, mace and cardamoms",M,1040.0,1040.0,9911.502,8
+UAE_Import,United Arab Emirates,France,2015,0908,"Nutmeg, mace and cardamoms",M,110.0,110.0,2118.404,8
+UAE_Import,United Arab Emirates,Guatemala,2015,0908,"Nutmeg, mace and cardamoms",M,11998061.8,11998061.8,95184437.953,8
+UAE_Import,United Arab Emirates,Indonesia,2015,0908,"Nutmeg, mace and cardamoms",M,11610.96,11610.96,42957.744,8
+UAE_Import,United Arab Emirates,Italy,2015,0908,"Nutmeg, mace and cardamoms",M,100.0,100.0,690.682,8
+UAE_Import,United Arab Emirates,Lebanon,2015,0908,"Nutmeg, mace and cardamoms",M,24.0,24.0,724.019,8
+UAE_Import,United Arab Emirates,Pakistan,2015,0908,"Nutmeg, mace and cardamoms",M,3060.0,3060.0,17294.097,8
+UAE_Import,United Arab Emirates,India,2015,0908,"Nutmeg, mace and cardamoms",M,1780989.0,1780989.0,16439793.223,8
+UAE_Import,United Arab Emirates,Viet Nam,2015,0908,"Nutmeg, mace and cardamoms",M,714.0,714.0,4532.282,8
+UAE_Import,United Arab Emirates,Spain,2015,0908,"Nutmeg, mace and cardamoms",M,434.0,434.0,3504.045,8
+UAE_Import,United Arab Emirates,Türkiye,2015,0908,"Nutmeg, mace and cardamoms",M,8.0,8.0,194.538,8
+UAE_Import,United Arab Emirates,United Kingdom,2015,0908,"Nutmeg, mace and cardamoms",M,1615.67,1615.67,32127.509,8
+UAE_Import,United Arab Emirates,USA,2015,0908,"Nutmeg, mace and cardamoms",M,1396.59,1396.59,26565.833,8
+UAE_Import,United Arab Emirates,Yemen,2015,0908,"Nutmeg, mace and cardamoms",M,50.0,50.0,148.673,8
+UAE_Import,United Arab Emirates,World,2016,0908,"Nutmeg, mace and cardamoms",M,7343068.34,7343068.34,51116815.158,8
+UAE_Import,United Arab Emirates,Afghanistan,2016,0908,"Nutmeg, mace and cardamoms",M,5500.0,5500.0,7803.347,8
+UAE_Import,United Arab Emirates,Algeria,2016,0908,"Nutmeg, mace and cardamoms",M,83.0,83.0,66.167,8
+UAE_Import,United Arab Emirates,Bahrain,2016,0908,"Nutmeg, mace and cardamoms",M,415.0,415.0,5934.621,8
+UAE_Import,United Arab Emirates,Sri Lanka,2016,0908,"Nutmeg, mace and cardamoms",M,200093.99,200093.99,1539270.619,8
+UAE_Import,United Arab Emirates,China,2016,0908,"Nutmeg, mace and cardamoms",M,10080.93,10080.93,85117.514,8
+UAE_Import,United Arab Emirates,Gabon,2016,0908,"Nutmeg, mace and cardamoms",M,10210.0,10210.0,11061.399,8
+UAE_Import,United Arab Emirates,Guatemala,2016,0908,"Nutmeg, mace and cardamoms",M,5442542.0,5442542.0,35301674.704,8
+UAE_Import,United Arab Emirates,Indonesia,2016,0908,"Nutmeg, mace and cardamoms",M,78725.3,78725.3,490554.422,8
+UAE_Import,United Arab Emirates,Lebanon,2016,0908,"Nutmeg, mace and cardamoms",M,24.0,24.0,724.019,8
+UAE_Import,United Arab Emirates,Netherlands,2016,0908,"Nutmeg, mace and cardamoms",M,72.0,72.0,1884.381,8
+UAE_Import,United Arab Emirates,India,2016,0908,"Nutmeg, mace and cardamoms",M,1586116.0,1586116.0,13618718.262,8
+UAE_Import,United Arab Emirates,Spain,2016,0908,"Nutmeg, mace and cardamoms",M,429.0,429.0,3148.879,8
+UAE_Import,United Arab Emirates,United Kingdom,2016,0908,"Nutmeg, mace and cardamoms",M,1533.35,1533.35,23273.27,8
+UAE_Import,United Arab Emirates,USA,2016,0908,"Nutmeg, mace and cardamoms",M,7243.77,7243.77,27583.554,8
+UAE_Import,United Arab Emirates,World,2017,0908,"Nutmeg, mace and cardamoms",M,9297585.0,9297585.0,92160489.732,8
+UAE_Import,United Arab Emirates,Austria,2017,0908,"Nutmeg, mace and cardamoms",M,750.0,750.0,9396.321,8
+UAE_Import,United Arab Emirates,Bahrain,2017,0908,"Nutmeg, mace and cardamoms",M,794.0,794.0,13968.682,8
+UAE_Import,United Arab Emirates,Bangladesh,2017,0908,"Nutmeg, mace and cardamoms",M,2000.0,2000.0,2964.465,8
+UAE_Import,United Arab Emirates,Myanmar,2017,0908,"Nutmeg, mace and cardamoms",M,4660.0,4660.0,19809.933,8
+UAE_Import,United Arab Emirates,Sri Lanka,2017,0908,"Nutmeg, mace and cardamoms",M,206921.0,206921.0,1267476.562,8
+UAE_Import,United Arab Emirates,China,2017,0908,"Nutmeg, mace and cardamoms",M,14877.0,14877.0,78443.545,8
+UAE_Import,United Arab Emirates,France,2017,0908,"Nutmeg, mace and cardamoms",M,12.0,12.0,163.104,8
+UAE_Import,United Arab Emirates,Germany,2017,0908,"Nutmeg, mace and cardamoms",M,4125.0,4125.0,29757.377,8
+UAE_Import,United Arab Emirates,Guatemala,2017,0908,"Nutmeg, mace and cardamoms",M,6539930.0,6539930.0,68592626.333,8
+UAE_Import,United Arab Emirates,Honduras,2017,0908,"Nutmeg, mace and cardamoms",M,11500.0,11500.0,113751.363,8
+UAE_Import,United Arab Emirates,Indonesia,2017,0908,"Nutmeg, mace and cardamoms",M,447212.0,447212.0,2049495.127,8
+UAE_Import,United Arab Emirates,Kuwait,2017,0908,"Nutmeg, mace and cardamoms",M,1037.0,1037.0,6438.936,8
+UAE_Import,United Arab Emirates,Pakistan,2017,0908,"Nutmeg, mace and cardamoms",M,65.0,65.0,22.6,8
+UAE_Import,United Arab Emirates,Saudi Arabia,2017,0908,"Nutmeg, mace and cardamoms",M,70.0,70.0,605.854,8
+UAE_Import,United Arab Emirates,India,2017,0908,"Nutmeg, mace and cardamoms",M,2058441.0,2058441.0,19908391.059,8
+UAE_Import,United Arab Emirates,Spain,2017,0908,"Nutmeg, mace and cardamoms",M,143.0,143.0,1081.552,8
+UAE_Import,United Arab Emirates,United Kingdom,2017,0908,"Nutmeg, mace and cardamoms",M,2722.0,2722.0,33371.808,8
+UAE_Import,United Arab Emirates,USA,2017,0908,"Nutmeg, mace and cardamoms",M,1696.0,1696.0,32578.343,8
+UAE_Import,United Arab Emirates,Yemen,2017,0908,"Nutmeg, mace and cardamoms",M,630.0,630.0,146.766,8
+UAE_Import,United Arab Emirates,World,2018,0908,"Nutmeg, mace and cardamoms",M,8373088.58,8373088.58,91160564.342,8
+UAE_Import,United Arab Emirates,Bahrain,2018,0908,"Nutmeg, mace and cardamoms",M,672.0,672.0,12249.458,8
+UAE_Import,United Arab Emirates,Sri Lanka,2018,0908,"Nutmeg, mace and cardamoms",M,170558.1,170558.1,1060167.311,8
+UAE_Import,United Arab Emirates,China,2018,0908,"Nutmeg, mace and cardamoms",M,1634.0,1634.0,15389.551,8
+UAE_Import,United Arab Emirates,Colombia,2018,0908,"Nutmeg, mace and cardamoms",M,890.0,890.0,15253.572,8
+UAE_Import,United Arab Emirates,Ecuador,2018,0908,"Nutmeg, mace and cardamoms",M,1041.0,1041.0,16707.244,8
+UAE_Import,United Arab Emirates,Germany,2018,0908,"Nutmeg, mace and cardamoms",M,2338.0,2338.0,17923.266,8
+UAE_Import,United Arab Emirates,Guatemala,2018,0908,"Nutmeg, mace and cardamoms",M,5940740.18,5940740.18,66261049.804,8
+UAE_Import,United Arab Emirates,Honduras,2018,0908,"Nutmeg, mace and cardamoms",M,9750.0,9750.0,130926.791,8
+UAE_Import,United Arab Emirates,Indonesia,2018,0908,"Nutmeg, mace and cardamoms",M,217494.45,217494.45,1382581.437,8
+UAE_Import,United Arab Emirates,Jordan,2018,0908,"Nutmeg, mace and cardamoms",M,5.0,5.0,61.024,8
+UAE_Import,United Arab Emirates,Kuwait,2018,0908,"Nutmeg, mace and cardamoms",M,1230.0,1230.0,22877.562,8
+UAE_Import,United Arab Emirates,Malaysia,2018,0908,"Nutmeg, mace and cardamoms",M,15.75,15.75,323.159,8
+UAE_Import,United Arab Emirates,Nepal,2018,0908,"Nutmeg, mace and cardamoms",M,1000.0,1000.0,9050.239,8
+UAE_Import,United Arab Emirates,Pakistan,2018,0908,"Nutmeg, mace and cardamoms",M,8.0,8.0,8.125,8
+UAE_Import,United Arab Emirates,India,2018,0908,"Nutmeg, mace and cardamoms",M,2011550.72,2011550.72,22048346.941,8
+UAE_Import,United Arab Emirates,South Africa,2018,0908,"Nutmeg, mace and cardamoms",M,5.0,5.0,82.056,8
+UAE_Import,United Arab Emirates,United Kingdom,2018,0908,"Nutmeg, mace and cardamoms",M,697.81,697.81,7331.843,8
+UAE_Import,United Arab Emirates,USA,2018,0908,"Nutmeg, mace and cardamoms",M,13358.57,13358.57,159895.409,8
+UAE_Import,United Arab Emirates,Yemen,2018,0908,"Nutmeg, mace and cardamoms",M,100.0,100.0,339.551,8
+UAE_Import,United Arab Emirates,World,2019,0908,"Nutmeg, mace and cardamoms",M,9764351.68,9764351.68,139466031.411,8
+UAE_Import,United Arab Emirates,Austria,2019,0908,"Nutmeg, mace and cardamoms",M,15.31,15.31,2290.26,8
+UAE_Import,United Arab Emirates,Bahrain,2019,0908,"Nutmeg, mace and cardamoms",M,821.0,821.0,10121.697,8
+UAE_Import,United Arab Emirates,Sri Lanka,2019,0908,"Nutmeg, mace and cardamoms",M,484308.6,484308.6,2756505.792,8
+UAE_Import,United Arab Emirates,China,2019,0908,"Nutmeg, mace and cardamoms",M,12465.08,12465.08,29919.357,8
+UAE_Import,United Arab Emirates,Colombia,2019,0908,"Nutmeg, mace and cardamoms",M,1992.0,1992.0,12670.335,8
+UAE_Import,United Arab Emirates,Denmark,2019,0908,"Nutmeg, mace and cardamoms",M,20.0,20.0,387.368,8
+UAE_Import,United Arab Emirates,Ecuador,2019,0908,"Nutmeg, mace and cardamoms",M,6530.0,6530.0,134712.449,8
+UAE_Import,United Arab Emirates,France,2019,0908,"Nutmeg, mace and cardamoms",M,10.0,10.0,1297.481,8
+UAE_Import,United Arab Emirates,Germany,2019,0908,"Nutmeg, mace and cardamoms",M,1503.0,1503.0,15309.292,8
+UAE_Import,United Arab Emirates,Guatemala,2019,0908,"Nutmeg, mace and cardamoms",M,7165952.2,7165952.2,112051769.527,8
+UAE_Import,United Arab Emirates,Indonesia,2019,0908,"Nutmeg, mace and cardamoms",M,498796.06,498796.06,3059732.031,8
+UAE_Import,United Arab Emirates,Kuwait,2019,0908,"Nutmeg, mace and cardamoms",M,4278.0,4278.0,72074.615,8
+UAE_Import,United Arab Emirates,Lebanon,2019,0908,"Nutmeg, mace and cardamoms",M,276.5,276.5,5230.154,8
+UAE_Import,United Arab Emirates,Nepal,2019,0908,"Nutmeg, mace and cardamoms",M,41846.0,41846.0,308800.398,8
+UAE_Import,United Arab Emirates,Pakistan,2019,0908,"Nutmeg, mace and cardamoms",M,3145.4,3145.4,93207.112,8
+UAE_Import,United Arab Emirates,India,2019,0908,"Nutmeg, mace and cardamoms",M,1541778.66,1541778.66,20891869.77,8
+UAE_Import,United Arab Emirates,United Kingdom,2019,0908,"Nutmeg, mace and cardamoms",M,38.88,38.88,1606.573,8
+UAE_Import,United Arab Emirates,United Rep. of Tanzania,2019,0908,"Nutmeg, mace and cardamoms",M,10.0,10.0,155.096,8
+UAE_Import,United Arab Emirates,USA,2019,0908,"Nutmeg, mace and cardamoms",M,411.99,411.99,17035.411,8
+UAE_Import,United Arab Emirates,Uzbekistan,2019,0908,"Nutmeg, mace and cardamoms",M,3.0,3.0,63.172,8
+UAE_Import,United Arab Emirates,Yemen,2019,0908,"Nutmeg, mace and cardamoms",M,150.0,150.0,1273.52,8
+UAE_Import,United Arab Emirates,World,2020,0908,"Nutmeg, mace and cardamoms",M,9608299.91,9608299.91,172140297.984,8
+UAE_Import,United Arab Emirates,Austria,2020,0908,"Nutmeg, mace and cardamoms",M,1.43,1.43,132.575,8
+UAE_Import,United Arab Emirates,Bahrain,2020,0908,"Nutmeg, mace and cardamoms",M,2582.1,2582.1,79277.687,8
+UAE_Import,United Arab Emirates,Bulgaria,2020,0908,"Nutmeg, mace and cardamoms",M,40.8,40.8,1478.715,8
+UAE_Import,United Arab Emirates,Sri Lanka,2020,0908,"Nutmeg, mace and cardamoms",M,383796.0,383796.0,2556212.782,8
+UAE_Import,United Arab Emirates,China,2020,0908,"Nutmeg, mace and cardamoms",M,9288.76,9288.76,44394.329,8
+UAE_Import,United Arab Emirates,Colombia,2020,0908,"Nutmeg, mace and cardamoms",M,690.0,690.0,5700.205,8
+UAE_Import,United Arab Emirates,Ecuador,2020,0908,"Nutmeg, mace and cardamoms",M,1115.0,1115.0,22290.458,8
+UAE_Import,United Arab Emirates,Ethiopia,2020,0908,"Nutmeg, mace and cardamoms",M,202.0,202.0,3675.371,8
+UAE_Import,United Arab Emirates,Germany,2020,0908,"Nutmeg, mace and cardamoms",M,2280.0,2280.0,20737.183,8
+UAE_Import,United Arab Emirates,Guatemala,2020,0908,"Nutmeg, mace and cardamoms",M,6147247.0,6147247.0,130348442.392,8
+UAE_Import,United Arab Emirates,Honduras,2020,0908,"Nutmeg, mace and cardamoms",M,11329.0,11329.0,251725.821,8
+UAE_Import,United Arab Emirates,Indonesia,2020,0908,"Nutmeg, mace and cardamoms",M,258750.0,258750.0,1471341.033,8
+UAE_Import,United Arab Emirates,Jordan,2020,0908,"Nutmeg, mace and cardamoms",M,9450.0,9450.0,109688.777,8
+UAE_Import,United Arab Emirates,Kuwait,2020,0908,"Nutmeg, mace and cardamoms",M,2903.9,2903.9,54718.262,8
+UAE_Import,United Arab Emirates,Lebanon,2020,0908,"Nutmeg, mace and cardamoms",M,471.5,471.5,15018.92,8
+UAE_Import,United Arab Emirates,Nepal,2020,0908,"Nutmeg, mace and cardamoms",M,123594.0,123594.0,472517.833,8
+UAE_Import,United Arab Emirates,Nigeria,2020,0908,"Nutmeg, mace and cardamoms",M,160.0,160.0,78.905,8
+UAE_Import,United Arab Emirates,Pakistan,2020,0908,"Nutmeg, mace and cardamoms",M,1305.2,1305.2,52566.376,8
+UAE_Import,United Arab Emirates,Saudi Arabia,2020,0908,"Nutmeg, mace and cardamoms",M,16200.0,16200.0,454477.913,8
+UAE_Import,United Arab Emirates,India,2020,0908,"Nutmeg, mace and cardamoms",M,2616288.8,2616288.8,35737636.442,8
+UAE_Import,United Arab Emirates,Viet Nam,2020,0908,"Nutmeg, mace and cardamoms",M,898.0,898.0,4256.73,8
+UAE_Import,United Arab Emirates,South Africa,2020,0908,"Nutmeg, mace and cardamoms",M,201.95,201.95,3185.577,8
+UAE_Import,United Arab Emirates,Spain,2020,0908,"Nutmeg, mace and cardamoms",M,6297.0,6297.0,248498.046,8
+UAE_Import,United Arab Emirates,Türkiye,2020,0908,"Nutmeg, mace and cardamoms",M,50.0,50.0,158.682,8
+UAE_Import,United Arab Emirates,Egypt,2020,0908,"Nutmeg, mace and cardamoms",M,534.0,534.0,28903.746,8
+UAE_Import,United Arab Emirates,United Kingdom,2020,0908,"Nutmeg, mace and cardamoms",M,236.47,236.47,8539.099,8
+UAE_Import,United Arab Emirates,United Rep. of Tanzania,2020,0908,"Nutmeg, mace and cardamoms",M,10950.0,10950.0,118876.198,8
+UAE_Import,United Arab Emirates,USA,2020,0908,"Nutmeg, mace and cardamoms",M,387.0,387.0,25167.517,8
+UAE_Import,United Arab Emirates,Yemen,2020,0908,"Nutmeg, mace and cardamoms",M,1050.0,1050.0,600.408,8
+UAE_Import,United Arab Emirates,World,2021,0908,"Nutmeg, mace and cardamoms",M,10747440.43,10747440.43,157871312.555,8
+UAE_Import,United Arab Emirates,Austria,2021,0908,"Nutmeg, mace and cardamoms",M,25.23,25.23,1192.825,8
+UAE_Import,United Arab Emirates,Bahrain,2021,0908,"Nutmeg, mace and cardamoms",M,3581.0,3581.0,136873.306,8
+UAE_Import,United Arab Emirates,Bhutan,2021,0908,"Nutmeg, mace and cardamoms",M,31.0,31.0,3020.83,8
+UAE_Import,United Arab Emirates,Sri Lanka,2021,0908,"Nutmeg, mace and cardamoms",M,200403.85,200403.85,1609680.314,8
+UAE_Import,United Arab Emirates,China,2021,0908,"Nutmeg, mace and cardamoms",M,24857.5,24857.5,59209.937,8
+UAE_Import,United Arab Emirates,Comoros,2021,0908,"Nutmeg, mace and cardamoms",M,175.0,175.0,20013.614,8
+UAE_Import,United Arab Emirates,Ecuador,2021,0908,"Nutmeg, mace and cardamoms",M,4376.0,4376.0,74050.236,8
+UAE_Import,United Arab Emirates,Ethiopia,2021,0908,"Nutmeg, mace and cardamoms",M,101861.0,101861.0,76273.762,8
+UAE_Import,United Arab Emirates,France,2021,0908,"Nutmeg, mace and cardamoms",M,30.84,30.84,606.704,8
+UAE_Import,United Arab Emirates,Germany,2021,0908,"Nutmeg, mace and cardamoms",M,890.8,890.8,31861.674,8
+UAE_Import,United Arab Emirates,Grenada,2021,0908,"Nutmeg, mace and cardamoms",M,12750.0,12750.0,103700.746,8
+UAE_Import,United Arab Emirates,Guatemala,2021,0908,"Nutmeg, mace and cardamoms",M,5241376.0,5241376.0,81500005.463,8
+UAE_Import,United Arab Emirates,Indonesia,2021,0908,"Nutmeg, mace and cardamoms",M,201876.82,201876.82,838967.312,8
+UAE_Import,United Arab Emirates,Iran,2021,0908,"Nutmeg, mace and cardamoms",M,3.0,3.0,3.219,8
+UAE_Import,United Arab Emirates,Ireland,2021,0908,"Nutmeg, mace and cardamoms",M,3.27,3.27,821.34,8
+UAE_Import,United Arab Emirates,Italy,2021,0908,"Nutmeg, mace and cardamoms",M,21.87,21.87,2489.628,8
+UAE_Import,United Arab Emirates,Japan,2021,0908,"Nutmeg, mace and cardamoms",M,4.0,4.0,883.45,8
+UAE_Import,United Arab Emirates,Kuwait,2021,0908,"Nutmeg, mace and cardamoms",M,4950.0,4950.0,96055.001,8
+UAE_Import,United Arab Emirates,Lebanon,2021,0908,"Nutmeg, mace and cardamoms",M,777.0,777.0,24528.28,8
+UAE_Import,United Arab Emirates,Mexico,2021,0908,"Nutmeg, mace and cardamoms",M,10270.0,10270.0,42737.371,8
+UAE_Import,United Arab Emirates,Netherlands,2021,0908,"Nutmeg, mace and cardamoms",M,1872.0,1872.0,37409.388,8
+UAE_Import,United Arab Emirates,Nigeria,2021,0908,"Nutmeg, mace and cardamoms",M,120.0,120.0,10.598,8
+UAE_Import,United Arab Emirates,Pakistan,2021,0908,"Nutmeg, mace and cardamoms",M,3033.01,3033.01,105241.658,8
+UAE_Import,United Arab Emirates,Saudi Arabia,2021,0908,"Nutmeg, mace and cardamoms",M,166.15,166.15,428.161,8
+UAE_Import,United Arab Emirates,India,2021,0908,"Nutmeg, mace and cardamoms",M,4931936.0,4931936.0,73090986.318,8
+UAE_Import,United Arab Emirates,South Africa,2021,0908,"Nutmeg, mace and cardamoms",M,153.8,153.8,563.959,8
+UAE_Import,United Arab Emirates,Sweden,2021,0908,"Nutmeg, mace and cardamoms",M,11.76,11.76,66.271,8
+UAE_Import,United Arab Emirates,Thailand,2021,0908,"Nutmeg, mace and cardamoms",M,2.0,2.0,19.292,8
+UAE_Import,United Arab Emirates,Türkiye,2021,0908,"Nutmeg, mace and cardamoms",M,101.0,101.0,1499.523,8
+UAE_Import,United Arab Emirates,Egypt,2021,0908,"Nutmeg, mace and cardamoms",M,19.8,19.8,894.87,8
+UAE_Import,United Arab Emirates,United Kingdom,2021,0908,"Nutmeg, mace and cardamoms",M,186.24,186.24,8088.419,8
+UAE_Import,United Arab Emirates,United Rep. of Tanzania,2021,0908,"Nutmeg, mace and cardamoms",M,200.0,200.0,690.633,8
+UAE_Import,United Arab Emirates,USA,2021,0908,"Nutmeg, mace and cardamoms",M,14.49,14.49,1355.812,8
+UAE_Import,United Arab Emirates,Yemen,2021,0908,"Nutmeg, mace and cardamoms",M,1360.0,1360.0,1082.641,8
+UAE_Import,United Arab Emirates,World,2022,0908,"Nutmeg, mace and cardamoms",M,15514676.08,15514676.08,144925037.968,8
+UAE_Import,United Arab Emirates,Afghanistan,2022,0908,"Nutmeg, mace and cardamoms",M,50000.0,50000.0,148323.481,8
+UAE_Import,United Arab Emirates,Australia,2022,0908,"Nutmeg, mace and cardamoms",M,49.35,49.35,356.732,8
+UAE_Import,United Arab Emirates,Bahrain,2022,0908,"Nutmeg, mace and cardamoms",M,2498.0,2498.0,98651.592,8
+UAE_Import,United Arab Emirates,Bhutan,2022,0908,"Nutmeg, mace and cardamoms",M,31.0,31.0,427.502,8
+UAE_Import,United Arab Emirates,Sri Lanka,2022,0908,"Nutmeg, mace and cardamoms",M,320150.3,320150.3,2471666.316,8
+UAE_Import,United Arab Emirates,China,2022,0908,"Nutmeg, mace and cardamoms",M,25057.0,25057.0,90387.771,8
+UAE_Import,United Arab Emirates,Colombia,2022,0908,"Nutmeg, mace and cardamoms",M,657.0,657.0,1812.915,8
+UAE_Import,United Arab Emirates,Ethiopia,2022,0908,"Nutmeg, mace and cardamoms",M,163932.0,163932.0,230122.526,8
+UAE_Import,United Arab Emirates,Finland,2022,0908,"Nutmeg, mace and cardamoms",M,6.8,6.8,406.911,8
+UAE_Import,United Arab Emirates,France,2022,0908,"Nutmeg, mace and cardamoms",M,91.81,91.81,1548.923,8
+UAE_Import,United Arab Emirates,Germany,2022,0908,"Nutmeg, mace and cardamoms",M,1480.08,1480.08,50145.104,8
+UAE_Import,United Arab Emirates,Grenada,2022,0908,"Nutmeg, mace and cardamoms",M,80725.0,80725.0,714801.886,8
+UAE_Import,United Arab Emirates,Guatemala,2022,0908,"Nutmeg, mace and cardamoms",M,9378840.0,9378840.0,77534904.384,8
+UAE_Import,United Arab Emirates,Honduras,2022,0908,"Nutmeg, mace and cardamoms",M,3.0,3.0,232.811,8
+UAE_Import,United Arab Emirates,Indonesia,2022,0908,"Nutmeg, mace and cardamoms",M,252608.43,252608.43,1626349.659,8
+UAE_Import,United Arab Emirates,Italy,2022,0908,"Nutmeg, mace and cardamoms",M,275.14,275.14,2834.824,8
+UAE_Import,United Arab Emirates,Jordan,2022,0908,"Nutmeg, mace and cardamoms",M,40.0,40.0,892.035,8
+UAE_Import,United Arab Emirates,Kuwait,2022,0908,"Nutmeg, mace and cardamoms",M,6150.0,6150.0,117426.273,8
+UAE_Import,United Arab Emirates,Lebanon,2022,0908,"Nutmeg, mace and cardamoms",M,1296.0,1296.0,11515.836,8
+UAE_Import,United Arab Emirates,Nigeria,2022,0908,"Nutmeg, mace and cardamoms",M,31.5,31.5,273.623,8
+UAE_Import,United Arab Emirates,Pakistan,2022,0908,"Nutmeg, mace and cardamoms",M,1807.2,1807.2,45031.993,8
+UAE_Import,United Arab Emirates,Saudi Arabia,2022,0908,"Nutmeg, mace and cardamoms",M,22.34,22.34,77.574,8
+UAE_Import,United Arab Emirates,India,2022,0908,"Nutmeg, mace and cardamoms",M,5121991.0,5121991.0,60396343.822,8
+UAE_Import,United Arab Emirates,Viet Nam,2022,0908,"Nutmeg, mace and cardamoms",M,15.53,15.53,112.844,8
+UAE_Import,United Arab Emirates,South Africa,2022,0908,"Nutmeg, mace and cardamoms",M,174.73,174.73,3371.807,8
+UAE_Import,United Arab Emirates,Egypt,2022,0908,"Nutmeg, mace and cardamoms",M,700.0,700.0,1572.716,8
+UAE_Import,United Arab Emirates,United Kingdom,2022,0908,"Nutmeg, mace and cardamoms",M,14259.84,14259.84,127725.63,8
+UAE_Import,United Arab Emirates,United Rep. of Tanzania,2022,0908,"Nutmeg, mace and cardamoms",M,91780.5,91780.5,1247306.762,8
+UAE_Import,United Arab Emirates,USA,2022,0908,"Nutmeg, mace and cardamoms",M,2.53,2.53,413.715,8
+UAE_Import,United Arab Emirates,World,2023,0908,"Nutmeg, mace and cardamoms",M,17175789.77,17175789.77,132672126.207,8
+UAE_Import,United Arab Emirates,Afghanistan,2023,0908,"Nutmeg, mace and cardamoms",M,65.0,65.0,115.965,8
+UAE_Import,United Arab Emirates,Algeria,2023,0908,"Nutmeg, mace and cardamoms",M,333.0,333.0,238.968,8
+UAE_Import,United Arab Emirates,Bahrain,2023,0908,"Nutmeg, mace and cardamoms",M,8045.0,8045.0,146971.255,8
+UAE_Import,United Arab Emirates,Belgium,2023,0908,"Nutmeg, mace and cardamoms",M,10.0,10.0,427.502,8
+UAE_Import,United Arab Emirates,Sri Lanka,2023,0908,"Nutmeg, mace and cardamoms",M,113610.15,113610.15,899558.412,8
+UAE_Import,United Arab Emirates,China,2023,0908,"Nutmeg, mace and cardamoms",M,121354.33,121354.33,379965.871,8
+UAE_Import,United Arab Emirates,Ecuador,2023,0908,"Nutmeg, mace and cardamoms",M,2201.0,2201.0,32681.415,8
+UAE_Import,United Arab Emirates,France,2023,0908,"Nutmeg, mace and cardamoms",M,102.29,102.29,3274.265,8
+UAE_Import,United Arab Emirates,Germany,2023,0908,"Nutmeg, mace and cardamoms",M,2000.8,2000.8,31736.832,8
+UAE_Import,United Arab Emirates,Grenada,2023,0908,"Nutmeg, mace and cardamoms",M,46650.5,46650.5,339136.614,8
+UAE_Import,United Arab Emirates,Guatemala,2023,0908,"Nutmeg, mace and cardamoms",M,13128572.79,13128572.79,88148384.692,8
+UAE_Import,United Arab Emirates,Honduras,2023,0908,"Nutmeg, mace and cardamoms",M,8.0,8.0,787.202,8
+UAE_Import,United Arab Emirates,Indonesia,2023,0908,"Nutmeg, mace and cardamoms",M,206800.9,206800.9,1233880.739,8
+UAE_Import,United Arab Emirates,Iran,2023,0908,"Nutmeg, mace and cardamoms",M,44.0,44.0,55.406,8
+UAE_Import,United Arab Emirates,Italy,2023,0908,"Nutmeg, mace and cardamoms",M,169.4,169.4,2153.451,8
+UAE_Import,United Arab Emirates,Jordan,2023,0908,"Nutmeg, mace and cardamoms",M,196.0,196.0,3319.809,8
+UAE_Import,United Arab Emirates,Kuwait,2023,0908,"Nutmeg, mace and cardamoms",M,5250.0,5250.0,175566.775,8
+UAE_Import,United Arab Emirates,Lao People's Dem. Rep.,2023,0908,"Nutmeg, mace and cardamoms",M,20500.0,20500.0,18190.978,8
+UAE_Import,United Arab Emirates,Lebanon,2023,0908,"Nutmeg, mace and cardamoms",M,830.0,830.0,13363.139,8
+UAE_Import,United Arab Emirates,Netherlands,2023,0908,"Nutmeg, mace and cardamoms",M,8.0,8.0,733.016,8
+UAE_Import,United Arab Emirates,Nicaragua,2023,0908,"Nutmeg, mace and cardamoms",M,4.4,4.4,4.468,8
+UAE_Import,United Arab Emirates,Nigeria,2023,0908,"Nutmeg, mace and cardamoms",M,175.0,175.0,229.549,8
+UAE_Import,United Arab Emirates,Pakistan,2023,0908,"Nutmeg, mace and cardamoms",M,1087.2,1087.2,29505.355,8
+UAE_Import,United Arab Emirates,Qatar,2023,0908,"Nutmeg, mace and cardamoms",M,4.92,4.92,124.773,8
+UAE_Import,United Arab Emirates,India,2023,0908,"Nutmeg, mace and cardamoms",M,3379103.0,3379103.0,39779850.5,8
+UAE_Import,United Arab Emirates,Singapore,2023,0908,"Nutmeg, mace and cardamoms",M,31879.0,31879.0,218211.294,8
+UAE_Import,United Arab Emirates,Viet Nam,2023,0908,"Nutmeg, mace and cardamoms",M,21672.0,21672.0,72394.664,8
+UAE_Import,United Arab Emirates,South Africa,2023,0908,"Nutmeg, mace and cardamoms",M,200.33,200.33,989.342,8
+UAE_Import,United Arab Emirates,Sweden,2023,0908,"Nutmeg, mace and cardamoms",M,0.48,0.48,11.415,8
+UAE_Import,United Arab Emirates,Türkiye,2023,0908,"Nutmeg, mace and cardamoms",M,21455.0,21455.0,206338.124,8
+UAE_Import,United Arab Emirates,Egypt,2023,0908,"Nutmeg, mace and cardamoms",M,52200.0,52200.0,765090.083,8
+UAE_Import,United Arab Emirates,United Kingdom,2023,0908,"Nutmeg, mace and cardamoms",M,229.47,229.47,7342.962,8
+UAE_Import,United Arab Emirates,United Rep. of Tanzania,2023,0908,"Nutmeg, mace and cardamoms",M,10510.0,10510.0,157876.374,8
+UAE_Import,United Arab Emirates,USA,2023,0908,"Nutmeg, mace and cardamoms",M,517.81,517.81,3614.995,8

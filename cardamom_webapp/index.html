@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cardamom Price — Prediction Archive</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root{
+      --bg:#f7f7fb; --card:#fff; --ink:#1f2937; --muted:#6b7280; --brand:#0b3d91; --grid:#e5e7eb;
+      --accent:#eef2ff; --good:#059669; --warn:#f59e0b; --bad:#dc2626;
+    }
+    html,body{ margin:0; padding:0; background:var(--bg); color:var(--ink); font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
+    .wrap{ max-width:1100px; margin:0 auto; padding:24px; }
+    h1{ font-size:22px; margin:0 0 10px; color:var(--ink); }
+    .muted{ color:var(--muted); font-size:13px; }
+    .row{ display:grid; grid-template-columns: repeat(12, 1fr); gap:16px; }
+    .card{ background:var(--card); border:1px solid var(--grid); border-radius:14px; padding:16px; box-shadow:0 1px 2px rgba(0,0,0,.03); }
+    .btn{ border:1px solid var(--grid); background:#fff; padding:8px 12px; border-radius:10px; cursor:pointer; font-size:13px; }
+    .btn.brand{ background:var(--brand); color:#fff; border-color:var(--brand); }
+    .btn.inline-input{ position:relative; overflow:hidden; display:inline-block; }
+    .btn.inline-input input{ position:absolute; inset:0; opacity:0; cursor:pointer; }
+    .kpi{ font-size:26px; font-weight:700; }
+    .kpi-label{ font-size:12px; color:var(--muted); }
+    table{ width:100%; border-collapse:collapse; font-size:13px; }
+    th, td{ padding:8px 10px; border-bottom:1px solid var(--grid); text-align:right; }
+    th:first-child, td:first-child{ text-align:left; }
+    thead th{ background:#f3f4f6; font-weight:600; color:#111827; }
+    .good{ color:var(--good); } .bad{ color:var(--bad); } .warn{ color:var(--warn); }
+    .flex{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .spacer{ height:10px; }
+    .footer{ font-size:12px; color:var(--muted); text-align:center; padding:20px 0; }
+    .pill{ background:var(--accent); color:var(--brand); border-radius:999px; padding:4px 8px; font-size:12px; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header class="row">
+      <div class="card" style="grid-column: span 12;">
+        <div class="flex" style="justify-content: space-between;">
+          <div>
+            <h1>Cardamom Price — Prediction Archive</h1>
+            <div class="muted">Average Kerala auction price (₹/kg). All local, no uploads.</div>
+          </div>
+          <div class="flex">
+            <label class="btn inline-input">Load archive.csv
+              <input type="file" accept=".csv" id="load-archive">
+            </label>
+            <button class="btn brand" id="download-archive">Download updated archive.csv</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="row">
+      <div class="card" style="grid-column: span 4;">
+        <div class="kpi" id="kpi-mape">—%</div>
+        <div class="kpi-label">30‑day MAPE</div>
+      </div>
+      <div class="card" style="grid-column: span 4;">
+        <div class="kpi" id="kpi-rmse">—</div>
+        <div class="kpi-label">30‑day RMSE</div>
+      </div>
+      <div class="card" style="grid-column: span 4;">
+        <div class="kpi" id="kpi-score">—</div>
+        <div class="kpi-label">Avg deviation score (0–100)</div>
+      </div>
+    </section>
+
+    <section class="row">
+      <div class="card" style="grid-column: span 12;">
+        <div class="flex">
+          <label class="btn inline-input">Upload new predictions
+            <input type="file" accept=".csv" id="upload-preds">
+          </label>
+          <label class="btn inline-input">Upload actuals
+            <input type="file" accept=".csv" id="upload-actuals">
+          </label>
+          <span class="pill">Required cols → predictions: date, predicted_avg_price_inr_per_kg • actuals: date, actual_avg_price_inr_per_kg</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="row">
+      <div class="card" style="grid-column: span 12;">
+        <canvas id="chart" height="110"></canvas>
+      </div>
+    </section>
+
+    <section class="row">
+      <div class="card" style="grid-column: span 12;">
+        <h3 style="margin:0 0 8px 0;">Daily Deviation (last 30 rows)</h3>
+        <div class="spacer"></div>
+        <div style="overflow:auto;">
+          <table id="tbl">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Actual</th>
+                <th>Predicted</th>
+                <th>Abs. Error</th>
+                <th>Pct. Error</th>
+                <th>Score (0–100)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="row">
+      <div class="card" style="grid-column: span 12;">
+        <h3 style="margin:0 0 8px 0;">Documentation</h3>
+        <div class="muted">
+          <p><b>Scoring:</b> Daily % error = |pred − actual| / actual. Deviation score = max(0, 100 × (1 − % error)). KPIs are 30‑day MAPE, RMSE, MAE, hit‑rate within ±5% (hover tooltips).</p>
+          <p><b>File formats:</b> archive.csv must include <code>date</code>, <code>actual_avg_price_inr_per_kg</code>, <code>predicted_avg_price_inr_per_kg</code>. Predictions/actuals uploads may contain extra columns; they are preserved in the merged archive.</p>
+          <p>Everything runs locally in your browser — no servers, no uploads.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">© Cardamom Forecast Tools — Local dashboard</div>
+  </div>
+
+<script>
+  // Utilities
+  const INR = (x) => x == null || x === "" ? "" : "₹" + Number(x).toLocaleString("en-IN", { maximumFractionDigits: 0 });
+  const parseNum = (x) => (x == null || x === "" ? null : Number(x));
+
+  function parseCSV(file, onDone) {
+    Papa.parse(file, {
+      header: true, skipEmptyLines: true,
+      complete: (res) => onDone(res.data)
+    });
+  }
+
+  function mergeArchive(archive, addRows, kind) {
+    // kind: "pred" | "actual" | "seed"
+    const idx = new Map(archive.map(r => [r.date, r]));
+    addRows.forEach(r => {
+      const date = (r.date || "").slice(0,10);
+      if (!date) return;
+      const row = idx.get(date) || { date };
+      if (kind === "pred" || kind === "seed") {
+        row.predicted_avg_price_inr_per_kg = r.predicted_avg_price_inr_per_kg ?? r.pred ?? r.predicted ?? r.point;
+        row.model_run_date = r.model_run_date || row.model_run_date || "";
+        row.horizon_days = r.horizon_days || row.horizon_days || 1;
+        row.model_version = r.model_version || row.model_version || "";
+      }
+      if (kind === "actual" || kind === "seed") {
+        row.actual_avg_price_inr_per_kg = r.actual_avg_price_inr_per_kg ?? r.actual ?? r.avg_price ?? r.price;
+      }
+      idx.set(date, row);
+    });
+    const merged = Array.from(idx.values()).sort((a,b) => a.date < b.date ? -1 : 1);
+    return merged;
+  }
+
+  function enrich(rows) {
+    return rows.map(r => {
+      const actual = parseNum(r.actual_avg_price_inr_per_kg);
+      const pred = parseNum(r.predicted_avg_price_inr_per_kg);
+      const absErr = (actual!=null && pred!=null) ? Math.abs(pred - actual) : null;
+      const pctErr = (actual!=null && pred!=null && actual !== 0) ? absErr / actual : null;
+      const score = (pctErr!=null) ? Math.max(0, 100 * (1 - pctErr)) : null;
+      return {...r, actual, pred, absErr, pctErr, score};
+    });
+  }
+
+  function rollMetrics(rows, windowDays = 30) {
+    const recent = rows.filter(r => r.actual!=null && r.pred!=null).slice(-windowDays);
+    const n = recent.length || 1;
+    const mape = recent.reduce((a,r)=>a + (r.pctErr ?? 0), 0) / n;
+    const mae = recent.reduce((a,r)=>a + (r.absErr ?? 0), 0) / n;
+    const rmse = Math.sqrt(recent.reduce((a,r)=>a + Math.pow(r.absErr ?? 0, 2), 0) / n);
+    const hit5 = recent.filter(r => (r.pctErr ?? 1) <= 0.05).length / n;
+    const avgScore = recent.reduce((a,r)=>a + (r.score ?? 0), 0) / n;
+    return { n, mape, mae, rmse, hit5, avgScore };
+  }
+
+  // State
+  let archive = [];
+  let chart;
+  const $ = (id) => document.getElementById(id);
+
+  function render() {
+    const enriched = enrich(archive);
+    const metrics = rollMetrics(enriched, 30);
+
+    // KPIs
+    $("kpi-mape").textContent = (metrics.mape*100 || 0).toFixed(1) + "%";
+    $("kpi-rmse").textContent = INR(metrics.rmse);
+    $("kpi-score").textContent = (metrics.avgScore || 0).toFixed(1);
+
+    // Table (last 30)
+    const tbody = $("tbl").querySelector("tbody");
+    tbody.innerHTML = "";
+    enriched.slice(-30).forEach(r => {
+      const tr = document.createElement("tr");
+      const tds = [
+        r.date,
+        INR(r.actual),
+        INR(r.pred),
+        INR(r.absErr),
+        (r.pctErr!=null) ? (r.pctErr*100).toFixed(1) + "%" : "",
+        (r.score!=null) ? r.score.toFixed(1) : ""
+      ];
+      tds.forEach((v,i)=>{
+        const td = document.createElement("td");
+        td.textContent = v;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+
+    // Chart
+    const labels = enriched.map(r => r.date);
+    const actual = enriched.map(r => r.actual);
+    const pred = enriched.map(r => r.pred);
+
+    if (chart) chart.destroy();
+    const ctx = $("chart").getContext("2d");
+    chart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels,
+        datasets: [{
+          label: "Actual",
+          data: actual,
+          borderWidth: 2,
+          tension: 0.2
+        },{
+          label: "Predicted",
+          data: pred,
+          borderWidth: 2,
+          tension: 0.2
+        }]
+      },
+      options: {
+        interaction: {mode: "index", intersect: false},
+        scales: {
+          y: { ticks: { callback: (v)=> INR(v) } }
+        },
+        plugins: {
+          legend: { display: true },
+          tooltip: { callbacks: { label: (ctx)=> `${ctx.dataset.label}: ${INR(ctx.parsed.y)}` } }
+        }
+      }
+    });
+  }
+
+  // Wire up controls
+  $("load-archive").addEventListener("change", (e)=>{
+    const f = e.target.files?.[0]; if (!f) return;
+    parseCSV(f, rows => { archive = mergeArchive([], rows, "seed"); render(); });
+  });
+
+  $("upload-preds").addEventListener("change", (e)=>{
+    const f = e.target.files?.[0]; if (!f) return;
+    parseCSV(f, rows => { archive = mergeArchive(archive, rows, "pred"); render(); });
+  });
+
+  $("upload-actuals").addEventListener("change", (e)=>{
+    const f = e.target.files?.[0]; if (!f) return;
+    parseCSV(f, rows => { archive = mergeArchive(archive, rows, "actual"); render(); });
+  });
+
+  $("download-archive").addEventListener("click", ()=>{
+    if (!archive.length) { alert("No archive in memory. Load or upload first."); return; }
+    const headers = Object.keys(archive[0]);
+    const csv = [headers.join(",")].concat(
+      archive.map(r => headers.map(h => (r[h] ?? "")).join(","))
+    ).join("\n");
+    const blob = new Blob([csv], {type: "text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "archive.csv"; a.click();
+    URL.revokeObjectURL(url);
+  });
+</script>
+</body>
+</html>

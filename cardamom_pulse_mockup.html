@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CardamomPulse — Cardamom Price Intelligence</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #f8f9fc;
+  --card: #ffffff;
+  --ink: #1a1a2e;
+  --muted: #8892a4;
+  --brand: #00185C;
+  --accent: #396DFF;
+  --accent-light: #eef2ff;
+  --good: #059669;
+  --good-bg: #ecfdf5;
+  --warn: #f59e0b;
+  --warn-bg: #fffbeb;
+  --bad: #dc2626;
+  --bad-bg: #fef2f2;
+  --border: #e8ecf2;
+  --cardamom: #2d6a4f;
+  --navy-dark: #000d33;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--ink); font-family: 'Inter', system-ui, -apple-system, sans-serif; font-size: 14px; line-height: 1.5; }
+
+/* NAV */
+.nav { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom: 1px solid var(--border); height: 56px; display: flex; align-items: center; padding: 0 24px; }
+.nav-inner { max-width: 1200px; width: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+.logo { font-size: 18px; font-weight: 800; color: var(--brand); letter-spacing: -0.5px; display: flex; align-items: center; gap: 6px; }
+.logo-dot { width: 8px; height: 8px; background: var(--cardamom); border-radius: 50%; }
+.nav-tabs { display: flex; gap: 4px; }
+.nav-tab { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; transition: all 0.15s; text-decoration: none; border: none; background: none; }
+.nav-tab:hover { color: var(--ink); background: var(--bg); }
+.nav-tab.active { color: var(--accent); background: var(--accent-light); }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.tier-toggle { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+.tier-toggle select { font-size: 11px; padding: 2px 6px; border: 1px solid var(--border); border-radius: 6px; background: #fff; cursor: pointer; }
+.btn-subscribe { background: var(--accent); color: #fff; border: none; padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.btn-subscribe:hover { background: #2b5de0; }
+
+/* LAYOUT */
+.wrap { max-width: 1200px; margin: 0 auto; padding: 24px; }
+.section { display: none; }
+.section.active { display: block; }
+.grid { display: grid; gap: 16px; }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-1 { grid-template-columns: 1fr; }
+
+/* CARDS */
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+.card-header { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.kpi { font-size: 28px; font-weight: 800; color: var(--ink); line-height: 1.2; }
+.kpi-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+/* PILLS & BADGES */
+.pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.pill-good { background: var(--good-bg); color: var(--good); }
+.pill-bad { background: var(--bad-bg); color: var(--bad); }
+.pill-warn { background: var(--warn-bg); color: var(--warn); }
+.pill-neutral { background: #f3f4f6; color: #6b7280; }
+.pill-accent { background: var(--accent-light); color: var(--accent); }
+
+/* TABLES */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { padding: 10px 12px; text-align: right; border-bottom: 1px solid var(--border); }
+th:first-child, td:first-child { text-align: left; }
+th { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; background: #fafbfd; }
+
+/* FORECAST WEEK CARDS */
+.week-strip { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; margin-top: 16px; }
+.week-card { background: #fafbfd; border: 1px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; font-size: 12px; transition: all 0.15s; }
+.week-card:hover { border-color: var(--accent); }
+.week-card .wk-label { font-weight: 700; color: var(--accent); font-size: 11px; text-transform: uppercase; }
+.week-card .wk-price { font-size: 16px; font-weight: 700; margin: 4px 0 2px; }
+.week-card .wk-date { color: var(--muted); font-size: 10px; }
+
+/* REGIME BAR */
+.regime-bar { display: flex; height: 32px; border-radius: 8px; overflow: hidden; margin-top: 8px; }
+.regime-seg { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: #fff; transition: all 0.15s; cursor: default; position: relative; }
+.regime-seg.current { outline: 2px solid var(--ink); outline-offset: -2px; border-radius: 4px; }
+
+/* DRIVER CARDS */
+.driver-card { border-left: 3px solid var(--border); padding-left: 16px; }
+.driver-name { font-size: 13px; font-weight: 700; }
+.driver-status { font-size: 12px; color: var(--muted); margin: 2px 0; }
+.driver-detail { font-size: 12px; color: var(--muted); font-style: italic; }
+
+/* BLUR OVERLAY */
+.blur-wrap { position: relative; }
+.blur-content { transition: filter 0.3s; }
+.blur-content.locked { filter: blur(8px); pointer-events: none; user-select: none; }
+.blur-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 10; }
+.blur-overlay.hidden { display: none; }
+.blur-cta { background: #fff; border-radius: 16px; padding: 28px 36px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.12); max-width: 420px; }
+.blur-cta h3 { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+
+/* REPORT SECTIONS */
+.report-section { padding: 20px 0; border-bottom: 1px solid var(--border); }
+.report-section h4 { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.report-section p { font-size: 13px; line-height: 1.7; color: #374151; }
+.report-blur-1 { filter: blur(2px); }
+.report-blur-2 { filter: blur(6px); }
+.report-blur-3 { filter: blur(10px); }
+
+/* PILL SELECTOR */
+.pill-selector { display: flex; gap: 4px; }
+.pill-selector .ps-btn { padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border); background: #fff; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+.pill-selector .ps-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* PRICING CARDS */
+.pricing-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+.pricing-card { border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; }
+.pricing-card.featured { border-color: var(--accent); background: var(--accent-light); }
+.pricing-card .p-tier { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; }
+.pricing-card .p-price { font-size: 22px; font-weight: 800; margin: 4px 0; }
+.pricing-card .p-desc { font-size: 11px; color: var(--muted); }
+.btn-trial { display: block; width: 100%; background: var(--accent); color: #fff; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 12px; }
+.btn-trial:hover { background: #2b5de0; }
+
+/* PAGINATION */
+.pagination { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; font-size: 12px; color: var(--muted); }
+.pagination button { padding: 6px 14px; border: 1px solid var(--border); border-radius: 8px; background: #fff; font-size: 12px; cursor: pointer; }
+
+/* FOOTER */
+.footer { background: var(--brand); color: rgba(255,255,255,0.7); padding: 32px 24px; margin-top: 40px; }
+.footer-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+.footer-brand { color: #fff; font-weight: 700; font-size: 14px; }
+.footer-links a { color: rgba(255,255,255,0.7); text-decoration: none; margin-left: 16px; font-size: 12px; }
+.footer-links a:hover { color: #fff; }
+
+/* LEDGER LOCK */
+.lock-icon { display: inline-block; width: 14px; height: 14px; margin-right: 4px; opacity: 0.5; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .nav-tabs { display: none; }
+  .nav-mobile-btn { display: block; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: 1fr; }
+  .week-strip { grid-template-columns: repeat(4, 1fr); }
+  .pricing-row { grid-template-columns: 1fr; }
+  .footer-inner { flex-direction: column; text-align: center; }
+}
+@media (max-width: 480px) {
+  .wrap { padding: 12px; }
+  .grid-4 { grid-template-columns: 1fr 1fr; }
+  .week-strip { grid-template-columns: repeat(2, 1fr); }
+  .kpi { font-size: 22px; }
+}
+
+/* CHART CANVAS */
+.chart-wrap { position: relative; }
+.chart-wrap canvas { width: 100% !important; }
+
+/* SPACER */
+.sp-8 { height: 8px; }
+.sp-16 { height: 16px; }
+.sp-24 { height: 24px; }
+
+/* ACCENT BORDER */
+.accent-left { border-left: 3px solid var(--cardamom); }
+</style>
+</head>
+<body>
+
+<!-- ===================== NAV ===================== -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="logo"><span class="logo-dot"></span> CardamomPulse</div>
+    <div class="nav-tabs" id="nav-tabs">
+      <a class="nav-tab active" data-tab="dashboard" href="#dashboard">Dashboard</a>
+      <a class="nav-tab" data-tab="archive" href="#archive">Price Archive</a>
+      <a class="nav-tab" data-tab="track-record" href="#track-record">Track Record</a>
+      <a class="nav-tab" data-tab="report" href="#report">Report</a>
+    </div>
+    <div class="nav-right">
+      <div class="tier-toggle">
+        <span>Preview as:</span>
+        <select id="tier-select">
+          <option value="free">Free</option>
+          <option value="standard">Standard</option>
+          <option value="pro" selected>Professional</option>
+        </select>
+      </div>
+      <button class="btn-subscribe">Subscribe</button>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- ===================== TAB 1: DASHBOARD ===================== -->
+<section class="section active" id="sec-dashboard">
+
+  <!-- KPI STRIP -->
+  <div class="grid grid-4" style="margin-bottom:16px;">
+    <div class="card accent-left">
+      <div class="card-header">Spot Price</div>
+      <div class="kpi" id="kpi-spot">&#8377;2,440</div>
+      <div class="kpi-sub">Feb 18, 2026</div>
+      <div class="sp-8"></div>
+      <span class="pill pill-bad">&#9660; &#8377;25 (&minus;1.0%)</span>
+    </div>
+    <div class="card">
+      <div class="card-header">1-Week Outlook</div>
+      <div class="kpi" style="color:var(--accent);">&#8377;2,455</div>
+      <div class="kpi-sub">Feb 25, 2026</div>
+      <div class="sp-8"></div>
+      <span class="pill pill-good">&#9650; +0.6%</span>
+      <span style="font-size:11px;color:var(--muted);margin-left:8px;">MAPE: 2.8%</span>
+    </div>
+    <div class="card">
+      <div class="card-header">Regime Status</div>
+      <div style="display:flex;align-items:center;gap:8px;margin:8px 0;">
+        <span style="width:14px;height:14px;border-radius:50%;background:var(--good);display:inline-block;"></span>
+        <span style="font-size:16px;font-weight:700;">SUPPLY TIGHT</span>
+      </div>
+      <div class="kpi-sub">Bear probability: 3%</div>
+      <div style="margin-top:8px;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden;">
+        <div style="width:3%;height:100%;background:var(--bad);border-radius:3px;"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">Model Score</div>
+      <div class="kpi">96.8</div>
+      <div class="kpi-sub">30-day track record (0&ndash;100)</div>
+      <div class="sp-8"></div>
+      <span class="pill pill-good">Top quartile</span>
+    </div>
+  </div>
+
+  <!-- 8-WEEK FORECAST CHART -->
+  <div class="card" style="margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div>
+        <div style="font-size:15px;font-weight:700;">8-Week Price Forecast</div>
+        <div style="font-size:12px;color:var(--muted);">Point forecast with &plusmn;MAE confidence bands</div>
+      </div>
+      <span class="pill pill-accent">Updated daily</span>
+    </div>
+    <div class="blur-wrap">
+      <div class="chart-wrap blur-content" id="forecast-chart-wrap">
+        <canvas id="chart-forecast" height="100"></canvas>
+      </div>
+      <div class="blur-overlay hidden" id="forecast-overlay">
+        <div class="blur-cta">
+          <div style="font-size:28px;margin-bottom:8px;">&#128274;</div>
+          <h3>Unlock 3&ndash;8 week forecasts</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Subscribe to see the full 8-week forward curve with confidence intervals.</p>
+          <button class="btn-trial">Start 7-day free trial</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK STRIP -->
+    <div class="week-strip" id="week-strip"></div>
+  </div>
+
+  <!-- PRICE HISTORY -->
+  <div class="card" style="margin-bottom:16px;">
+    <div style="font-size:15px;font-weight:700;margin-bottom:12px;">90-Day Price History</div>
+    <div class="chart-wrap">
+      <canvas id="chart-history" height="80"></canvas>
+    </div>
+  </div>
+
+  <!-- REGIME TIMELINE -->
+  <div class="card" style="margin-bottom:16px;">
+    <div style="font-size:15px;font-weight:700;margin-bottom:8px;">Regime Timeline (12 months)</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Bear probability by month &mdash; green = low risk, red = high risk</div>
+    <div class="regime-bar" id="regime-bar"></div>
+  </div>
+
+  <!-- KEY DRIVERS -->
+  <div class="card">
+    <div style="font-size:15px;font-weight:700;margin-bottom:16px;">Key Forecast Drivers</div>
+    <div class="grid grid-3" id="drivers-grid"></div>
+  </div>
+
+</section>
+
+<!-- ===================== TAB 2: PRICE ARCHIVE ===================== -->
+<section class="section" id="sec-archive">
+
+  <div class="card" style="margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <div style="font-size:15px;font-weight:700;">Price Archive</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="pill-selector">
+          <button class="ps-btn active">Daily</button>
+          <button class="ps-btn">Weekly</button>
+          <button class="ps-btn">Monthly</button>
+        </div>
+        <button class="btn-subscribe" style="font-size:12px;padding:6px 14px;" id="btn-download-csv">
+          <span id="csv-lock" style="display:none;">&#128274; </span>Download CSV
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div class="chart-wrap">
+      <canvas id="chart-archive" height="100"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="overflow-x:auto;">
+      <table id="tbl-archive">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Avg Price (&#8377;/Kg)</th>
+            <th>Max Price (&#8377;/Kg)</th>
+            <th>Volume Sold (Kg)</th>
+            <th>Volume Arrived (Kg)</th>
+            <th>Auctions</th>
+          </tr>
+        </thead>
+        <tbody id="archive-tbody"></tbody>
+      </table>
+    </div>
+    <div class="pagination">
+      <span>Showing 1&ndash;20 of 2,847 auction days</span>
+      <div style="display:flex;gap:4px;">
+        <button disabled>&laquo; Prev</button>
+        <button>Next &raquo;</button>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ===================== TAB 3: TRACK RECORD ===================== -->
+<section class="section" id="sec-track-record">
+
+  <!-- SUMMARY CARDS -->
+  <div class="grid grid-4" style="margin-bottom:16px;">
+    <div class="card">
+      <div class="card-header">Overall MAPE</div>
+      <div class="kpi" style="color:var(--good);">3.2%</div>
+      <div class="kpi-sub">30-day rolling average</div>
+    </div>
+    <div class="card">
+      <div class="card-header">Directional Accuracy</div>
+      <div class="kpi">54%</div>
+      <div class="kpi-sub">Correctly predicted direction</div>
+    </div>
+    <div class="card">
+      <div class="card-header">Predictions Validated</div>
+      <div class="kpi">847</div>
+      <div class="kpi-sub">Across all horizons</div>
+    </div>
+    <div class="card">
+      <div class="card-header">Best Horizon</div>
+      <div class="kpi" style="font-size:20px;">1 Week</div>
+      <div class="kpi-sub">2.8% MAPE &mdash; 91.2 score</div>
+    </div>
+  </div>
+
+  <!-- HORIZON SELECTOR + CHART -->
+  <div class="card" style="margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div style="font-size:15px;font-weight:700;">Predicted vs Actual</div>
+      <div class="pill-selector" id="horizon-selector">
+        <button class="ps-btn active" data-hz="all">All</button>
+        <button class="ps-btn" data-hz="1w">1W</button>
+        <button class="ps-btn" data-hz="2w">2W</button>
+        <button class="ps-btn" data-hz="4w">4W</button>
+        <button class="ps-btn" data-hz="8w">8W</button>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="chart-track" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- PER-HORIZON TABLE -->
+  <div class="card" style="margin-bottom:16px;">
+    <div style="font-size:15px;font-weight:700;margin-bottom:12px;">Per-Horizon Breakdown</div>
+    <table>
+      <thead>
+        <tr><th>Horizon</th><th>MAE (&#8377;)</th><th>MAPE (%)</th><th>Dir. Accuracy</th><th>Score (0&ndash;100)</th><th>N</th></tr>
+      </thead>
+      <tbody id="horizon-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- ROLLING ACCURACY -->
+  <div class="card" style="margin-bottom:16px;">
+    <div style="font-size:15px;font-weight:700;margin-bottom:12px;">Rolling 30-Day MAPE</div>
+    <div class="chart-wrap">
+      <canvas id="chart-rolling" height="70"></canvas>
+    </div>
+  </div>
+
+  <!-- FORECAST LEDGER -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div style="font-size:15px;font-weight:700;">Forecast Ledger</div>
+      <span class="pill pill-accent">Immutable &mdash; every prediction timestamped</span>
+    </div>
+    <div class="blur-wrap">
+      <div class="blur-content" id="ledger-content">
+        <table>
+          <thead>
+            <tr><th>Made On</th><th>Horizon</th><th>Target Date</th><th>Predicted</th><th>Actual</th><th>Error</th><th>Status</th></tr>
+          </thead>
+          <tbody id="ledger-tbody"></tbody>
+        </table>
+      </div>
+      <div class="blur-overlay hidden" id="ledger-overlay">
+        <div class="blur-cta">
+          <div style="font-size:28px;margin-bottom:8px;">&#128274;</div>
+          <h3>Full Forecast Ledger</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Professional subscribers get full access to the immutable prediction history.</p>
+          <button class="btn-trial">Upgrade to Professional</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ===================== TAB 4: SUBSCRIBER REPORT ===================== -->
+<section class="section" id="sec-report">
+
+  <div class="card" style="margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-size:18px;font-weight:700;">Weekly Intelligence Report</div>
+        <div style="font-size:12px;color:var(--muted);">Week ending Feb 18, 2026</div>
+      </div>
+      <span class="pill pill-accent">Standard & Professional</span>
+    </div>
+  </div>
+
+  <div class="card" style="position:relative;">
+    <!-- Section 1: Executive Summary (visible) -->
+    <div class="report-section">
+      <h4>Executive Summary</h4>
+      <p>Cardamom prices softened 2.6% in the week ending Feb 18, settling at &#8377;2,440/kg. The decline is consistent with seasonal patterns &mdash; February typically marks the tail of the peak harvest season before lean season tightening begins in March. Auction volumes remained robust at ~70,000 kg/day with strong participation across 8 auction centers.</p>
+      <p style="margin-top:8px;">Our models project a modest recovery over the next 4 weeks, with the 1-week outlook at &#8377;2,455 (+0.6%). The regime indicator remains firmly in "Supply Tight" territory with only 3% bear probability, supported by the active La Ni&ntilde;a phase which historically provides a 12-month price tailwind.</p>
+    </div>
+
+    <!-- Section 2: Forecast table (slightly blurred for free) -->
+    <div class="report-section" id="report-forecast-section">
+      <h4>8-Week Forecast Table</h4>
+      <table style="margin-top:8px;">
+        <thead><tr><th>Horizon</th><th>Target Date</th><th>Forecast</th><th>Change</th><th>Confidence</th></tr></thead>
+        <tbody>
+          <tr><td>Week 1</td><td>Feb 25</td><td>&#8377;2,455</td><td class="good">+0.6%</td><td>&#8377;2,377 &ndash; &#8377;2,533</td></tr>
+          <tr><td>Week 2</td><td>Mar 4</td><td>&#8377;2,420</td><td class="bad">&minus;0.8%</td><td>&#8377;2,308 &ndash; &#8377;2,532</td></tr>
+          <tr><td>Week 3</td><td>Mar 11</td><td>&#8377;2,410</td><td class="bad">&minus;1.2%</td><td>&#8377;2,265 &ndash; &#8377;2,555</td></tr>
+          <tr><td>Week 4</td><td>Mar 18</td><td>&#8377;2,427</td><td class="bad">&minus;0.5%</td><td>&#8377;2,238 &ndash; &#8377;2,616</td></tr>
+          <tr><td>Week 5</td><td>Mar 25</td><td>&#8377;2,440</td><td style="color:var(--muted);">0.0%</td><td>&#8377;2,220 &ndash; &#8377;2,660</td></tr>
+          <tr><td>Week 6</td><td>Apr 1</td><td>&#8377;2,380</td><td class="bad">&minus;2.5%</td><td>&#8377;2,125 &ndash; &#8377;2,635</td></tr>
+          <tr><td>Week 7</td><td>Apr 8</td><td>&#8377;2,350</td><td class="bad">&minus;3.7%</td><td>&#8377;2,065 &ndash; &#8377;2,635</td></tr>
+          <tr><td>Week 8</td><td>Apr 15</td><td>&#8377;2,320</td><td class="bad">&minus;4.9%</td><td>&#8377;2,010 &ndash; &#8377;2,630</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section 3: Key Drivers (blurred) -->
+    <div class="report-section" id="report-drivers-section">
+      <h4>Key Price Drivers This Week</h4>
+      <p style="margin-top:8px;">The dominant price driver this week was <strong>ENSO status</strong> (weight: 14.8%), with the La Ni&ntilde;a phase continuing to reduce Kerala rainfall below seasonal norms. The second-largest contributor was <strong>cumulative 28-day rainfall</strong> at 66mm (weight: 13.9%), well below the 120mm long-term average for February.</p>
+      <p style="margin-top:8px;">Guatemala export volumes showed a seasonal uptick of +8% month-over-month to 2.3M kg, creating mild downward pressure via the trade channel. The cost floor from MGNREGA wages continues to rise at 5.2% CAGR, placing the structural price floor at approximately &#8377;578/kg &mdash; well below current levels.</p>
+      <div style="background:#f3f4f6;border-radius:10px;padding:16px;margin-top:12px;height:120px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;">[Feature importance bar chart]</div>
+    </div>
+
+    <!-- Section 4: Weather (blurred) -->
+    <div class="report-section" id="report-weather-section">
+      <h4>Weather &amp; ENSO Outlook</h4>
+      <p style="margin-top:8px;">The Bureau of Meteorology maintains a La Ni&ntilde;a alert with the ONI index at &minus;0.8&deg;C. Historical analysis shows La Ni&ntilde;a events lead cardamom prices higher by approximately 12 months (r = &minus;0.40), as reduced rainfall in the Idukki cardamom hills during the preceding monsoon constrains production.</p>
+      <p style="margin-top:8px;">Idukki received 12mm of rainfall in the past 28 days, compared to 42mm for Guatemala&rsquo;s Cob&aacute;n region. The cumulative 182-day rainfall in Idukki stands at 680mm, approximately 15% below the 10-year average, which models associate with tighter supply in Q2 2026.</p>
+    </div>
+
+    <!-- Section 5: Supply (blurred) -->
+    <div class="report-section" id="report-supply-section">
+      <h4>Global Supply Signals</h4>
+      <p style="margin-top:8px;">Guatemala cardamom exports (HS 0908) for the latest reported month totaled 2.1M kg at a unit price of $8.42/kg, representing a &minus;3% year-over-year decline in volume but a +12% increase in unit price. This suggests tightening global supply dynamics despite stable Indian auction volumes.</p>
+      <p style="margin-top:8px;">Saudi Arabian import volumes remain robust at 1.8M kg/month (3-month rolling), consistent with strong Middle Eastern demand. The Saudi import unit price of $9.15/kg represents a premium over Guatemala&rsquo;s export price, indicating healthy demand-pull dynamics.</p>
+    </div>
+
+    <!-- Section 6: Regime (blurred) -->
+    <div class="report-section" id="report-regime-section" style="border-bottom:none;">
+      <h4>Regime Analysis</h4>
+      <p style="margin-top:8px;">The regime classifier assigns a 3% probability to a bear market onset within the next 6 months. The key factors supporting the low-risk assessment: (1) La Ni&ntilde;a active &mdash; historically price-supportive; (2) price-to-cost ratio at 4.2x, well above the 2.5x danger zone; (3) cobweb cycle is 18 months past trough, with the typical peak at 36&ndash;48 months, suggesting structural upside remains.</p>
+      <p style="margin-top:8px;">The earliest reasonable bear window, based on cycle analysis, opens in Q4 2027 when the current planting cohort (stimulated by 2023&ndash;24 high prices) begins producing at scale. We will monitor planting intent proxied by Google Trends for &ldquo;cardamom plantation&rdquo; as a leading indicator.</p>
+    </div>
+
+    <!-- SUBSCRIBE OVERLAY for Report (visible for free tier) -->
+    <div class="blur-overlay hidden" id="report-overlay" style="align-items:flex-start;padding-top:200px;">
+      <div class="blur-cta">
+        <div style="font-size:28px;margin-bottom:8px;">&#128274;</div>
+        <h3>Unlock the Weekly Intelligence Report</h3>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Get deep analysis of forecast drivers, weather outlook, global supply signals, and regime analysis every week.</p>
+        <div class="pricing-row">
+          <div class="pricing-card">
+            <div class="p-tier">Standard</div>
+            <div class="p-price">&#8377;499<span style="font-size:13px;font-weight:400;">/mo</span></div>
+            <div class="p-desc">Full forecasts + monthly report</div>
+          </div>
+          <div class="pricing-card featured">
+            <div class="p-tier" style="color:var(--accent);">Professional</div>
+            <div class="p-price">&#8377;1,999<span style="font-size:13px;font-weight:400;">/mo</span></div>
+            <div class="p-desc">Everything + CSV + ledger + API</div>
+          </div>
+        </div>
+        <button class="btn-trial">Start 7-day free trial</button>
+        <div style="font-size:11px;color:var(--muted);margin-top:8px;">or contact us for institutional pricing</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+</div><!-- /wrap -->
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">CardamomPulse &mdash; Kerala cardamom price intelligence</div>
+    <div style="font-size:12px;">Data from Spices Board of India e-auctions. Models retrained weekly.</div>
+    <div class="footer-links">
+      <a href="#">About</a>
+      <a href="#">Methodology</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ===================== SCRIPT ===================== -->
+<script>
+// ===== SAMPLE DATA =====
+const INR = (x) => x == null ? '' : '\u20B9' + Number(x).toLocaleString('en-IN', {maximumFractionDigits:0});
+
+const D = {
+  current: { date:'2026-02-18', price:2440, prev:2465 },
+  forecasts: [
+    {w:1, date:'Feb 25', price:2455, pct:0.6,  mae:78},
+    {w:2, date:'Mar 4',  price:2420, pct:-0.8, mae:112},
+    {w:3, date:'Mar 11', price:2410, pct:-1.2, mae:145},
+    {w:4, date:'Mar 18', price:2427, pct:-0.5, mae:189},
+    {w:5, date:'Mar 25', price:2440, pct:0.0,  mae:220},
+    {w:6, date:'Apr 1',  price:2380, pct:-2.5, mae:255},
+    {w:7, date:'Apr 8',  price:2350, pct:-3.7, mae:285},
+    {w:8, date:'Apr 15', price:2320, pct:-4.9, mae:310},
+  ],
+  regime: [
+    {m:'Mar 25',p:0.08},{m:'Apr',p:0.06},{m:'May',p:0.05},{m:'Jun',p:0.12},
+    {m:'Jul',p:0.18},{m:'Aug',p:0.15},{m:'Sep',p:0.10},{m:'Oct',p:0.07},
+    {m:'Nov',p:0.04},{m:'Dec',p:0.03},{m:'Jan 26',p:0.03},{m:'Feb 26',p:0.03}
+  ],
+  drivers: [
+    {name:'ENSO',status:'La Niña Active',signal:'bullish',detail:'12-month lag supports prices (r = −0.40)'},
+    {name:'Guatemala Supply',status:'Exports Steady',signal:'neutral',detail:'3-month rolling: 2.1M kg, −3% YoY'},
+    {name:'Cost Floor',status:'Rising',signal:'bullish',detail:'MGNREGA +5.2% → ₹578/kg structural floor'},
+  ],
+  horizonTable: [
+    {h:'1 Week', mae:78, mape:2.8, dir:54, score:91.2, n:142},
+    {h:'2 Weeks',mae:112,mape:4.1, dir:51, score:87.3, n:138},
+    {h:'3 Weeks',mae:145,mape:5.3, dir:49, score:82.1, n:134},
+    {h:'4 Weeks',mae:189,mape:6.8, dir:48, score:78.5, n:130},
+    {h:'5 Weeks',mae:220,mape:8.0, dir:47, score:74.2, n:126},
+    {h:'6 Weeks',mae:255,mape:9.3, dir:46, score:70.8, n:122},
+    {h:'7 Weeks',mae:285,mape:10.4,dir:45, score:67.3, n:120},
+    {h:'8 Weeks',mae:310,mape:11.2,dir:45, score:65.1, n:118},
+  ],
+};
+
+// Generate 90 days of price history
+const historyPrices = [];
+let hp = 2250;
+for (let i = 90; i >= 0; i--) {
+  const dt = new Date(2026, 1, 18);
+  dt.setDate(dt.getDate() - i);
+  if (dt.getDay() === 0) continue; // skip Sundays
+  hp += (Math.random() - 0.48) * 30;
+  hp = Math.max(2100, Math.min(2600, hp));
+  historyPrices.push({ date: dt.toISOString().slice(0,10), price: Math.round(hp), vol: Math.round(40000 + Math.random()*80000) });
+}
+// Ensure last few match actual data
+const lastPrices = [2528,2512,2462,2449,2501,2476,2448,2422,2435,2440];
+for (let i = 0; i < lastPrices.length && i < historyPrices.length; i++) {
+  historyPrices[historyPrices.length - lastPrices.length + i].price = lastPrices[i];
+}
+
+// Generate track record data (60 days of 1-week predictions)
+const trackData = [];
+for (let i = 60; i >= 0; i--) {
+  const dt = new Date(2026, 1, 18);
+  dt.setDate(dt.getDate() - i);
+  const actual = 2300 + Math.random() * 300;
+  const err = (Math.random() - 0.5) * 200;
+  trackData.push({ date: dt.toISOString().slice(0,10), actual: Math.round(actual), predicted: Math.round(actual + err) });
+}
+
+// Generate archive sample
+const archiveData = historyPrices.slice(-20).map(h => ({
+  date: h.date,
+  avg: h.price,
+  max: h.price + Math.round(200 + Math.random()*300),
+  sold: h.vol,
+  arrived: h.vol + Math.round(Math.random()*15000),
+  auctions: Math.floor(1 + Math.random()*3),
+}));
+
+// Rolling MAPE data
+const rollingMape = [];
+for (let i = 180; i >= 0; i--) {
+  const dt = new Date(2026, 1, 18);
+  dt.setDate(dt.getDate() - i);
+  rollingMape.push({ date: dt.toISOString().slice(0,10), mape: 2 + Math.random() * 6 });
+}
+
+// Ledger data
+const ledgerData = [
+  {made:'2026-02-18',hz:'1W',target:'2026-02-25',pred:2455,actual:null,err:null,status:'Pending'},
+  {made:'2026-02-17',hz:'2W',target:'2026-03-03',pred:2430,actual:null,err:null,status:'Pending'},
+  {made:'2026-02-11',hz:'1W',target:'2026-02-18',pred:2460,actual:2440,err:20,status:'Validated'},
+  {made:'2026-02-10',hz:'2W',target:'2026-02-24',pred:2425,actual:null,err:null,status:'Pending'},
+  {made:'2026-02-04',hz:'1W',target:'2026-02-11',pred:2470,actual:2449,err:21,status:'Validated'},
+  {made:'2026-02-04',hz:'2W',target:'2026-02-18',pred:2445,actual:2440,err:5,status:'Validated'},
+  {made:'2026-01-28',hz:'1W',target:'2026-02-04',pred:2490,actual:2479,err:11,status:'Validated'},
+  {made:'2026-01-28',hz:'4W',target:'2026-02-25',pred:2410,actual:null,err:null,status:'Pending'},
+  {made:'2026-01-21',hz:'1W',target:'2026-01-28',pred:2445,actual:2452,err:7,status:'Validated'},
+  {made:'2026-01-21',hz:'2W',target:'2026-02-04',pred:2460,actual:2479,err:19,status:'Validated'},
+];
+
+
+// ===== CHARTS =====
+let charts = {};
+
+function destroyCharts() { Object.values(charts).forEach(c => c && c.destroy()); charts = {}; }
+
+function initDashboardCharts() {
+  // Fan chart
+  const labels = ['Now', ...D.forecasts.map(f => f.date)];
+  const centers = [D.current.price, ...D.forecasts.map(f => f.price)];
+  const upper = [D.current.price, ...D.forecasts.map(f => f.price + f.mae)];
+  const lower = [D.current.price, ...D.forecasts.map(f => f.price - f.mae)];
+  const outerUp = [D.current.price, ...D.forecasts.map(f => f.price + f.mae*1.6)];
+  const outerLo = [D.current.price, ...D.forecasts.map(f => f.price - f.mae*1.6)];
+
+  charts.forecast = new Chart(document.getElementById('chart-forecast'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label:'Outer band', data:outerUp, borderWidth:0, pointRadius:0, fill:false, backgroundColor:'transparent' },
+        { label:'Outer band lo', data:outerLo, borderWidth:0, pointRadius:0, fill:'-1', backgroundColor:'rgba(57,109,255,0.08)' },
+        { label:'Inner band', data:upper, borderWidth:0, pointRadius:0, fill:false, backgroundColor:'transparent' },
+        { label:'Inner band lo', data:lower, borderWidth:0, pointRadius:0, fill:'-1', backgroundColor:'rgba(57,109,255,0.18)' },
+        { label:'Forecast', data:centers, borderColor:'#396DFF', borderWidth:2.5, pointRadius:5, pointBackgroundColor:'#396DFF', fill:false, tension:0.2 },
+        { label:'Current', data:[D.current.price,...Array(8).fill(D.current.price)], borderColor:'rgba(0,0,0,0.15)', borderWidth:1, borderDash:[6,4], pointRadius:0, fill:false },
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:true,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx => ctx.dataset.label === 'Forecast' ? `Forecast: ${INR(ctx.parsed.y)}` : ''}}
+      },
+      scales:{
+        y:{ticks:{callback:v=>INR(v)}, grid:{color:'rgba(0,0,0,0.04)'}},
+        x:{grid:{display:false}}
+      }
+    }
+  });
+
+  // History area chart
+  charts.history = new Chart(document.getElementById('chart-history'), {
+    type: 'line',
+    data: {
+      labels: historyPrices.map(h => h.date),
+      datasets: [
+        { label:'Avg Price', data:historyPrices.map(h=>h.price), borderColor:'#396DFF', borderWidth:1.5, pointRadius:0, fill:true, backgroundColor:'rgba(57,109,255,0.06)', tension:0.3 },
+        { label:'Volume', data:historyPrices.map(h=>h.vol), type:'bar', backgroundColor:'rgba(0,0,0,0.04)', yAxisID:'y1', borderRadius:2 },
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:true,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx => ctx.dataset.label==='Avg Price' ? `Price: ${INR(ctx.parsed.y)}` : `Vol: ${ctx.parsed.y.toLocaleString()} kg`}}},
+      scales:{
+        y:{ticks:{callback:v=>INR(v)}, grid:{color:'rgba(0,0,0,0.04)'}},
+        y1:{display:false, position:'right', beginAtZero:true},
+        x:{display:false}
+      }
+    }
+  });
+}
+
+function initTrackCharts() {
+  charts.track = new Chart(document.getElementById('chart-track'), {
+    type: 'line',
+    data: {
+      labels: trackData.map(t=>t.date),
+      datasets: [
+        {label:'Actual', data:trackData.map(t=>t.actual), borderColor:'#396DFF', borderWidth:2, pointRadius:0, tension:0.3},
+        {label:'Predicted', data:trackData.map(t=>t.predicted), borderColor:'#f59e0b', borderWidth:2, borderDash:[6,3], pointRadius:0, tension:0.3},
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:true,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:true,position:'top',labels:{boxWidth:12,font:{size:11}}}},
+      scales:{
+        y:{ticks:{callback:v=>INR(v)}, grid:{color:'rgba(0,0,0,0.04)'}},
+        x:{display:false}
+      }
+    }
+  });
+
+  charts.rolling = new Chart(document.getElementById('chart-rolling'), {
+    type: 'line',
+    data: {
+      labels: rollingMape.map(r=>r.date),
+      datasets: [
+        {label:'30d MAPE', data:rollingMape.map(r=>r.mape), borderColor:'#396DFF', borderWidth:1.5, pointRadius:0, fill:true, backgroundColor:'rgba(57,109,255,0.06)', tension:0.3},
+        {label:'5% target', data:rollingMape.map(()=>5), borderColor:'var(--good)', borderWidth:1, borderDash:[4,4], pointRadius:0, fill:false},
+        {label:'10% caution', data:rollingMape.map(()=>10), borderColor:'var(--bad)', borderWidth:1, borderDash:[4,4], pointRadius:0, fill:false},
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:true,
+      plugins:{legend:{display:true,position:'top',labels:{boxWidth:12,font:{size:11}}}},
+      scales:{
+        y:{ticks:{callback:v=>v+'%'}, grid:{color:'rgba(0,0,0,0.04)'},min:0,max:15},
+        x:{display:false}
+      }
+    }
+  });
+}
+
+function initArchiveChart() {
+  const yearly = [];
+  let yp = 600;
+  for (let yr = 2014; yr <= 2026; yr++) {
+    for (let m = (yr===2014?10:0); m < (yr===2026?2:12); m++) {
+      yp += (Math.random()-0.47)*60;
+      yp = Math.max(400, Math.min(3200, yp));
+      yearly.push({date:`${yr}-${String(m+1).padStart(2,'0')}`, price:Math.round(yp)});
+    }
+  }
+  // Add realistic peaks
+  yearly.forEach((d,i)=>{
+    const yr = parseInt(d.date);
+    if (yr===2019 && d.date.includes('-10')) yearly[i].price = 3100;
+    if (yr===2019 && d.date.includes('-11')) yearly[i].price = 3200;
+    if (yr===2019 && d.date.includes('-12')) yearly[i].price = 2900;
+    if (yr===2020 && d.date.includes('-06')) yearly[i].price = 1800;
+    if (yr===2023 && d.date.includes('-06')) yearly[i].price = 900;
+    if (yr===2023 && d.date.includes('-07')) yearly[i].price = 850;
+  });
+
+  charts.archive = new Chart(document.getElementById('chart-archive'), {
+    type: 'line',
+    data: {
+      labels: yearly.map(y=>y.date),
+      datasets: [{
+        label:'Avg Price', data:yearly.map(y=>y.price),
+        borderColor:'#396DFF', borderWidth:1.5, pointRadius:0,
+        fill:true, backgroundColor:'rgba(57,109,255,0.06)', tension:0.3
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:true,
+      plugins:{legend:{display:false}},
+      scales:{
+        y:{ticks:{callback:v=>INR(v)}, grid:{color:'rgba(0,0,0,0.04)'}},
+        x:{ticks:{maxTicksLimit:12}, grid:{display:false}}
+      }
+    }
+  });
+}
+
+
+// ===== POPULATE STATIC ELEMENTS =====
+
+function renderWeekStrip() {
+  const el = document.getElementById('week-strip');
+  el.innerHTML = D.forecasts.map(f => {
+    const col = f.pct > 0 ? 'var(--good)' : f.pct < 0 ? 'var(--bad)' : 'var(--muted)';
+    const arrow = f.pct > 0 ? '&#9650;' : f.pct < 0 ? '&#9660;' : '&#9644;';
+    return `<div class="week-card">
+      <div class="wk-label">W${f.w}</div>
+      <div class="wk-price">${INR(f.price)}</div>
+      <div style="color:${col};font-size:12px;font-weight:600;">${arrow} ${f.pct>0?'+':''}${f.pct}%</div>
+      <div class="wk-date">${f.date}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderRegimeBar() {
+  const el = document.getElementById('regime-bar');
+  el.innerHTML = D.regime.map((r, i) => {
+    const p = r.p;
+    const g = p < 0.2 ? 'var(--good)' : p < 0.5 ? 'var(--warn)' : 'var(--bad)';
+    const cls = i === D.regime.length-1 ? ' current' : '';
+    return `<div class="regime-seg${cls}" style="background:${g};" title="${r.m}: ${(p*100).toFixed(0)}% bear probability">${r.m}</div>`;
+  }).join('');
+}
+
+function renderDrivers() {
+  const el = document.getElementById('drivers-grid');
+  el.innerHTML = D.drivers.map(d => {
+    const sigCls = d.signal==='bullish' ? 'pill-good' : d.signal==='bearish' ? 'pill-bad' : 'pill-neutral';
+    return `<div class="card driver-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="driver-name">${d.name}</div>
+        <span class="pill ${sigCls}" style="text-transform:capitalize;">${d.signal}</span>
+      </div>
+      <div class="driver-status">${d.status}</div>
+      <div class="driver-detail">${d.detail}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderHorizonTable() {
+  const el = document.getElementById('horizon-tbody');
+  el.innerHTML = D.horizonTable.map(h => {
+    const mc = h.mape < 5 ? 'good' : h.mape < 10 ? 'warn' : 'bad';
+    return `<tr>
+      <td>${h.h}</td><td>${INR(h.mae)}</td>
+      <td class="${mc}">${h.mape}%</td>
+      <td>${h.dir}%</td><td>${h.score.toFixed(1)}</td><td>${h.n}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderArchiveTable() {
+  const el = document.getElementById('archive-tbody');
+  el.innerHTML = [...archiveData].reverse().map(a => `<tr>
+    <td>${a.date}</td><td>${INR(a.avg)}</td><td>${INR(a.max)}</td>
+    <td>${a.sold.toLocaleString()}</td><td>${a.arrived.toLocaleString()}</td><td>${a.auctions}</td>
+  </tr>`).join('');
+}
+
+function renderLedger() {
+  const el = document.getElementById('ledger-tbody');
+  el.innerHTML = ledgerData.map(l => {
+    const stCls = l.status==='Validated' ? 'good' : 'warn';
+    return `<tr>
+      <td>${l.made}</td><td>${l.hz}</td><td>${l.target}</td>
+      <td>${INR(l.pred)}</td><td>${l.actual ? INR(l.actual) : '—'}</td>
+      <td>${l.err != null ? INR(l.err) : '—'}</td>
+      <td><span class="pill pill-${l.status==='Validated'?'good':'warn'}">${l.status}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+
+// ===== TAB ROUTING =====
+const tabs = ['dashboard','archive','track-record','report'];
+
+function switchTab(tab) {
+  tabs.forEach(t => {
+    document.getElementById('sec-'+t).classList.toggle('active', t===tab);
+  });
+  document.querySelectorAll('.nav-tab').forEach(el => {
+    el.classList.toggle('active', el.dataset.tab===tab);
+  });
+  destroyCharts();
+  if (tab === 'dashboard') { initDashboardCharts(); }
+  else if (tab === 'archive') { initArchiveChart(); }
+  else if (tab === 'track-record') { initTrackCharts(); }
+}
+
+document.querySelectorAll('.nav-tab').forEach(el => {
+  el.addEventListener('click', e => {
+    e.preventDefault();
+    switchTab(el.dataset.tab);
+    history.pushState(null, '', '#'+el.dataset.tab);
+  });
+});
+
+// Horizon selector pills
+document.querySelectorAll('#horizon-selector .ps-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#horizon-selector .ps-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+// Granularity pills
+document.querySelectorAll('#sec-archive .pill-selector .ps-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#sec-archive .pill-selector .ps-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+
+// ===== TIER TOGGLE =====
+function applyTier(tier) {
+  const forecastWrap = document.getElementById('forecast-chart-wrap');
+  const forecastOverlay = document.getElementById('forecast-overlay');
+  const ledgerContent = document.getElementById('ledger-content');
+  const ledgerOverlay = document.getElementById('ledger-overlay');
+  const reportOverlay = document.getElementById('report-overlay');
+  const reportSections = ['report-forecast-section','report-drivers-section','report-weather-section','report-supply-section','report-regime-section'];
+  const csvLock = document.getElementById('csv-lock');
+
+  // Reset
+  forecastWrap.classList.remove('locked');
+  forecastOverlay.classList.add('hidden');
+  ledgerContent.classList.remove('locked');
+  ledgerOverlay.classList.add('hidden');
+  reportOverlay.classList.add('hidden');
+  reportSections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.filter = 'none'; el.style.pointerEvents = 'auto'; }
+  });
+  csvLock.style.display = 'none';
+
+  if (tier === 'free') {
+    forecastWrap.classList.add('locked');
+    forecastOverlay.classList.remove('hidden');
+    ledgerContent.classList.add('locked');
+    ledgerOverlay.classList.remove('hidden');
+    reportOverlay.classList.remove('hidden');
+    reportSections.forEach((id,i) => {
+      const el = document.getElementById(id);
+      if (el) { el.style.filter = `blur(${(i+1)*3}px)`; el.style.pointerEvents = 'none'; }
+    });
+    csvLock.style.display = 'inline';
+  } else if (tier === 'standard') {
+    ledgerContent.classList.add('locked');
+    ledgerOverlay.classList.remove('hidden');
+    csvLock.style.display = 'inline';
+  }
+  // pro = everything visible (default)
+}
+
+document.getElementById('tier-select').addEventListener('change', e => applyTier(e.target.value));
+
+
+// ===== INIT =====
+function init() {
+  renderWeekStrip();
+  renderRegimeBar();
+  renderDrivers();
+  renderHorizonTable();
+  renderArchiveTable();
+  renderLedger();
+
+  const hash = window.location.hash.replace('#','') || 'dashboard';
+  switchTab(tabs.includes(hash) ? hash : 'dashboard');
+  applyTier(document.getElementById('tier-select').value);
+}
+
+init();
+</script>
+</body>
+</html>
