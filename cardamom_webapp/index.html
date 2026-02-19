@@ -2,140 +2,214 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>CardamomPulse — Price Intelligence</title>
+  <title>CardamomPulse — Price Intelligence Platform</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     :root{
-      --bg:#f7f7fb; --card:#fff; --ink:#1f2937; --muted:#6b7280; --brand:#0b3d91; --grid:#e5e7eb;
-      --accent:#eef2ff; --good:#059669; --warn:#f59e0b; --bad:#dc2626;
+      --bg:#f7f7fb; --card:#fff; --ink:#1f2937; --muted:#6b7280; --brand:#0b3d91;
+      --grid:#e5e7eb; --accent:#eef2ff; --good:#059669; --warn:#f59e0b; --bad:#dc2626;
+      --premium-bg:linear-gradient(135deg,#1e1b4b 0%,#312e81 100%);
+      --premium-card:rgba(255,255,255,0.07); --premium-border:rgba(255,255,255,0.12);
+      --subscriber-bg:#f0fdf4; --subscriber-border:#bbf7d0;
     }
-    html,body{ margin:0; padding:0; background:var(--bg); color:var(--ink); font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
-    .wrap{ max-width:1100px; margin:0 auto; padding:24px; }
-    h1{ font-size:22px; margin:0 0 10px; color:var(--ink); }
-    h3{ margin:0 0 8px 0; }
-    .muted{ color:var(--muted); font-size:13px; }
-    .row{ display:grid; grid-template-columns: repeat(12, 1fr); gap:16px; margin-bottom:0; }
-    .card{ background:var(--card); border:1px solid var(--grid); border-radius:14px; padding:16px; box-shadow:0 1px 2px rgba(0,0,0,.03); }
-    .btn{ border:1px solid var(--grid); background:#fff; padding:8px 12px; border-radius:10px; cursor:pointer; font-size:13px; }
-    .btn.brand{ background:var(--brand); color:#fff; border-color:var(--brand); }
-    .btn.inline-input{ position:relative; overflow:hidden; display:inline-block; }
-    .btn.inline-input input{ position:absolute; inset:0; opacity:0; cursor:pointer; }
-    .kpi{ font-size:26px; font-weight:700; }
-    .kpi-label{ font-size:12px; color:var(--muted); }
-    .kpi-sub{ font-size:13px; margin-top:2px; }
-    table{ width:100%; border-collapse:collapse; font-size:13px; }
-    th, td{ padding:8px 10px; border-bottom:1px solid var(--grid); text-align:right; }
-    th:first-child, td:first-child{ text-align:left; }
-    thead th{ background:#f3f4f6; font-weight:600; color:#111827; }
-    .good{ color:var(--good); } .bad{ color:var(--bad); } .warn{ color:var(--warn); }
-    .flex{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-    .spacer{ height:10px; }
-    .footer{ font-size:12px; color:var(--muted); text-align:center; padding:20px 0; }
-    .pill{ background:var(--accent); color:var(--brand); border-radius:999px; padding:4px 8px; font-size:12px; }
-    .regime-badge{ display:inline-block; padding:4px 12px; border-radius:999px; font-size:13px; font-weight:600; }
-    .regime-low{ background:#d1fae5; color:#065f46; }
-    .regime-moderate{ background:#fef3c7; color:#92400e; }
-    .regime-high{ background:#fee2e2; color:#991b1b; }
-    .status-dot{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
-    .status-live{ background:var(--good); }
-    .status-stale{ background:var(--warn); }
+    *{box-sizing:border-box;}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}
+    .wrap{max-width:1140px;margin:0 auto;padding:24px 20px;}
+    h1{font-size:24px;margin:0;color:var(--ink);}
+    h2{font-size:18px;margin:0 0 16px;font-weight:700;}
+    h3{margin:0 0 10px;font-size:15px;font-weight:600;}
+    .muted{color:var(--muted);font-size:13px;}
+    .row{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-bottom:16px;}
+    .card{background:var(--card);border:1px solid var(--grid);border-radius:14px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+    .kpi{font-size:28px;font-weight:700;line-height:1.2;}
+    .kpi-label{font-size:12px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;}
+    .kpi-sub{font-size:13px;margin-top:4px;}
+    table{width:100%;border-collapse:collapse;font-size:13px;}
+    th,td{padding:8px 10px;border-bottom:1px solid var(--grid);text-align:right;}
+    th:first-child,td:first-child{text-align:left;}
+    thead th{background:#f3f4f6;font-weight:600;color:#111827;position:sticky;top:0;}
+    .good{color:var(--good);} .bad{color:var(--bad);} .warn{color:var(--warn);}
+    .flex{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .pill{border-radius:999px;padding:4px 10px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;display:inline-block;}
+    .pill-free{background:#dbeafe;color:#1d4ed8;}
+    .pill-sub{background:#d1fae5;color:#065f46;}
+    .pill-premium{background:#ede9fe;color:#5b21b6;}
+    .regime-badge{display:inline-block;padding:6px 16px;border-radius:999px;font-size:14px;font-weight:700;}
+    .regime-low{background:#d1fae5;color:#065f46;}
+    .regime-moderate{background:#fef3c7;color:#92400e;}
+    .regime-high{background:#fee2e2;color:#991b1b;}
+    .status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;}
+    .status-live{background:var(--good);} .status-stale{background:var(--warn);}
+    .footer{font-size:12px;color:var(--muted);text-align:center;padding:24px 0 8px;}
+
+    /* Tier sections */
+    .tier-section{border-radius:16px;padding:24px;margin-bottom:24px;}
+    .tier-header{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+    .tier-free{background:#fff;border:1px solid var(--grid);}
+    .tier-subscriber{background:var(--subscriber-bg);border:1px solid var(--subscriber-border);}
+    .tier-premium{background:var(--premium-bg);border:none;color:#e0e7ff;}
+    .tier-premium h2,.tier-premium h3{color:#e0e7ff;}
+    .tier-premium .muted{color:#a5b4fc;}
+    .tier-premium .card{background:var(--premium-card);border:1px solid var(--premium-border);color:#e0e7ff;}
+    .tier-premium table{color:#e0e7ff;}
+    .tier-premium thead th{background:rgba(255,255,255,0.08);color:#c7d2fe;}
+    .tier-premium th,.tier-premium td{border-bottom-color:rgba(255,255,255,0.1);}
+    .tier-premium .kpi-label{color:#a5b4fc;}
+    .tier-premium .good{color:#34d399;} .tier-premium .bad{color:#fca5a5;} .tier-premium .warn{color:#fcd34d;}
+
+    /* Chart container */
+    .chart-wrap{position:relative;height:280px;}
+    .chart-wrap canvas{width:100%!important;height:100%!important;}
+
+    /* Tab nav for chart periods */
+    .tab-nav{display:flex;gap:4px;margin-bottom:12px;}
+    .tab-btn{padding:5px 12px;border:1px solid var(--grid);background:#fff;border-radius:8px;font-size:12px;cursor:pointer;font-weight:500;color:var(--muted);}
+    .tab-btn.active{background:var(--brand);color:#fff;border-color:var(--brand);}
+    .tier-premium .tab-btn{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);color:#a5b4fc;}
+    .tier-premium .tab-btn.active{background:#4f46e5;color:#fff;border-color:#4f46e5;}
+
+    /* Volume bars */
+    .vol-bar{height:6px;border-radius:3px;background:var(--brand);display:inline-block;vertical-align:middle;}
+    .tier-premium .vol-bar{background:#818cf8;}
+
+    /* Scrollable table */
+    .table-scroll{max-height:320px;overflow-y:auto;border-radius:8px;}
+
+    @media(max-width:768px){
+      .row{grid-template-columns:1fr!important;}
+      .row>[style*="span"]{grid-column:span 1!important;}
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 </head>
 <body>
   <div class="wrap">
-    <!-- Header -->
-    <header class="row">
-      <div class="card" style="grid-column: span 12;">
-        <div class="flex" style="justify-content: space-between;">
-          <div>
-            <h1>CardamomPulse</h1>
-            <div class="muted"><span class="status-dot" id="status-dot"></span><span id="status-text">Loading...</span></div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         HEADER
+         ═══════════════════════════════════════════════════════════════ -->
+    <header style="margin-bottom:20px;">
+      <div class="flex" style="justify-content:space-between;align-items:flex-end;">
+        <div>
+          <h1>CardamomPulse</h1>
+          <div class="muted" style="margin-top:4px;">
+            <span class="status-dot" id="status-dot"></span>
+            <span id="status-text">Loading pipeline data...</span>
           </div>
-          <div class="flex">
-            <label class="btn inline-input">Load archive.csv
-              <input type="file" accept=".csv" id="load-archive">
-            </label>
-            <button class="btn brand" id="download-archive">Download archive.csv</button>
-          </div>
+        </div>
+        <div class="muted" style="text-align:right;">
+          Pipeline runs daily at 6:00 PM IST<br>
+          Data refreshed automatically
         </div>
       </div>
     </header>
 
-    <!-- Spot Price KPIs -->
-    <section class="row">
-      <div class="card" style="grid-column: span 3;">
-        <div class="kpi" id="kpi-spot">--</div>
-        <div class="kpi-label">Spot Price (Avg)</div>
-        <div class="kpi-sub" id="kpi-change"></div>
+    <!-- ═══════════════════════════════════════════════════════════════
+         FREE TIER — Market Overview
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="tier-section tier-free">
+      <div class="tier-header">
+        <h2>Market Overview</h2>
+        <span class="pill pill-free">Free</span>
       </div>
-      <div class="card" style="grid-column: span 3;">
-        <div class="kpi" id="kpi-mape">--%</div>
-        <div class="kpi-label">30-day MAPE</div>
-      </div>
-      <div class="card" style="grid-column: span 3;">
-        <div class="kpi" id="kpi-rmse">--</div>
-        <div class="kpi-label">30-day RMSE</div>
-      </div>
-      <div class="card" style="grid-column: span 3;">
-        <div class="kpi" id="kpi-score">--</div>
-        <div class="kpi-label">Avg Score (0-100)</div>
-      </div>
-    </section>
 
-    <!-- Forecasts + Regime -->
-    <section class="row">
-      <div class="card" style="grid-column: span 8;">
-        <h3>Forecasts</h3>
-        <table id="forecast-tbl">
-          <thead><tr><th>Horizon</th><th>Target Date</th><th>Predicted</th><th>Range (80%)</th></tr></thead>
-          <tbody></tbody>
-        </table>
+      <!-- KPIs -->
+      <div class="row">
+        <div class="card" style="grid-column:span 4;">
+          <div class="kpi" id="kpi-spot">--</div>
+          <div class="kpi-label">Spot Price (Avg)</div>
+          <div class="kpi-sub" id="kpi-change"></div>
+        </div>
+        <div class="card" style="grid-column:span 4;">
+          <div class="kpi" id="kpi-max">--</div>
+          <div class="kpi-label">Max Price</div>
+          <div class="kpi-sub muted" id="kpi-date"></div>
+        </div>
+        <div class="card" style="grid-column:span 4;">
+          <div style="text-align:center;padding:8px 0;">
+            <div id="regime-badge" class="regime-badge">--</div>
+            <div class="muted" style="margin-top:8px;" id="regime-detail"></div>
+          </div>
+          <div class="kpi-label" style="text-align:center;">Market Regime</div>
+        </div>
       </div>
-      <div class="card" style="grid-column: span 4;">
-        <h3>Market Regime</h3>
-        <div id="regime-display" style="text-align:center; padding:20px 0;">
-          <div id="regime-badge" class="regime-badge">--</div>
-          <div class="muted" style="margin-top:8px;" id="regime-detail"></div>
+
+      <!-- 30-day price chart (free) -->
+      <div class="card">
+        <h3>Price Trend (Last 30 Days)</h3>
+        <div class="chart-wrap">
+          <canvas id="chart-free"></canvas>
         </div>
       </div>
     </section>
 
-    <!-- Upload controls -->
-    <section class="row">
-      <div class="card" style="grid-column: span 12;">
-        <div class="flex">
-          <label class="btn inline-input">Upload predictions
-            <input type="file" accept=".csv" id="upload-preds">
-          </label>
-          <label class="btn inline-input">Upload actuals
-            <input type="file" accept=".csv" id="upload-actuals">
-          </label>
-          <span class="pill">Manual CSV upload still supported alongside auto-loaded pipeline data</span>
+    <!-- ═══════════════════════════════════════════════════════════════
+         SUBSCRIBER TIER — Forecasts & Analytics
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="tier-section tier-subscriber">
+      <div class="tier-header">
+        <h2>Forecasts &amp; Analytics</h2>
+        <span class="pill pill-sub">Subscriber</span>
+      </div>
+
+      <div class="row">
+        <!-- Forecasts table -->
+        <div class="card" style="grid-column:span 7;">
+          <h3>Price Forecasts</h3>
+          <table id="forecast-tbl">
+            <thead><tr><th>Horizon</th><th>Target Date</th><th>Predicted</th><th>Range (80%)</th><th>Model</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <!-- Accuracy KPIs -->
+        <div class="card" style="grid-column:span 5;">
+          <h3>Model Accuracy (30-day)</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px;">
+            <div>
+              <div class="kpi" id="kpi-mape" style="font-size:22px;">--%</div>
+              <div class="kpi-label">MAPE</div>
+            </div>
+            <div>
+              <div class="kpi" id="kpi-rmse" style="font-size:22px;">--</div>
+              <div class="kpi-label">RMSE</div>
+            </div>
+            <div>
+              <div class="kpi" id="kpi-score" style="font-size:22px;">--</div>
+              <div class="kpi-label">Avg Score</div>
+            </div>
+            <div>
+              <div class="kpi" id="kpi-hitrate" style="font-size:22px;">--%</div>
+              <div class="kpi-label">Hit Rate (&plusmn;5%)</div>
+            </div>
+          </div>
         </div>
       </div>
-    </section>
 
-    <!-- Chart -->
-    <section class="row">
-      <div class="card" style="grid-column: span 12;">
-        <canvas id="chart" height="110"></canvas>
+      <!-- Full price history chart -->
+      <div class="card">
+        <div class="flex" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <h3 style="margin:0;">Price History</h3>
+          <div class="tab-nav" id="chart-tabs">
+            <button class="tab-btn" data-range="90">3M</button>
+            <button class="tab-btn active" data-range="180">6M</button>
+            <button class="tab-btn" data-range="365">1Y</button>
+            <button class="tab-btn" data-range="0">All</button>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart-subscriber"></canvas>
+        </div>
       </div>
-    </section>
 
-    <!-- Deviation Table -->
-    <section class="row">
-      <div class="card" style="grid-column: span 12;">
-        <h3>Daily Deviation (last 30 rows)</h3>
-        <div class="spacer"></div>
-        <div style="overflow:auto;">
-          <table id="tbl">
+      <!-- Deviation table -->
+      <div class="card">
+        <h3>Daily Deviation (Last 30 Days)</h3>
+        <div class="table-scroll">
+          <table id="tbl-deviation">
             <thead>
-              <tr>
-                <th>Date</th><th>Actual</th><th>Predicted</th>
-                <th>Abs. Error</th><th>Pct. Error</th><th>Score (0-100)</th>
-              </tr>
+              <tr><th>Date</th><th>Actual</th><th>Predicted</th><th>Abs. Error</th><th>Pct. Error</th><th>Score</th></tr>
             </thead>
             <tbody></tbody>
           </table>
@@ -143,15 +217,91 @@
       </div>
     </section>
 
-    <!-- Documentation -->
-    <section class="row">
-      <div class="card" style="grid-column: span 12;">
-        <h3>Documentation</h3>
-        <div class="muted">
-          <p><b>Pipeline:</b> Data is collected daily at 6 PM IST. Models predict 7/14/28/90-day prices. All predictions are stored in an immutable forecast ledger.</p>
-          <p><b>Scoring:</b> Daily % error = |pred - actual| / actual. Deviation score = max(0, 100 x (1 - % error)). KPIs are 30-day MAPE, RMSE, MAE, hit-rate within +/-5%.</p>
-          <p><b>Regime:</b> Bear probability from a Gradient Boosting classifier. LOW (&lt;30%), MODERATE (30-60%), HIGH (&gt;60%).</p>
+    <!-- ═══════════════════════════════════════════════════════════════
+         PREMIUM TIER — Deep Intelligence
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="tier-section tier-premium">
+      <div class="tier-header">
+        <h2>Deep Intelligence</h2>
+        <span class="pill pill-premium">Premium</span>
+      </div>
+
+      <div class="row">
+        <!-- 90-day extended forecast -->
+        <div class="card" style="grid-column:span 6;">
+          <h3>90-Day Extended Forecast</h3>
+          <div style="text-align:center;padding:16px 0;">
+            <div class="kpi" id="kpi-90d-price" style="font-size:32px;">--</div>
+            <div class="kpi-label">Predicted Price</div>
+            <div class="muted" style="margin-top:8px;" id="kpi-90d-range"></div>
+            <div class="muted" style="margin-top:4px;" id="kpi-90d-date"></div>
+          </div>
+          <div class="chart-wrap" style="height:200px;">
+            <canvas id="chart-confidence"></canvas>
+          </div>
         </div>
+
+        <!-- Volume analysis -->
+        <div class="card" style="grid-column:span 6;">
+          <h3>Volume Analysis</h3>
+          <div class="row" style="margin-bottom:12px;">
+            <div style="grid-column:span 6;">
+              <div class="kpi" id="kpi-vol-today" style="font-size:20px;">--</div>
+              <div class="kpi-label">Latest Volume (kg)</div>
+            </div>
+            <div style="grid-column:span 6;">
+              <div class="kpi" id="kpi-vol-avg" style="font-size:20px;">--</div>
+              <div class="kpi-label">30-Day Avg Volume</div>
+            </div>
+          </div>
+          <div class="table-scroll" style="max-height:240px;">
+            <table id="tbl-volume">
+              <thead><tr><th>Date</th><th>Volume (kg)</th><th>Avg Price</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full price chart with all overlays -->
+      <div class="card">
+        <div class="flex" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <h3 style="margin:0;">Complete Price &amp; Forecast Overlay</h3>
+          <div class="tab-nav" id="premium-chart-tabs">
+            <button class="tab-btn" data-range="90">3M</button>
+            <button class="tab-btn" data-range="180">6M</button>
+            <button class="tab-btn active" data-range="365">1Y</button>
+            <button class="tab-btn" data-range="0">All</button>
+          </div>
+        </div>
+        <div class="chart-wrap" style="height:320px;">
+          <canvas id="chart-premium"></canvas>
+        </div>
+      </div>
+
+      <!-- Model track record -->
+      <div class="card">
+        <h3>Model Track Record</h3>
+        <div id="track-record-content">
+          <p class="muted">Track record builds as forecasts mature and are validated against actuals. Metrics shown per horizon.</p>
+          <table id="tbl-track">
+            <thead><tr><th>Horizon</th><th>Predictions</th><th>MAPE</th><th>RMSE</th><th>Hit Rate</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         DOCUMENTATION
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="card" style="margin-bottom:16px;">
+      <h3>How It Works</h3>
+      <div class="muted" style="line-height:1.7;">
+        <p><b>Automated Pipeline:</b> Data is collected daily at 6 PM IST from auction houses and market sources. Models predict 7/14/28/90-day prices. All predictions are stored in an immutable forecast ledger.</p>
+        <p><b>Scoring:</b> Daily % error = |predicted - actual| / actual. Deviation score = max(0, 100 &times; (1 - % error)). KPIs include 30-day MAPE, RMSE, and hit-rate within &plusmn;5%.</p>
+        <p><b>Market Regime:</b> Bear probability from a Gradient Boosting classifier. LOW (&lt;30%), MODERATE (30-60%), HIGH (&gt;60%).</p>
+        <p><b>Tiers:</b> Free users see spot prices and 30-day trends. Subscribers get forecasts, accuracy metrics, and full history. Premium includes extended forecasts, volume analysis, confidence bands, and model track records.</p>
       </div>
     </section>
 
@@ -159,130 +309,194 @@
   </div>
 
 <script>
-  const INR = (x) => x == null || x === "" ? "" : "\u20B9" + Number(x).toLocaleString("en-IN", { maximumFractionDigits: 0 });
+  // ── Utilities ──────────────────────────────────────────────────
+  const INR = (x) => x == null || x === "" ? "--" : "\u20B9" + Number(x).toLocaleString("en-IN", { maximumFractionDigits: 0 });
+  const fmtK = (x) => x == null ? "--" : (x >= 100000 ? (x/1000).toFixed(0) + "k" : Number(x).toLocaleString("en-IN", { maximumFractionDigits: 0 }));
   const parseNum = (x) => (x == null || x === "" ? null : Number(x));
   const $ = (id) => document.getElementById(id);
 
-  // ── State ────────────────────────────────────────────────────────
-  let archive = [];
-  let chart;
+  // ── State ──────────────────────────────────────────────────────
   let dashboardData = null;
+  let priceHistory = [];
+  let archive = [];
+  let trackRecord = null;
+  let chartFree, chartSub, chartPremium, chartConfidence;
 
-  // ── CSV utilities (kept for manual upload backward compat) ──────
-  function parseCSV(file, onDone) {
-    Papa.parse(file, { header: true, skipEmptyLines: true, complete: (res) => onDone(res.data) });
+  // ── Data loading (all automatic from pipeline) ────────────────
+  async function loadAll() {
+    const [dashRes, histRes, archRes, trackRes] = await Promise.allSettled([
+      fetch("data/dashboard.json").then(r => r.ok ? r.json() : null),
+      fetch("data/price_history.json").then(r => r.ok ? r.json() : null),
+      fetch("data/archive.csv").then(r => r.ok ? r.text() : null),
+      fetch("data/track_record.json").then(r => r.ok ? r.json() : null)
+    ]);
+
+    if (dashRes.status === "fulfilled" && dashRes.value) {
+      dashboardData = dashRes.value;
+      renderHeader(dashboardData);
+      renderFreeKPIs(dashboardData);
+      renderForecasts(dashboardData);
+      renderRegime(dashboardData);
+      renderPremiumForecast(dashboardData);
+    }
+
+    if (histRes.status === "fulfilled" && histRes.value) {
+      priceHistory = histRes.value.prices || [];
+      renderFreeChart();
+      renderSubscriberChart(180);
+      renderVolumeAnalysis();
+      renderPremiumChart(365);
+    }
+
+    if (archRes.status === "fulfilled" && archRes.value) {
+      Papa.parse(archRes.value, {
+        header: true, skipEmptyLines: true,
+        complete: (res) => {
+          archive = res.data;
+          renderDeviation();
+          renderAccuracyKPIs();
+        }
+      });
+    }
+
+    if (trackRes.status === "fulfilled" && trackRes.value) {
+      trackRecord = trackRes.value;
+      renderTrackRecord();
+    }
   }
 
-  function mergeArchive(existing, addRows, kind) {
-    const idx = new Map(existing.map(r => [r.date, r]));
-    addRows.forEach(r => {
-      const date = (r.date || "").slice(0,10);
-      if (!date) return;
-      const row = idx.get(date) || { date };
-      if (kind === "pred" || kind === "seed") {
-        row.predicted_avg_price_inr_per_kg = r.predicted_avg_price_inr_per_kg ?? r.pred ?? r.predicted ?? r.point;
-        row.model_run_date = r.model_run_date || row.model_run_date || "";
-        row.horizon_days = r.horizon_days || row.horizon_days || 1;
-        row.model_version = r.model_version || row.model_version || "";
-      }
-      if (kind === "actual" || kind === "seed") {
-        row.actual_avg_price_inr_per_kg = r.actual_avg_price_inr_per_kg ?? r.actual ?? r.avg_price ?? r.price;
-      }
-      idx.set(date, row);
-    });
-    return Array.from(idx.values()).sort((a,b) => a.date < b.date ? -1 : 1);
-  }
-
-  function enrich(rows) {
-    return rows.map(r => {
-      const actual = parseNum(r.actual_avg_price_inr_per_kg);
-      const pred = parseNum(r.predicted_avg_price_inr_per_kg);
-      const absErr = (actual!=null && pred!=null) ? Math.abs(pred - actual) : null;
-      const pctErr = (actual!=null && pred!=null && actual !== 0) ? absErr / actual : null;
-      const score = (pctErr!=null) ? Math.max(0, 100 * (1 - pctErr)) : null;
-      return {...r, actual, pred, absErr, pctErr, score};
-    });
-  }
-
-  function rollMetrics(rows, windowDays = 30) {
-    const recent = rows.filter(r => r.actual!=null && r.pred!=null).slice(-windowDays);
-    const n = recent.length || 1;
-    const mape = recent.reduce((a,r)=>a + (r.pctErr ?? 0), 0) / n;
-    const rmse = Math.sqrt(recent.reduce((a,r)=>a + Math.pow(r.absErr ?? 0, 2), 0) / n);
-    const avgScore = recent.reduce((a,r)=>a + (r.score ?? 0), 0) / n;
-    return { n, mape, rmse, avgScore };
-  }
-
-  // ── Render dashboard from pipeline JSON ────────────────────────
-  function renderDashboard(data) {
-    dashboardData = data;
+  // ── Header / Status ────────────────────────────────────────────
+  function renderHeader(data) {
     const dot = $("status-dot");
-    const statusText = $("status-text");
-
-    // Status indicator
+    const txt = $("status-text");
     const updatedAt = new Date(data.updated_at);
     const ageHours = (Date.now() - updatedAt) / 3600000;
     if (ageHours < 26) {
       dot.className = "status-dot status-live";
-      statusText.textContent = "Live — updated " + updatedAt.toLocaleDateString("en-IN", {day:"numeric",month:"short",year:"numeric"});
+      txt.textContent = "Live — updated " + updatedAt.toLocaleDateString("en-IN", {day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});
     } else {
       dot.className = "status-dot status-stale";
-      statusText.textContent = "Stale — last update " + updatedAt.toLocaleDateString("en-IN");
+      txt.textContent = "Stale — last update " + updatedAt.toLocaleDateString("en-IN", {day:"numeric",month:"short",year:"numeric"});
     }
+  }
 
-    // Spot price
+  // ── FREE: KPIs ─────────────────────────────────────────────────
+  function renderFreeKPIs(data) {
     const spot = data.spot_price;
-    if (spot) {
-      $("kpi-spot").textContent = INR(spot.avg_price);
-      const changeEl = $("kpi-change");
-      const sign = spot.daily_change >= 0 ? "+" : "";
-      changeEl.textContent = sign + INR(spot.daily_change) + " (" + sign + spot.daily_change_pct.toFixed(1) + "%)";
-      changeEl.className = "kpi-sub " + (spot.daily_change >= 0 ? "good" : "bad");
-    }
+    if (!spot) return;
+    $("kpi-spot").textContent = INR(spot.avg_price);
+    const changeEl = $("kpi-change");
+    const sign = spot.daily_change >= 0 ? "+" : "";
+    changeEl.textContent = sign + INR(spot.daily_change) + " (" + sign + spot.daily_change_pct.toFixed(1) + "%)";
+    changeEl.className = "kpi-sub " + (spot.daily_change >= 0 ? "good" : "bad");
 
-    // Forecasts table
+    $("kpi-max").textContent = INR(spot.max_price);
+    $("kpi-date").textContent = spot.date;
+  }
+
+  // ── FREE: Regime ───────────────────────────────────────────────
+  function renderRegime(data) {
+    const regime = data.regime;
+    if (!regime) return;
+    const badge = $("regime-badge");
+    const label = regime.label || "UNKNOWN";
+    badge.textContent = label + " RISK";
+    badge.className = "regime-badge regime-" + label.toLowerCase();
+    $("regime-detail").textContent = (regime.bear_probability * 100).toFixed(0) + "% bear probability";
+  }
+
+  // ── FREE: 30-day chart ─────────────────────────────────────────
+  function renderFreeChart() {
+    const last30 = priceHistory.slice(-30);
+    if (!last30.length) return;
+    const ctx = $("chart-free").getContext("2d");
+    if (chartFree) chartFree.destroy();
+    chartFree = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: last30.map(p => p.date),
+        datasets: [{
+          label: "Avg Price",
+          data: last30.map(p => p.avg_price),
+          borderColor: "#0b3d91", borderWidth: 2, tension: 0.3,
+          fill: true, backgroundColor: "rgba(11,61,145,0.06)",
+          pointRadius: 0, pointHitRadius: 8
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        scales: {
+          x: { display: true, ticks: { maxTicksToShow: 6, font: { size: 11 } } },
+          y: { ticks: { callback: v => INR(v), font: { size: 11 } } }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => INR(ctx.parsed.y) } }
+        }
+      }
+    });
+  }
+
+  // ── SUBSCRIBER: Forecasts table ────────────────────────────────
+  function renderForecasts(data) {
     const tbody = $("forecast-tbl").querySelector("tbody");
     tbody.innerHTML = "";
     (data.forecasts || []).forEach(f => {
       const tr = document.createElement("tr");
       const horizon = f.horizon_days + "-day";
-      const range = f.lower_bound ? INR(f.lower_bound) + " - " + INR(f.upper_bound) : "-";
-      [horizon, f.target_date, INR(f.predicted_price), range].forEach(v => {
+      const range = f.lower_bound ? INR(f.lower_bound) + " – " + INR(f.upper_bound) : "—";
+      [horizon, f.target_date, INR(f.predicted_price), range, f.model_version || "—"].forEach(v => {
         const td = document.createElement("td");
         td.textContent = v;
         tr.appendChild(td);
       });
       tbody.appendChild(tr);
     });
-
-    // Regime
-    const regime = data.regime;
-    if (regime) {
-      const badge = $("regime-badge");
-      const label = regime.label || "UNKNOWN";
-      badge.textContent = label + " RISK";
-      badge.className = "regime-badge regime-" + label.toLowerCase();
-      $("regime-detail").textContent = (regime.bear_probability * 100).toFixed(0) + "% bear probability";
-    }
   }
 
-  // ── Render archive table + chart ──────────────────────────────
-  function renderArchive() {
-    const enriched = enrich(archive);
-    const metrics = rollMetrics(enriched, 30);
+  // ── SUBSCRIBER: Accuracy KPIs ──────────────────────────────────
+  function renderAccuracyKPIs() {
+    const enriched = enrichArchive(archive);
+    const recent = enriched.filter(r => r.actual != null && r.pred != null).slice(-30);
+    const n = recent.length || 1;
+    const mape = recent.reduce((a, r) => a + (r.pctErr ?? 0), 0) / n;
+    const rmse = Math.sqrt(recent.reduce((a, r) => a + Math.pow(r.absErr ?? 0, 2), 0) / n);
+    const avgScore = recent.reduce((a, r) => a + (r.score ?? 0), 0) / n;
+    const hitRate = recent.filter(r => r.pctErr != null && r.pctErr <= 0.05).length / n;
 
-    $("kpi-mape").textContent = (metrics.mape*100 || 0).toFixed(1) + "%";
-    $("kpi-rmse").textContent = INR(metrics.rmse);
-    $("kpi-score").textContent = (metrics.avgScore || 0).toFixed(1);
+    $("kpi-mape").textContent = (mape * 100).toFixed(1) + "%";
+    $("kpi-rmse").textContent = INR(rmse);
+    $("kpi-score").textContent = avgScore.toFixed(1);
+    $("kpi-hitrate").textContent = (hitRate * 100).toFixed(0) + "%";
+  }
 
-    // Table
-    const tbody = $("tbl").querySelector("tbody");
+  function enrichArchive(rows) {
+    return rows.map(r => {
+      const actual = parseNum(r.actual_avg_price_inr_per_kg);
+      const pred = parseNum(r.predicted_avg_price_inr_per_kg);
+      const absErr = (actual != null && pred != null) ? Math.abs(pred - actual) : null;
+      const pctErr = (actual != null && pred != null && actual !== 0) ? absErr / actual : null;
+      const score = pctErr != null ? Math.max(0, 100 * (1 - pctErr)) : null;
+      return { ...r, actual, pred, absErr, pctErr, score };
+    });
+  }
+
+  // ── SUBSCRIBER: Deviation table ────────────────────────────────
+  function renderDeviation() {
+    const enriched = enrichArchive(archive);
+    const withBoth = enriched.filter(r => r.actual != null && r.pred != null).slice(-30);
+    const tbody = $("tbl-deviation").querySelector("tbody");
     tbody.innerHTML = "";
-    enriched.slice(-30).forEach(r => {
+    if (withBoth.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center;padding:20px;">Deviation data will appear as forecasts mature and are validated against actuals.</td></tr>';
+      return;
+    }
+    withBoth.forEach(r => {
       const tr = document.createElement("tr");
       [r.date, INR(r.actual), INR(r.pred), INR(r.absErr),
-       (r.pctErr!=null) ? (r.pctErr*100).toFixed(1)+"%" : "",
-       (r.score!=null) ? r.score.toFixed(1) : ""
+       r.pctErr != null ? (r.pctErr * 100).toFixed(1) + "%" : "—",
+       r.score != null ? r.score.toFixed(1) : "—"
       ].forEach(v => {
         const td = document.createElement("td");
         td.textContent = v;
@@ -290,97 +504,214 @@
       });
       tbody.appendChild(tr);
     });
+  }
 
-    // Chart
-    const labels = enriched.map(r => r.date);
-    const actual = enriched.map(r => r.actual);
-    const pred = enriched.map(r => r.pred);
-    if (chart) chart.destroy();
-    const ctx = $("chart").getContext("2d");
-    chart = new Chart(ctx, {
+  // ── SUBSCRIBER: Price history chart ────────────────────────────
+  function renderSubscriberChart(days) {
+    const data = days === 0 ? priceHistory : priceHistory.slice(-days);
+    if (!data.length) return;
+    const ctx = $("chart-subscriber").getContext("2d");
+    if (chartSub) chartSub.destroy();
+    chartSub = new Chart(ctx, {
       type: "line",
       data: {
-        labels,
+        labels: data.map(p => p.date),
         datasets: [
-          { label: "Actual", data: actual, borderWidth: 2, tension: 0.2, borderColor: "#0b3d91" },
-          { label: "Predicted", data: pred, borderWidth: 2, tension: 0.2, borderColor: "#f59e0b", borderDash: [5,3] }
+          { label: "Avg Price", data: data.map(p => p.avg_price), borderColor: "#0b3d91", borderWidth: 2, tension: 0.3, pointRadius: 0, pointHitRadius: 8, fill: true, backgroundColor: "rgba(11,61,145,0.05)" },
+          { label: "Max Price", data: data.map(p => p.max_price), borderColor: "#f59e0b", borderWidth: 1.5, tension: 0.3, pointRadius: 0, borderDash: [4, 3] }
         ]
       },
       options: {
+        responsive: true, maintainAspectRatio: false,
         interaction: { mode: "index", intersect: false },
-        scales: { y: { ticks: { callback: (v) => INR(v) } } },
+        scales: {
+          x: { ticks: { maxTicksToShow: 8, font: { size: 11 } } },
+          y: { ticks: { callback: v => INR(v), font: { size: 11 } } }
+        },
         plugins: {
-          legend: { display: true },
-          tooltip: { callbacks: { label: (ctx) => ctx.dataset.label + ": " + INR(ctx.parsed.y) } }
+          legend: { display: true, position: "top", labels: { boxWidth: 12, font: { size: 11 } } },
+          tooltip: { callbacks: { label: ctx => ctx.dataset.label + ": " + INR(ctx.parsed.y) } }
         }
       }
     });
   }
 
-  // ── Auto-load pipeline data on page load ──────────────────────
-  async function autoLoad() {
-    // Try loading dashboard.json from pipeline exports
-    try {
-      const resp = await fetch("data/dashboard.json");
-      if (resp.ok) {
-        const data = await resp.json();
-        renderDashboard(data);
-      }
-    } catch(e) {
-      console.log("No dashboard.json found (pipeline not run yet)");
-    }
+  // ── PREMIUM: 90-day forecast card ──────────────────────────────
+  function renderPremiumForecast(data) {
+    const fc90 = (data.forecasts || []).find(f => f.horizon_days === 90);
+    if (!fc90) return;
+    $("kpi-90d-price").textContent = INR(fc90.predicted_price);
+    $("kpi-90d-range").textContent = fc90.lower_bound
+      ? "80% range: " + INR(fc90.lower_bound) + " – " + INR(fc90.upper_bound)
+      : "";
+    $("kpi-90d-date").textContent = "Target: " + fc90.target_date;
 
-    // Try loading archive.csv from pipeline exports
-    try {
-      const resp = await fetch("data/archive.csv");
-      if (resp.ok) {
-        const text = await resp.text();
-        Papa.parse(text, {
-          header: true, skipEmptyLines: true,
-          complete: (res) => {
-            if (res.data.length > 0) {
-              archive = mergeArchive([], res.data, "seed");
-              renderArchive();
-            }
-          }
-        });
-      }
-    } catch(e) {
-      console.log("No archive.csv found (pipeline not run yet)");
+    // Confidence band chart
+    if (!fc90.lower_bound) return;
+    const spot = data.spot_price?.avg_price || fc90.predicted_price;
+    const points = [
+      { x: data.spot_price?.date || "Today", mid: spot, lo: spot, hi: spot },
+      { x: fc90.target_date, mid: fc90.predicted_price, lo: fc90.lower_bound, hi: fc90.upper_bound }
+    ];
+    // Interpolate mid-points
+    const labels = [points[0].x];
+    const mids = [points[0].mid];
+    const los = [points[0].lo];
+    const his = [points[0].hi];
+    for (let i = 1; i <= 3; i++) {
+      const t = i / 4;
+      labels.push("");
+      mids.push(spot + t * (fc90.predicted_price - spot));
+      los.push(spot + t * (fc90.lower_bound - spot));
+      his.push(spot + t * (fc90.upper_bound - spot));
     }
+    labels.push(points[1].x);
+    mids.push(points[1].mid);
+    los.push(points[1].lo);
+    his.push(points[1].hi);
+
+    const ctx = $("chart-confidence").getContext("2d");
+    if (chartConfidence) chartConfidence.destroy();
+    chartConfidence = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          { label: "Upper Bound", data: his, borderColor: "rgba(129,140,248,0.4)", borderWidth: 1, pointRadius: 0, fill: false },
+          { label: "Forecast", data: mids, borderColor: "#818cf8", borderWidth: 2.5, tension: 0.4, pointRadius: 0, fill: "-1", backgroundColor: "rgba(129,140,248,0.15)" },
+          { label: "Lower Bound", data: los, borderColor: "rgba(129,140,248,0.4)", borderWidth: 1, pointRadius: 0, fill: "-1", backgroundColor: "rgba(129,140,248,0.1)" }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        scales: {
+          x: { ticks: { color: "#a5b4fc", font: { size: 10 } }, grid: { color: "rgba(255,255,255,0.05)" } },
+          y: { ticks: { callback: v => INR(v), color: "#a5b4fc", font: { size: 10 } }, grid: { color: "rgba(255,255,255,0.05)" } }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ctx.dataset.label + ": " + INR(ctx.parsed.y) } }
+        }
+      }
+    });
   }
 
-  // ── Wire up manual controls ────────────────────────────────────
-  $("load-archive").addEventListener("change", (e) => {
-    const f = e.target.files?.[0]; if (!f) return;
-    parseCSV(f, rows => { archive = mergeArchive([], rows, "seed"); renderArchive(); });
-  });
+  // ── PREMIUM: Volume analysis ───────────────────────────────────
+  function renderVolumeAnalysis() {
+    const last30 = priceHistory.slice(-30);
+    if (!last30.length) return;
+    const latest = last30[last30.length - 1];
+    const avgVol = last30.reduce((a, p) => a + (p.sold_kg || 0), 0) / last30.length;
+    const maxVol = Math.max(...last30.map(p => p.sold_kg || 0));
 
-  $("upload-preds").addEventListener("change", (e) => {
-    const f = e.target.files?.[0]; if (!f) return;
-    parseCSV(f, rows => { archive = mergeArchive(archive, rows, "pred"); renderArchive(); });
-  });
+    $("kpi-vol-today").textContent = fmtK(latest.sold_kg) + " kg";
+    $("kpi-vol-avg").textContent = fmtK(avgVol) + " kg";
 
-  $("upload-actuals").addEventListener("change", (e) => {
-    const f = e.target.files?.[0]; if (!f) return;
-    parseCSV(f, rows => { archive = mergeArchive(archive, rows, "actual"); renderArchive(); });
-  });
+    const tbody = $("tbl-volume").querySelector("tbody");
+    tbody.innerHTML = "";
+    last30.slice(-15).reverse().forEach(p => {
+      const tr = document.createElement("tr");
+      const pct = maxVol > 0 ? ((p.sold_kg || 0) / maxVol) * 100 : 0;
+      [
+        p.date,
+        fmtK(p.sold_kg),
+        INR(p.avg_price),
+        `<span class="vol-bar" style="width:${pct}%"></span>`
+      ].forEach((v, i) => {
+        const td = document.createElement("td");
+        if (i === 3) td.innerHTML = v; else td.textContent = v;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+  }
 
-  $("download-archive").addEventListener("click", () => {
-    if (!archive.length) { alert("No archive in memory. Load or upload first."); return; }
-    const headers = Object.keys(archive[0]);
-    const csv = [headers.join(",")].concat(
-      archive.map(r => headers.map(h => (r[h] ?? "")).join(","))
-    ).join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = "archive.csv"; a.click();
-    URL.revokeObjectURL(url);
-  });
+  // ── PREMIUM: Full overlay chart ────────────────────────────────
+  function renderPremiumChart(days) {
+    const data = days === 0 ? priceHistory : priceHistory.slice(-days);
+    if (!data.length) return;
 
-  // Boot
-  autoLoad();
+    // Add forecast points
+    const forecastDates = [];
+    const forecastPrices = [];
+    if (dashboardData?.forecasts) {
+      dashboardData.forecasts.forEach(f => {
+        forecastDates.push(f.target_date);
+        forecastPrices.push(f.predicted_price);
+      });
+    }
+
+    const allLabels = [...data.map(p => p.date), ...forecastDates];
+    const avgData = [...data.map(p => p.avg_price), ...new Array(forecastDates.length).fill(null)];
+    const volData = data.map(p => p.sold_kg);
+    const fcData = [...new Array(data.length - 1).fill(null), data[data.length - 1].avg_price, ...forecastPrices];
+
+    const ctx = $("chart-premium").getContext("2d");
+    if (chartPremium) chartPremium.destroy();
+    chartPremium = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: allLabels,
+        datasets: [
+          { label: "Avg Price", data: avgData, borderColor: "#818cf8", borderWidth: 2, tension: 0.3, pointRadius: 0, pointHitRadius: 8, yAxisID: "y" },
+          { label: "Forecast", data: fcData, borderColor: "#34d399", borderWidth: 2.5, tension: 0.3, pointRadius: 3, borderDash: [6, 3], yAxisID: "y" },
+          { label: "Volume", data: [...volData, ...new Array(forecastDates.length).fill(null)], type: "bar", backgroundColor: "rgba(129,140,248,0.15)", borderColor: "transparent", yAxisID: "y1" }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        scales: {
+          x: { ticks: { color: "#a5b4fc", maxTicksToShow: 10, font: { size: 10 } }, grid: { color: "rgba(255,255,255,0.05)" } },
+          y: { position: "left", ticks: { callback: v => INR(v), color: "#a5b4fc", font: { size: 10 } }, grid: { color: "rgba(255,255,255,0.06)" } },
+          y1: { position: "right", ticks: { callback: v => fmtK(v), color: "#a5b4fc", font: { size: 10 } }, grid: { display: false } }
+        },
+        plugins: {
+          legend: { display: true, position: "top", labels: { color: "#c7d2fe", boxWidth: 12, font: { size: 11 } } },
+          tooltip: { callbacks: { label: ctx => ctx.dataset.label + ": " + (ctx.dataset.yAxisID === "y1" ? fmtK(ctx.parsed.y) + " kg" : INR(ctx.parsed.y)) } }
+        }
+      }
+    });
+  }
+
+  // ── PREMIUM: Track record ──────────────────────────────────────
+  function renderTrackRecord() {
+    if (!trackRecord) return;
+    const tbody = $("tbl-track").querySelector("tbody");
+    tbody.innerHTML = "";
+    const horizons = trackRecord.metrics_by_horizon || {};
+    if (Object.keys(horizons).length === 0 && trackRecord.total_predictions === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:16px;opacity:0.6;">Track record will populate as forecasts mature and are validated against actual prices.</td></tr>';
+      return;
+    }
+    Object.entries(horizons).forEach(([h, m]) => {
+      const tr = document.createElement("tr");
+      [h + "-day", m.count || "—", m.mape ? (m.mape * 100).toFixed(1) + "%" : "—", m.rmse ? INR(m.rmse) : "—", m.hit_rate ? (m.hit_rate * 100).toFixed(0) + "%" : "—"].forEach(v => {
+        const td = document.createElement("td");
+        td.textContent = v;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ── Tab navigation ─────────────────────────────────────────────
+  function setupTabs(containerId, renderFn) {
+    const container = $(containerId);
+    if (!container) return;
+    container.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        container.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderFn(parseInt(btn.dataset.range));
+      });
+    });
+  }
+
+  // ── Boot ───────────────────────────────────────────────────────
+  setupTabs("chart-tabs", renderSubscriberChart);
+  setupTabs("premium-chart-tabs", renderPremiumChart);
+  loadAll();
 </script>
 </body>
 </html>
