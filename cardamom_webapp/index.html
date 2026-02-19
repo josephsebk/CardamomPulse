@@ -117,28 +117,34 @@
 
       <!-- KPIs -->
       <div class="row">
-        <div class="card" style="grid-column:span 4;">
+        <div class="card" style="grid-column:span 3;">
           <div class="kpi" id="kpi-spot">--</div>
           <div class="kpi-label">Spot Price (Avg)</div>
           <div class="kpi-sub" id="kpi-change"></div>
         </div>
-        <div class="card" style="grid-column:span 4;">
+        <div class="card" style="grid-column:span 3;">
           <div class="kpi" id="kpi-max">--</div>
           <div class="kpi-label">Max Price</div>
           <div class="kpi-sub muted" id="kpi-date"></div>
         </div>
-        <div class="card" style="grid-column:span 4;">
+        <div class="card" style="grid-column:span 3;background:#ecfdf5;border-color:#a7f3d0;">
+          <div class="kpi" id="kpi-predicted" style="color:#059669;">--</div>
+          <div class="kpi-label">Predicted Price Today</div>
+          <div class="kpi-sub muted" id="kpi-predicted-horizon"></div>
+        </div>
+        <div class="card" style="grid-column:span 3;">
           <div style="text-align:center;padding:8px 0;">
             <div id="regime-badge" class="regime-badge">--</div>
             <div class="muted" style="margin-top:8px;" id="regime-detail"></div>
+            <div class="muted" style="margin-top:4px;font-size:12px;" id="regime-change-text"></div>
           </div>
           <div class="kpi-label" style="text-align:center;">Market Regime</div>
         </div>
       </div>
 
-      <!-- 30-day price chart (free) -->
+      <!-- 30-day predicted vs actual chart (free) -->
       <div class="card">
-        <h3>Price Trend (Last 30 Days)</h3>
+        <h3>Predicted vs Actual (Last 30 Days)</h3>
         <div class="chart-wrap">
           <canvas id="chart-free"></canvas>
         </div>
@@ -190,7 +196,7 @@
       <!-- Full price history chart -->
       <div class="card">
         <div class="flex" style="justify-content:space-between;align-items:center;margin-bottom:4px;">
-          <h3 style="margin:0;">Price History</h3>
+          <h3 style="margin:0;">Price Forecast Graph</h3>
           <div class="tab-nav" id="chart-tabs">
             <button class="tab-btn" data-range="90">3M</button>
             <button class="tab-btn active" data-range="180">6M</button>
@@ -279,6 +285,37 @@
         </div>
       </div>
 
+      <!-- Market Insights from Research -->
+      <div class="card">
+        <h3>Market Intelligence Insights</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div style="padding:12px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
+            <div style="font-weight:600;margin-bottom:6px;font-size:13px;">Guatemala Supply Shock</div>
+            <div class="muted" style="font-size:12px;line-height:1.6;">Guatemala controls 50-70% of global cardamom exports. The 2024-25 thrips infestation reduced exports 46-75%, making it the primary driver of the current bull run.</div>
+          </div>
+          <div style="padding:12px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
+            <div style="font-weight:600;margin-bottom:6px;font-size:13px;">Cost Floor Creates Asymmetric Risk</div>
+            <div class="muted" style="font-size:12px;line-height:1.6;">Kerala agricultural wages rise 5.2% annually, pushing production costs to ~&#8377;580/kg. Current prices at 4.3x cost are unusually profitable, but a crash below &#8377;400/kg triggers farmer abandonment.</div>
+          </div>
+          <div style="padding:12px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
+            <div style="font-weight:600;margin-bottom:6px;font-size:13px;">3-4 Year Planting Cobweb Cycle</div>
+            <div class="muted" style="font-size:12px;line-height:1.6;">High prices drive planting surges that take 3 years to mature. The 2019-20 peak triggered the 2021-23 oversupply crash. Current prices may create new supply pressure by 2027-28.</div>
+          </div>
+          <div style="padding:12px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
+            <div style="font-weight:600;margin-bottom:6px;font-size:13px;">La Ni&ntilde;a Drives Prices Higher</div>
+            <div class="muted" style="font-size:12px;line-height:1.6;">Counterintuitively, excess rainfall (La Ni&ntilde;a) causes more damage than drought. The 2018 Kerala floods caused a &gt;100% price spike lasting 18+ months, making excess moisture the primary climatic risk.</div>
+          </div>
+          <div style="padding:12px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
+            <div style="font-weight:600;margin-bottom:6px;font-size:13px;">Festival Demand Overrides Supply</div>
+            <div class="muted" style="font-size:12px;line-height:1.6;">Prices peak Aug-Dec (&plusmn;10% seasonal swing) during harvest when supply is highest, driven by Diwali, Christmas, and year-end export orders. March-May weakness reflects post-harvest inventory glut.</div>
+          </div>
+          <div style="padding:12px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
+            <div style="font-weight:600;margin-bottom:6px;font-size:13px;">Yield Growth Offsets Cost Inflation</div>
+            <div class="muted" style="font-size:12px;line-height:1.6;">Indian cardamom yield surged 153% (2010-2021) via new varieties like IISR Vijetha, creating long-term deflationary pressure despite 5%/year wage growth. Major rallies result from shocks, not structural tightness.</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Model track record -->
       <div class="card">
         <h3>Model Track Record</h3>
@@ -355,6 +392,8 @@
           archive = res.data;
           renderDeviation();
           renderAccuracyKPIs();
+          // Re-render free chart with predicted overlay now that archive is loaded
+          if (priceHistory.length) renderFreeChart();
         }
       });
     }
@@ -392,6 +431,13 @@
 
     $("kpi-max").textContent = INR(spot.max_price);
     $("kpi-date").textContent = spot.date;
+
+    // Predicted price today (nearest horizon forecast)
+    const fc = (data.forecasts || [])[0];
+    if (fc) {
+      $("kpi-predicted").textContent = INR(fc.predicted_price);
+      $("kpi-predicted-horizon").textContent = fc.horizon_days + "-day forecast → " + fc.target_date;
+    }
   }
 
   // ── FREE: Regime ───────────────────────────────────────────────
@@ -403,25 +449,58 @@
     badge.textContent = label + " RISK";
     badge.className = "regime-badge regime-" + label.toLowerCase();
     $("regime-detail").textContent = (regime.bear_probability * 100).toFixed(0) + "% bear probability";
+
+    // Significant market change indicator
+    const changeText = $("regime-change-text");
+    const bearPct = regime.bear_probability * 100;
+    if (bearPct < 15) {
+      changeText.textContent = "No significant market change expected";
+      changeText.style.color = "var(--good)";
+    } else if (bearPct < 40) {
+      changeText.textContent = "Moderate market shift possible";
+      changeText.style.color = "var(--warn)";
+    } else {
+      changeText.textContent = "Significant market change likely";
+      changeText.style.color = "var(--bad)";
+    }
   }
 
-  // ── FREE: 30-day chart ─────────────────────────────────────────
+  // ── FREE: 30-day Predicted vs Actual chart ─────────────────────
   function renderFreeChart() {
     const last30 = priceHistory.slice(-30);
     if (!last30.length) return;
+
+    // Build predicted prices from archive data (if available)
+    const predMap = {};
+    archive.forEach(r => {
+      if (r.date && r.predicted_avg_price_inr_per_kg) {
+        predMap[r.date] = parseNum(r.predicted_avg_price_inr_per_kg);
+      }
+    });
+    const predictedData = last30.map(p => predMap[p.date] ?? null);
+
     const ctx = $("chart-free").getContext("2d");
     if (chartFree) chartFree.destroy();
     chartFree = new Chart(ctx, {
       type: "line",
       data: {
         labels: last30.map(p => p.date),
-        datasets: [{
-          label: "Avg Price",
-          data: last30.map(p => p.avg_price),
-          borderColor: "#0b3d91", borderWidth: 2, tension: 0.3,
-          fill: true, backgroundColor: "rgba(11,61,145,0.06)",
-          pointRadius: 0, pointHitRadius: 8
-        }]
+        datasets: [
+          {
+            label: "Actual Price",
+            data: last30.map(p => p.avg_price),
+            borderColor: "#0b3d91", borderWidth: 2, tension: 0.3,
+            fill: true, backgroundColor: "rgba(11,61,145,0.06)",
+            pointRadius: 0, pointHitRadius: 8
+          },
+          {
+            label: "Predicted Price",
+            data: predictedData,
+            borderColor: "#059669", borderWidth: 2, tension: 0.3,
+            borderDash: [5, 3], pointRadius: 0, pointHitRadius: 8,
+            fill: false
+          }
+        ]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
@@ -431,8 +510,8 @@
           y: { ticks: { callback: v => INR(v), font: { size: 11 } } }
         },
         plugins: {
-          legend: { display: false },
-          tooltip: { callbacks: { label: ctx => INR(ctx.parsed.y) } }
+          legend: { display: true, position: "top", labels: { boxWidth: 12, font: { size: 11 } } },
+          tooltip: { callbacks: { label: ctx => ctx.dataset.label + ": " + INR(ctx.parsed.y) } }
         }
       }
     });
