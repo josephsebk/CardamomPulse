@@ -26,18 +26,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Run pipeline (seed + train + predict + export)
-        run: python -m pipeline.run_daily --seed
-
       - name: Prepare Pages artifact
         run: |
           mkdir -p _site
