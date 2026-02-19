@@ -16,3 +16,8 @@ __pycache__/
 
 # Archives
 *.zip
+
+# Pipeline runtime artifacts
+data/cardamom.db
+data/models/
+data/pipeline.log

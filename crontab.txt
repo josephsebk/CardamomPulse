@@ -1,0 +1,15 @@
+# CardamomPulse Pipeline Schedule
+# Install: crontab crontab.txt
+# Edit PROJECT_DIR to match your deployment path
+
+PROJECT_DIR=/home/user/CardamomPulse
+
+# ── Daily run at 6:00 PM IST (12:30 UTC) ──────────────────────────────
+# Collects data, validates, predicts, exports JSON
+30 12 * * * cd $PROJECT_DIR && python3 -m pipeline.run_daily >> data/pipeline.log 2>&1
+
+# ── Weekly model retrain: Sunday 2:00 AM IST (Saturday 20:30 UTC) ──────
+30 20 * * 6 cd $PROJECT_DIR && python3 -m pipeline.run_daily --retrain >> data/pipeline.log 2>&1
+
+# ── Monthly data refresh: 1st of month at 3:00 AM IST (21:30 UTC prev day)
+30 21 1 * * cd $PROJECT_DIR && python3 -m pipeline.run_daily --retrain >> data/pipeline.log 2>&1

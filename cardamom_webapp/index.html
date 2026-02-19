@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Cardamom Price — Prediction Archive</title>
+  <title>CardamomPulse — Price Intelligence</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     :root{
@@ -12,8 +12,9 @@
     html,body{ margin:0; padding:0; background:var(--bg); color:var(--ink); font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
     .wrap{ max-width:1100px; margin:0 auto; padding:24px; }
     h1{ font-size:22px; margin:0 0 10px; color:var(--ink); }
+    h3{ margin:0 0 8px 0; }
     .muted{ color:var(--muted); font-size:13px; }
-    .row{ display:grid; grid-template-columns: repeat(12, 1fr); gap:16px; }
+    .row{ display:grid; grid-template-columns: repeat(12, 1fr); gap:16px; margin-bottom:0; }
     .card{ background:var(--card); border:1px solid var(--grid); border-radius:14px; padding:16px; box-shadow:0 1px 2px rgba(0,0,0,.03); }
     .btn{ border:1px solid var(--grid); background:#fff; padding:8px 12px; border-radius:10px; cursor:pointer; font-size:13px; }
     .btn.brand{ background:var(--brand); color:#fff; border-color:var(--brand); }
@@ -21,6 +22,7 @@
     .btn.inline-input input{ position:absolute; inset:0; opacity:0; cursor:pointer; }
     .kpi{ font-size:26px; font-weight:700; }
     .kpi-label{ font-size:12px; color:var(--muted); }
+    .kpi-sub{ font-size:13px; margin-top:2px; }
     table{ width:100%; border-collapse:collapse; font-size:13px; }
     th, td{ padding:8px 10px; border-bottom:1px solid var(--grid); text-align:right; }
     th:first-child, td:first-child{ text-align:left; }
@@ -30,78 +32,109 @@
     .spacer{ height:10px; }
     .footer{ font-size:12px; color:var(--muted); text-align:center; padding:20px 0; }
     .pill{ background:var(--accent); color:var(--brand); border-radius:999px; padding:4px 8px; font-size:12px; }
+    .regime-badge{ display:inline-block; padding:4px 12px; border-radius:999px; font-size:13px; font-weight:600; }
+    .regime-low{ background:#d1fae5; color:#065f46; }
+    .regime-moderate{ background:#fef3c7; color:#92400e; }
+    .regime-high{ background:#fee2e2; color:#991b1b; }
+    .status-dot{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
+    .status-live{ background:var(--good); }
+    .status-stale{ background:var(--warn); }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <div class="wrap">
+    <!-- Header -->
     <header class="row">
       <div class="card" style="grid-column: span 12;">
         <div class="flex" style="justify-content: space-between;">
           <div>
-            <h1>Cardamom Price — Prediction Archive</h1>
-            <div class="muted">Average Kerala auction price (₹/kg). All local, no uploads.</div>
+            <h1>CardamomPulse</h1>
+            <div class="muted"><span class="status-dot" id="status-dot"></span><span id="status-text">Loading...</span></div>
           </div>
           <div class="flex">
             <label class="btn inline-input">Load archive.csv
               <input type="file" accept=".csv" id="load-archive">
             </label>
-            <button class="btn brand" id="download-archive">Download updated archive.csv</button>
+            <button class="btn brand" id="download-archive">Download archive.csv</button>
           </div>
         </div>
       </div>
     </header>
 
+    <!-- Spot Price KPIs -->
     <section class="row">
-      <div class="card" style="grid-column: span 4;">
-        <div class="kpi" id="kpi-mape">—%</div>
-        <div class="kpi-label">30‑day MAPE</div>
+      <div class="card" style="grid-column: span 3;">
+        <div class="kpi" id="kpi-spot">--</div>
+        <div class="kpi-label">Spot Price (Avg)</div>
+        <div class="kpi-sub" id="kpi-change"></div>
       </div>
-      <div class="card" style="grid-column: span 4;">
-        <div class="kpi" id="kpi-rmse">—</div>
-        <div class="kpi-label">30‑day RMSE</div>
+      <div class="card" style="grid-column: span 3;">
+        <div class="kpi" id="kpi-mape">--%</div>
+        <div class="kpi-label">30-day MAPE</div>
       </div>
-      <div class="card" style="grid-column: span 4;">
-        <div class="kpi" id="kpi-score">—</div>
-        <div class="kpi-label">Avg deviation score (0–100)</div>
+      <div class="card" style="grid-column: span 3;">
+        <div class="kpi" id="kpi-rmse">--</div>
+        <div class="kpi-label">30-day RMSE</div>
+      </div>
+      <div class="card" style="grid-column: span 3;">
+        <div class="kpi" id="kpi-score">--</div>
+        <div class="kpi-label">Avg Score (0-100)</div>
       </div>
     </section>
 
+    <!-- Forecasts + Regime -->
+    <section class="row">
+      <div class="card" style="grid-column: span 8;">
+        <h3>Forecasts</h3>
+        <table id="forecast-tbl">
+          <thead><tr><th>Horizon</th><th>Target Date</th><th>Predicted</th><th>Range (80%)</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="card" style="grid-column: span 4;">
+        <h3>Market Regime</h3>
+        <div id="regime-display" style="text-align:center; padding:20px 0;">
+          <div id="regime-badge" class="regime-badge">--</div>
+          <div class="muted" style="margin-top:8px;" id="regime-detail"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Upload controls -->
     <section class="row">
       <div class="card" style="grid-column: span 12;">
         <div class="flex">
-          <label class="btn inline-input">Upload new predictions
+          <label class="btn inline-input">Upload predictions
             <input type="file" accept=".csv" id="upload-preds">
           </label>
           <label class="btn inline-input">Upload actuals
             <input type="file" accept=".csv" id="upload-actuals">
           </label>
-          <span class="pill">Required cols → predictions: date, predicted_avg_price_inr_per_kg • actuals: date, actual_avg_price_inr_per_kg</span>
+          <span class="pill">Manual CSV upload still supported alongside auto-loaded pipeline data</span>
         </div>
       </div>
     </section>
 
+    <!-- Chart -->
     <section class="row">
       <div class="card" style="grid-column: span 12;">
         <canvas id="chart" height="110"></canvas>
       </div>
     </section>
 
+    <!-- Deviation Table -->
     <section class="row">
       <div class="card" style="grid-column: span 12;">
-        <h3 style="margin:0 0 8px 0;">Daily Deviation (last 30 rows)</h3>
+        <h3>Daily Deviation (last 30 rows)</h3>
         <div class="spacer"></div>
         <div style="overflow:auto;">
           <table id="tbl">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Actual</th>
-                <th>Predicted</th>
-                <th>Abs. Error</th>
-                <th>Pct. Error</th>
-                <th>Score (0–100)</th>
+                <th>Date</th><th>Actual</th><th>Predicted</th>
+                <th>Abs. Error</th><th>Pct. Error</th><th>Score (0-100)</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -110,35 +143,38 @@
       </div>
     </section>
 
+    <!-- Documentation -->
     <section class="row">
       <div class="card" style="grid-column: span 12;">
-        <h3 style="margin:0 0 8px 0;">Documentation</h3>
+        <h3>Documentation</h3>
         <div class="muted">
-          <p><b>Scoring:</b> Daily % error = |pred − actual| / actual. Deviation score = max(0, 100 × (1 − % error)). KPIs are 30‑day MAPE, RMSE, MAE, hit‑rate within ±5% (hover tooltips).</p>
-          <p><b>File formats:</b> archive.csv must include <code>date</code>, <code>actual_avg_price_inr_per_kg</code>, <code>predicted_avg_price_inr_per_kg</code>. Predictions/actuals uploads may contain extra columns; they are preserved in the merged archive.</p>
-          <p>Everything runs locally in your browser — no servers, no uploads.</p>
+          <p><b>Pipeline:</b> Data is collected daily at 6 PM IST. Models predict 7/14/28/90-day prices. All predictions are stored in an immutable forecast ledger.</p>
+          <p><b>Scoring:</b> Daily % error = |pred - actual| / actual. Deviation score = max(0, 100 x (1 - % error)). KPIs are 30-day MAPE, RMSE, MAE, hit-rate within +/-5%.</p>
+          <p><b>Regime:</b> Bear probability from a Gradient Boosting classifier. LOW (&lt;30%), MODERATE (30-60%), HIGH (&gt;60%).</p>
         </div>
       </div>
     </section>
 
-    <div class="footer">© Cardamom Forecast Tools — Local dashboard</div>
+    <div class="footer">&copy; CardamomPulse — Quantitative intelligence for the cardamom market</div>
   </div>
 
 <script>
-  // Utilities
-  const INR = (x) => x == null || x === "" ? "" : "₹" + Number(x).toLocaleString("en-IN", { maximumFractionDigits: 0 });
+  const INR = (x) => x == null || x === "" ? "" : "\u20B9" + Number(x).toLocaleString("en-IN", { maximumFractionDigits: 0 });
   const parseNum = (x) => (x == null || x === "" ? null : Number(x));
+  const $ = (id) => document.getElementById(id);
 
+  // ── State ────────────────────────────────────────────────────────
+  let archive = [];
+  let chart;
+  let dashboardData = null;
+
+  // ── CSV utilities (kept for manual upload backward compat) ──────
   function parseCSV(file, onDone) {
-    Papa.parse(file, {
-      header: true, skipEmptyLines: true,
-      complete: (res) => onDone(res.data)
-    });
+    Papa.parse(file, { header: true, skipEmptyLines: true, complete: (res) => onDone(res.data) });
   }
 
-  function mergeArchive(archive, addRows, kind) {
-    // kind: "pred" | "actual" | "seed"
-    const idx = new Map(archive.map(r => [r.date, r]));
+  function mergeArchive(existing, addRows, kind) {
+    const idx = new Map(existing.map(r => [r.date, r]));
     addRows.forEach(r => {
       const date = (r.date || "").slice(0,10);
       if (!date) return;
@@ -154,8 +190,7 @@
       }
       idx.set(date, row);
     });
-    const merged = Array.from(idx.values()).sort((a,b) => a.date < b.date ? -1 : 1);
-    return merged;
+    return Array.from(idx.values()).sort((a,b) => a.date < b.date ? -1 : 1);
   }
 
   function enrich(rows) {
@@ -173,41 +208,82 @@
     const recent = rows.filter(r => r.actual!=null && r.pred!=null).slice(-windowDays);
     const n = recent.length || 1;
     const mape = recent.reduce((a,r)=>a + (r.pctErr ?? 0), 0) / n;
-    const mae = recent.reduce((a,r)=>a + (r.absErr ?? 0), 0) / n;
     const rmse = Math.sqrt(recent.reduce((a,r)=>a + Math.pow(r.absErr ?? 0, 2), 0) / n);
-    const hit5 = recent.filter(r => (r.pctErr ?? 1) <= 0.05).length / n;
     const avgScore = recent.reduce((a,r)=>a + (r.score ?? 0), 0) / n;
-    return { n, mape, mae, rmse, hit5, avgScore };
+    return { n, mape, rmse, avgScore };
   }
 
-  // State
-  let archive = [];
-  let chart;
-  const $ = (id) => document.getElementById(id);
+  // ── Render dashboard from pipeline JSON ────────────────────────
+  function renderDashboard(data) {
+    dashboardData = data;
+    const dot = $("status-dot");
+    const statusText = $("status-text");
 
-  function render() {
+    // Status indicator
+    const updatedAt = new Date(data.updated_at);
+    const ageHours = (Date.now() - updatedAt) / 3600000;
+    if (ageHours < 26) {
+      dot.className = "status-dot status-live";
+      statusText.textContent = "Live — updated " + updatedAt.toLocaleDateString("en-IN", {day:"numeric",month:"short",year:"numeric"});
+    } else {
+      dot.className = "status-dot status-stale";
+      statusText.textContent = "Stale — last update " + updatedAt.toLocaleDateString("en-IN");
+    }
+
+    // Spot price
+    const spot = data.spot_price;
+    if (spot) {
+      $("kpi-spot").textContent = INR(spot.avg_price);
+      const changeEl = $("kpi-change");
+      const sign = spot.daily_change >= 0 ? "+" : "";
+      changeEl.textContent = sign + INR(spot.daily_change) + " (" + sign + spot.daily_change_pct.toFixed(1) + "%)";
+      changeEl.className = "kpi-sub " + (spot.daily_change >= 0 ? "good" : "bad");
+    }
+
+    // Forecasts table
+    const tbody = $("forecast-tbl").querySelector("tbody");
+    tbody.innerHTML = "";
+    (data.forecasts || []).forEach(f => {
+      const tr = document.createElement("tr");
+      const horizon = f.horizon_days + "-day";
+      const range = f.lower_bound ? INR(f.lower_bound) + " - " + INR(f.upper_bound) : "-";
+      [horizon, f.target_date, INR(f.predicted_price), range].forEach(v => {
+        const td = document.createElement("td");
+        td.textContent = v;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+
+    // Regime
+    const regime = data.regime;
+    if (regime) {
+      const badge = $("regime-badge");
+      const label = regime.label || "UNKNOWN";
+      badge.textContent = label + " RISK";
+      badge.className = "regime-badge regime-" + label.toLowerCase();
+      $("regime-detail").textContent = (regime.bear_probability * 100).toFixed(0) + "% bear probability";
+    }
+  }
+
+  // ── Render archive table + chart ──────────────────────────────
+  function renderArchive() {
     const enriched = enrich(archive);
     const metrics = rollMetrics(enriched, 30);
 
-    // KPIs
     $("kpi-mape").textContent = (metrics.mape*100 || 0).toFixed(1) + "%";
     $("kpi-rmse").textContent = INR(metrics.rmse);
     $("kpi-score").textContent = (metrics.avgScore || 0).toFixed(1);
 
-    // Table (last 30)
+    // Table
     const tbody = $("tbl").querySelector("tbody");
     tbody.innerHTML = "";
     enriched.slice(-30).forEach(r => {
       const tr = document.createElement("tr");
-      const tds = [
-        r.date,
-        INR(r.actual),
-        INR(r.pred),
-        INR(r.absErr),
-        (r.pctErr!=null) ? (r.pctErr*100).toFixed(1) + "%" : "",
-        (r.score!=null) ? r.score.toFixed(1) : ""
-      ];
-      tds.forEach((v,i)=>{
+      [r.date, INR(r.actual), INR(r.pred), INR(r.absErr),
+       (r.pctErr!=null) ? (r.pctErr*100).toFixed(1)+"%" : "",
+       (r.score!=null) ? r.score.toFixed(1) : ""
+      ].forEach(v => {
         const td = document.createElement("td");
         td.textContent = v;
         tr.appendChild(td);
@@ -219,66 +295,92 @@
     const labels = enriched.map(r => r.date);
     const actual = enriched.map(r => r.actual);
     const pred = enriched.map(r => r.pred);
-
     if (chart) chart.destroy();
     const ctx = $("chart").getContext("2d");
     chart = new Chart(ctx, {
       type: "line",
       data: {
         labels,
-        datasets: [{
-          label: "Actual",
-          data: actual,
-          borderWidth: 2,
-          tension: 0.2
-        },{
-          label: "Predicted",
-          data: pred,
-          borderWidth: 2,
-          tension: 0.2
-        }]
+        datasets: [
+          { label: "Actual", data: actual, borderWidth: 2, tension: 0.2, borderColor: "#0b3d91" },
+          { label: "Predicted", data: pred, borderWidth: 2, tension: 0.2, borderColor: "#f59e0b", borderDash: [5,3] }
+        ]
       },
       options: {
-        interaction: {mode: "index", intersect: false},
-        scales: {
-          y: { ticks: { callback: (v)=> INR(v) } }
-        },
+        interaction: { mode: "index", intersect: false },
+        scales: { y: { ticks: { callback: (v) => INR(v) } } },
         plugins: {
           legend: { display: true },
-          tooltip: { callbacks: { label: (ctx)=> `${ctx.dataset.label}: ${INR(ctx.parsed.y)}` } }
+          tooltip: { callbacks: { label: (ctx) => ctx.dataset.label + ": " + INR(ctx.parsed.y) } }
         }
       }
     });
   }
 
-  // Wire up controls
-  $("load-archive").addEventListener("change", (e)=>{
+  // ── Auto-load pipeline data on page load ──────────────────────
+  async function autoLoad() {
+    // Try loading dashboard.json from pipeline exports
+    try {
+      const resp = await fetch("data/dashboard.json");
+      if (resp.ok) {
+        const data = await resp.json();
+        renderDashboard(data);
+      }
+    } catch(e) {
+      console.log("No dashboard.json found (pipeline not run yet)");
+    }
+
+    // Try loading archive.csv from pipeline exports
+    try {
+      const resp = await fetch("data/archive.csv");
+      if (resp.ok) {
+        const text = await resp.text();
+        Papa.parse(text, {
+          header: true, skipEmptyLines: true,
+          complete: (res) => {
+            if (res.data.length > 0) {
+              archive = mergeArchive([], res.data, "seed");
+              renderArchive();
+            }
+          }
+        });
+      }
+    } catch(e) {
+      console.log("No archive.csv found (pipeline not run yet)");
+    }
+  }
+
+  // ── Wire up manual controls ────────────────────────────────────
+  $("load-archive").addEventListener("change", (e) => {
     const f = e.target.files?.[0]; if (!f) return;
-    parseCSV(f, rows => { archive = mergeArchive([], rows, "seed"); render(); });
+    parseCSV(f, rows => { archive = mergeArchive([], rows, "seed"); renderArchive(); });
   });
 
-  $("upload-preds").addEventListener("change", (e)=>{
+  $("upload-preds").addEventListener("change", (e) => {
     const f = e.target.files?.[0]; if (!f) return;
-    parseCSV(f, rows => { archive = mergeArchive(archive, rows, "pred"); render(); });
+    parseCSV(f, rows => { archive = mergeArchive(archive, rows, "pred"); renderArchive(); });
   });
 
-  $("upload-actuals").addEventListener("change", (e)=>{
+  $("upload-actuals").addEventListener("change", (e) => {
     const f = e.target.files?.[0]; if (!f) return;
-    parseCSV(f, rows => { archive = mergeArchive(archive, rows, "actual"); render(); });
+    parseCSV(f, rows => { archive = mergeArchive(archive, rows, "actual"); renderArchive(); });
   });
 
-  $("download-archive").addEventListener("click", ()=>{
+  $("download-archive").addEventListener("click", () => {
     if (!archive.length) { alert("No archive in memory. Load or upload first."); return; }
     const headers = Object.keys(archive[0]);
     const csv = [headers.join(",")].concat(
       archive.map(r => headers.map(h => (r[h] ?? "")).join(","))
     ).join("\n");
-    const blob = new Blob([csv], {type: "text/csv;charset=utf-8;"});
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url; a.download = "archive.csv"; a.click();
     URL.revokeObjectURL(url);
   });
+
+  // Boot
+  autoLoad();
 </script>
 </body>
 </html>
