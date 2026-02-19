@@ -21,8 +21,3 @@ __pycache__/
 data/cardamom.db
 data/models/
 data/pipeline.log
-cardamom_webapp/data/dashboard.json
-cardamom_webapp/data/price_history.json
-cardamom_webapp/data/track_record.json
-cardamom_webapp/data/archive.csv
-!cardamom_webapp/data/archive_template.csv
