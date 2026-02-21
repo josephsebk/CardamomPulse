@@ -85,18 +85,20 @@ def load_xls_fallback() -> pd.DataFrame:
 
 
 def aggregate_daily(df: pd.DataFrame) -> pd.DataFrame:
-    """Aggregate per-auctioneer rows to daily totals."""
-    daily = (
-        df.groupby("Date")
-        .agg({
-            "Lots": "sum",
-            "Qty_Arrived_Kg": "sum",
-            "Qty_Sold_Kg": "sum",
-            "AvgPrice": "mean",
-            "MaxPrice": "mean",
+    """Aggregate per-auctioneer rows to daily totals (volume-weighted avg price)."""
+
+    def _wavg(group):
+        sold = group["Qty_Sold_Kg"]
+        weights = sold / sold.sum() if sold.sum() > 0 else 1 / len(sold)
+        return pd.Series({
+            "Lots": group["Lots"].sum(),
+            "Qty_Arrived_Kg": group["Qty_Arrived_Kg"].sum(),
+            "Qty_Sold_Kg": sold.sum(),
+            "AvgPrice": (group["AvgPrice"] * weights).sum(),
+            "MaxPrice": group["MaxPrice"].max(),
         })
-        .reset_index()
-    )
+
+    daily = df.groupby("Date").apply(_wavg, include_groups=False).reset_index()
     daily = daily.rename(columns={
         "Date": "date",
         "Lots": "lots",
