@@ -1,15 +1,20 @@
-name: Deploy to GitHub Pages
+name: CardamomPulse Pipeline & Deploy
 
 on:
-  push:
-    branches: [main, claude/check-app-status-E58UY]
   schedule:
     # Daily at 12:30 UTC (6:00 PM IST) — run pipeline + deploy
     - cron: '30 12 * * *'
   workflow_dispatch:
+    inputs:
+      retrain:
+        description: 'Force full model retrain'
+        type: boolean
+        default: false
+  push:
+    branches: [main]
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -23,8 +28,76 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - uses: actions/checkout@v4
+
+      # ═══════════════════════════════════════════════════════════════
+      # DATA PIPELINE (schedule + manual dispatch only)
+      # On push events, skip pipeline and just deploy existing data.
+      # ═══════════════════════════════════════════════════════════════
+
+      - name: Setup Python
+        if: github.event_name != 'push'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        if: github.event_name != 'push'
+        run: pip install -r requirements.txt
+
+      - name: Restore pipeline cache (DB + models)
+        if: github.event_name != 'push'
+        uses: actions/cache@v4
+        with:
+          path: |
+            data/cardamom.db
+            data/models/
+          key: pipeline-${{ github.run_number }}
+          restore-keys: |
+            pipeline-
+
+      - name: Determine pipeline flags
+        if: github.event_name != 'push'
+        id: flags
+        run: |
+          # First run (no cached DB): seed from CSV files + train models
+          if [ ! -f data/cardamom.db ]; then
+            echo "args=--seed" >> "$GITHUB_OUTPUT"
+            echo "::notice::First run detected — seeding database and training models"
+          # Sunday or manual retrain: full retrain
+          elif [[ "${{ inputs.retrain }}" == "true" ]] || [[ "$(date -u +%u)" == "7" ]]; then
+            echo "args=--retrain" >> "$GITHUB_OUTPUT"
+            echo "::notice::Retrain triggered"
+          # Normal daily run
+          else
+            echo "args=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run data pipeline
+        if: github.event_name != 'push'
+        id: pipeline
+        run: python -m pipeline.run_daily ${{ steps.flags.outputs.args }}
+
+      - name: Commit updated data
+        if: github.event_name != 'push' && steps.pipeline.outcome == 'success'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f cardamom_webapp/data/
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: pipeline data update $(date -u +%Y-%m-%d) [skip ci]"
+            git push
+            echo "::notice::Pipeline data committed and pushed"
+          else
+            echo "::notice::No data changes to commit"
+          fi
+
+      # ═══════════════════════════════════════════════════════════════
+      # DEPLOY TO GITHUB PAGES (always runs)
+      # ═══════════════════════════════════════════════════════════════
 
       - name: Prepare Pages artifact
         run: |
