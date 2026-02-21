@@ -1,25 +1,25 @@
 {
-  "updated_at": "2026-02-21T04:21:07.336056Z",
+  "updated_at": "2026-02-21T04:27:52.085856Z",
   "total_predictions": 1,
   "metrics_by_horizon": {
     "14": {
       "n": 1,
-      "mape": 0.0084,
-      "mae": 20.7,
-      "rmse": 20.7,
+      "mape": 0.0078,
+      "mae": 19.1,
+      "rmse": 19.1,
       "hit_5pct": 1.0
     }
   },
   "recent_validations": [
     {
-      "id": 1,
+      "id": 2,
       "date": "2026-02-20",
       "horizon_days": 14,
       "predicted_price": 2427.4,
-      "actual_price": 2448.0699999999997,
-      "abs_error": 20.669999999999618,
-      "pct_error": 0.008443386014288652,
-      "created_at": "2026-02-21 04:20:05"
+      "actual_price": 2446.4926108404525,
+      "abs_error": 19.09261084045238,
+      "pct_error": 0.007804074598816559,
+      "created_at": "2026-02-21 04:26:49"
     }
   ]
 }
