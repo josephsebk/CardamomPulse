@@ -1,9 +1,9 @@
 """Collect daily cardamom auction prices from Spices Board / XLS fallback."""
 
 import logging
+import re
 import pandas as pd
 import requests
-from io import StringIO
 from pipeline.config import CSV_DIR
 from pipeline.db import get_conn, get_latest_date
 
@@ -11,20 +11,55 @@ log = logging.getLogger(__name__)
 
 SPICES_BOARD_URL = "https://www.indianspices.com/marketing/auction/small-cardamom.html"
 
+# Regex to parse the ticker text format on the Spices Board page.
+# Each Small Cardamom entry looks like:
+#   Spice: Small Cardamom</b>,  Date of Auction: 20-Feb-2026,
+#   Auctioneer: ...,  No.of lots: 245,  Qty Arrived (Kgs): 72074.4,
+#   Qty Sold (Kgs): 70270.6,  Max Price (Rs./Kg): 2912.00,
+#   Avg. Price (Rs./Kg): 2415.68
+_TICKER_RE = re.compile(
+    r"Spice:\s*Small Cardamom[^,]*,\s*"
+    r"Date of Auction:\s*([\w\d -]+?)\s*,\s*"
+    r"Auctioneer:\s*(.+?)\s*,\s*"
+    r"No\.of lots:\s*([\d.]+)\s*,\s*"
+    r"Qty Arrived \(Kgs\):\s*([\d.]+)\s*,\s*"
+    r"Qty Sold \(Kgs\):\s*([\d.]+)\s*,\s*"
+    r"Max Price \(Rs\./Kg\):\s*([\d.]+)\s*,\s*"
+    r"Avg\. Price \(Rs\./Kg\):\s*([\d.]+)",
+    re.DOTALL,
+)
+
 
 def scrape_auction_page() -> pd.DataFrame | None:
-    """Attempt to scrape today's auction data from indianspices.com."""
+    """Scrape today's auction data from indianspices.com ticker text."""
     try:
         resp = requests.get(SPICES_BOARD_URL, timeout=30, headers={
             "User-Agent": "CardamomPulse/1.0 (price-research)"
         })
         resp.raise_for_status()
-        tables = pd.read_html(StringIO(resp.text))
-        if not tables:
-            log.warning("No tables found on Spices Board page")
+
+        # Strip HTML tags to get clean text for regex matching
+        clean = re.sub(r"<[^>]+>", "", resp.text)
+        clean = re.sub(r"\s+", " ", clean)
+
+        matches = _TICKER_RE.findall(clean)
+        if not matches:
+            log.warning("No Small Cardamom entries found in page ticker")
             return None
-        df = tables[0]
-        log.info(f"Scraped {len(df)} rows from Spices Board")
+
+        rows = []
+        for m in matches:
+            rows.append({
+                "Date": pd.to_datetime(m[0].strip(), format="%d-%b-%Y", dayfirst=True),
+                "Auctioneer": m[1].strip(),
+                "Lots": float(m[2]),
+                "Qty_Arrived_Kg": float(m[3]),
+                "Qty_Sold_Kg": float(m[4]),
+                "MaxPrice": float(m[5]),
+                "AvgPrice": float(m[6]),
+            })
+        df = pd.DataFrame(rows)
+        log.info(f"Scraped {len(df)} Small Cardamom entries from Spices Board ticker")
         return df
     except Exception as e:
         log.warning(f"Spices Board scrape failed: {e}")
@@ -50,18 +85,20 @@ def load_xls_fallback() -> pd.DataFrame:
 
 
 def aggregate_daily(df: pd.DataFrame) -> pd.DataFrame:
-    """Aggregate per-auctioneer rows to daily totals."""
-    daily = (
-        df.groupby("Date")
-        .agg({
-            "Lots": "sum",
-            "Qty_Arrived_Kg": "sum",
-            "Qty_Sold_Kg": "sum",
-            "AvgPrice": "mean",
-            "MaxPrice": "mean",
+    """Aggregate per-auctioneer rows to daily totals (volume-weighted avg price)."""
+
+    def _wavg(group):
+        sold = group["Qty_Sold_Kg"]
+        weights = sold / sold.sum() if sold.sum() > 0 else 1 / len(sold)
+        return pd.Series({
+            "Lots": group["Lots"].sum(),
+            "Qty_Arrived_Kg": group["Qty_Arrived_Kg"].sum(),
+            "Qty_Sold_Kg": sold.sum(),
+            "AvgPrice": (group["AvgPrice"] * weights).sum(),
+            "MaxPrice": group["MaxPrice"].max(),
         })
-        .reset_index()
-    )
+
+    daily = df.groupby("Date").apply(_wavg, include_groups=False).reset_index()
     daily = daily.rename(columns={
         "Date": "date",
         "Lots": "lots",
@@ -76,28 +113,19 @@ def aggregate_daily(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def collect_auction() -> pd.DataFrame:
-    """Main entry: try scrape, fall back to XLS, aggregate to daily, upsert."""
+    """Main entry: load XLS history, merge with fresh scrape, aggregate, upsert."""
+    # Always load XLS baseline for historical data
+    raw = load_xls_fallback()
+    log.info(f"Loaded XLS fallback: {len(raw)} rows")
+
+    # Try to scrape today's data and merge it in
     scraped = scrape_auction_page()
     if scraped is not None and len(scraped) > 0:
-        try:
-            scraped.columns = [
-                "Date", "Auctioneer", "Lots", "Qty_Arrived_Kg",
-                "Qty_Sold_Kg", "MaxPrice", "AvgPrice",
-            ]
-            scraped["Date"] = pd.to_datetime(scraped["Date"], format="mixed", dayfirst=False)
-            for col in ["Lots", "Qty_Arrived_Kg", "Qty_Sold_Kg", "MaxPrice", "AvgPrice"]:
-                scraped[col] = pd.to_numeric(scraped[col], errors="coerce")
-            scraped = scraped.dropna(subset=["Date", "AvgPrice"])
-            daily = aggregate_daily(scraped)
-            log.info(f"Scraped auction data: {len(daily)} daily rows")
-        except Exception as e:
-            log.warning(f"Failed to parse scraped data: {e}, falling back to XLS")
-            raw = load_xls_fallback()
-            daily = aggregate_daily(raw)
-    else:
-        raw = load_xls_fallback()
-        daily = aggregate_daily(raw)
-        log.info(f"Loaded XLS fallback: {len(daily)} daily rows")
+        raw = pd.concat([raw, scraped], ignore_index=True)
+        raw = raw.drop_duplicates(subset=["Date", "Auctioneer"], keep="last")
+        log.info(f"Merged {len(scraped)} scraped rows with XLS history")
+
+    daily = aggregate_daily(raw)
 
     # Upsert into DB
     conn = get_conn()
