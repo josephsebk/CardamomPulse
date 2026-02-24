@@ -1224,7 +1224,7 @@ function renderLedger() {
   });
 
   // Forward forecasts first (future dates, no actual price yet)
-  const forwardForecasts = (dashboardData?.forecasts || []).slice().sort((a, b) => a.target_date.localeCompare(b.target_date));
+  const forwardForecasts = (dashboardData?.forecasts || []).slice().sort((a, b) => b.target_date.localeCompare(a.target_date));
   forwardForecasts.forEach(f => {
     const d = new Date(f.target_date + "T00:00:00");
     const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
