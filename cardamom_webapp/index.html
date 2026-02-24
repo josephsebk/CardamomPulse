@@ -441,6 +441,7 @@
     <!-- Spot Price -->
     <div class="card kpi-card" id="kpi-spot-card">
       <div class="kpi-label">Spot Price</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:4px;" id="kpi-spot-date"></div>
       <div style="display:flex;align-items:center;">
         <span class="kpi-value" id="kpi-spot">--</span>
         <span class="kpi-badge green" id="kpi-spot-badge">--</span>
@@ -451,7 +452,7 @@
     <!-- Predicted Price -->
     <div class="card kpi-card predicted">
       <div class="kpi-label">Predicted Price</div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:4px;">Today</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:4px;" id="kpi-pred-date">--</div>
       <div style="display:flex;align-items:center;">
         <span class="kpi-value" id="kpi-pred">--</span>
         <span class="kpi-badge green" id="kpi-pred-badge">--</span>
@@ -495,7 +496,7 @@
   <!-- FORECAST CHART + INTELLIGENCE -->
   <div class="two-col">
     <!-- Price Forecast Model -->
-    <div class="card paywall-zone">
+    <div class="card">
       <div class="card-header">
         <div>
           <div class="card-title">Price Forecast Model</div>
@@ -508,15 +509,6 @@
       </div>
       <div class="chart-wrap" style="height:240px;">
         <canvas id="chart-forecast"></canvas>
-      </div>
-      <!-- Paywall overlay -->
-      <div class="paywall-overlay">
-        <div class="paywall-lock">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        </div>
-        <div class="paywall-title">Pro Forecast Access</div>
-        <div class="paywall-desc">Unlock advanced 8-week predictive analytics, confidence intervals, and exclusive market signals.</div>
-        <button class="paywall-btn" onclick="switchPage('plans')">Unlock Pro Intelligence &rarr;</button>
       </div>
     </div>
 
@@ -888,6 +880,8 @@ function renderDashboard(data) {
 
   // Spot price KPI
   $("kpi-spot").textContent = INR(spot.avg_price);
+  const spotDate = new Date(spot.date + "T00:00:00");
+  $("kpi-spot-date").textContent = spotDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   const pctSign = spot.daily_change_pct >= 0 ? "+" : "";
   $("kpi-spot-badge").textContent = pctSign + spot.daily_change_pct.toFixed(1) + "%";
   $("kpi-spot-badge").className = "kpi-badge " + (spot.daily_change_pct >= 0 ? "green" : "red");
@@ -897,6 +891,8 @@ function renderDashboard(data) {
   const fc = (data.forecasts || [])[0];
   if (fc) {
     $("kpi-pred").textContent = INR(fc.predicted_price);
+    const predDate = new Date(fc.target_date + "T00:00:00");
+    $("kpi-pred-date").textContent = predDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
     const predChange = ((fc.predicted_price - spot.avg_price) / spot.avg_price * 100);
     const predSign = predChange >= 0 ? "+" : "";
     $("kpi-pred-badge").textContent = predSign + predChange.toFixed(1) + "%";
@@ -1112,13 +1108,17 @@ function renderIntelChart(days) {
 
   const ctx = $("chart-intel").getContext("2d");
   if (chartIntel) chartIntel.destroy();
+
+  // Use proper date labels (e.g. "Oct 18", "Nov 3")
+  const dateLabels = data.map(p => {
+    const d = new Date(p.date + "T00:00:00");
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  });
+
   chartIntel = new Chart(ctx, {
     type: "line",
     data: {
-      labels: data.map(p => {
-        const d = new Date(p.date);
-        return d.toLocaleDateString("en-US", { month: "short" });
-      }),
+      labels: dateLabels,
       datasets: [
         {
           label: "Actual Price",
@@ -1127,10 +1127,7 @@ function renderIntelChart(days) {
           borderWidth: 2.5,
           tension: 0.3,
           fill: false,
-          pointRadius: (ctx) => {
-            // Show dots every ~10 points
-            return ctx.dataIndex % 8 === 0 ? 4 : 0;
-          },
+          pointRadius: (ctx) => ctx.dataIndex % 8 === 0 ? 3 : 0,
           pointBackgroundColor: "#1a472a",
           pointHitRadius: 8
         },
@@ -1138,10 +1135,15 @@ function renderIntelChart(days) {
           label: "Model Prediction",
           data: data.map(p => predMap[p.date] ?? null),
           borderColor: "#22c55e",
-          borderWidth: 2,
+          borderWidth: 2.5,
           tension: 0.3,
           borderDash: [6, 4],
-          pointRadius: 0,
+          pointRadius: (ctx) => {
+            const val = data[ctx.dataIndex] ? predMap[data[ctx.dataIndex].date] : null;
+            if (val == null) return 0;
+            return ctx.dataIndex % 8 === 0 ? 3 : 0;
+          },
+          pointBackgroundColor: "#22c55e",
           fill: false,
           spanGaps: true
         }
@@ -1152,7 +1154,16 @@ function renderIntelChart(days) {
       maintainAspectRatio: false,
       interaction: { mode: "index", intersect: false },
       scales: {
-        x: { ticks: { maxTicksToShow: 8, font: { size: 11 }, color: "#9ca3af" }, grid: { display: false } },
+        x: {
+          ticks: {
+            maxRotation: 0,
+            autoSkip: true,
+            maxTicksToShow: 10,
+            font: { size: 11 },
+            color: "#9ca3af"
+          },
+          grid: { display: false }
+        },
         y: {
           ticks: { callback: v => INR(v), font: { size: 11 }, color: "#9ca3af" },
           grid: { color: "#f3f4f6" },
@@ -1177,9 +1188,9 @@ function renderIntelChart(days) {
             title: (items) => {
               if (!items.length) return "";
               const idx = items[0].dataIndex;
-              const p = (days === 0 ? priceHistory : priceHistory.slice(-days))[idx];
+              const p = data[idx];
               if (!p) return "";
-              const d = new Date(p.date);
+              const d = new Date(p.date + "T00:00:00");
               return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
             },
             label: ctx => ctx.dataset.label + ": " + INR(ctx.parsed.y)
@@ -1204,11 +1215,7 @@ function renderLedger() {
   const body = $("ledger-body");
   body.innerHTML = "";
 
-  // Use last 30 days of price history to create ledger entries
-  const last30 = priceHistory.slice(-30);
-  if (!last30.length) return;
-
-  // Build predicted map
+  // Build predicted map from archive
   const predMap = {};
   archive.forEach(r => {
     if (r.date && r.predicted_avg_price_inr_per_kg) {
@@ -1216,10 +1223,36 @@ function renderLedger() {
     }
   });
 
-  // Generate ledger rows with simulated predictions if no real ones exist
-  const hasPredictions = last30.some(p => predMap[p.date] != null);
+  // Forward forecasts first (future dates, no actual price yet)
+  const forwardForecasts = (dashboardData?.forecasts || []).slice().sort((a, b) => a.target_date.localeCompare(b.target_date));
+  forwardForecasts.forEach(f => {
+    const d = new Date(f.target_date + "T00:00:00");
+    const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    const horizonLabel = f.horizon_days + "d";
 
-  last30.reverse().forEach((p, i) => {
+    const tr = document.createElement("tr");
+    tr.style.background = "#f8faf8";
+    tr.innerHTML = `
+      <td>
+        <div class="ledger-date">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          ${dateStr}
+        </div>
+      </td>
+      <td class="ledger-price">${INR(f.predicted_price)}</td>
+      <td class="ledger-price" style="color:var(--muted)">—</td>
+      <td class="ledger-delta" style="color:var(--muted)">—</td>
+      <td>—</td>
+      <td><span class="status-badge" style="background:#f3f4f6;color:var(--muted)">Pending</span></td>
+    `;
+    body.appendChild(tr);
+  });
+
+  // Historical rows: last 30 days of price history
+  const last30 = priceHistory.slice(-30);
+  if (!last30.length) return;
+
+  last30.slice().reverse().forEach((p, i) => {
     const actual = p.avg_price;
     let predicted;
     if (predMap[p.date] != null) {
@@ -1239,7 +1272,7 @@ function renderLedger() {
     else if (pctErr < 0.05) { status = "Within Margin"; statusClass = "margin"; }
     else { status = "Miss"; statusClass = "miss"; }
 
-    const d = new Date(p.date);
+    const d = new Date(p.date + "T00:00:00");
     const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
     const precisionColor = precision > 95 ? "var(--green-dark)" : precision > 90 ? "var(--green-accent)" : "var(--orange)";
