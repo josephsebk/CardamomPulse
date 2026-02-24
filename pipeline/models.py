@@ -102,6 +102,18 @@ def walk_forward_cv(df: pd.DataFrame, features: list[str], target_col: str,
 
 # ── Model factories ──────────────────────────────────────────────────────
 
+def _gbr_short(horizon):
+    """Factory for short-horizon (1d–7d) GBR models."""
+    # Shorter horizons use slightly less complexity
+    return GradientBoostingRegressor(
+        n_estimators=100, max_depth=4,
+        learning_rate=0.12 if horizon <= 3 else 0.1,
+        subsample=0.8,
+        min_samples_leaf=max(5, horizon * 2),
+        random_state=42,
+    )
+
+
 def _gbr_7d():
     return GradientBoostingRegressor(
         n_estimators=100, max_depth=4, learning_rate=0.1,
@@ -148,6 +160,23 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     """Train all models on full data and save to disk. Returns metrics + models."""
     ensure_dirs()
     results = {}
+
+    # ── 1d–6d daily models (same features as 7d) ──────────────────
+    feats_short = _available_feats(daily, FEATS_7D)
+    for h in range(1, 7):
+        key = f"{h}d"
+        target_col = f"target_{key}"
+        daily[target_col] = daily["avg_price"].shift(-h)
+        cv = walk_forward_cv(daily, feats_short, target_col,
+                             lambda _h=h: _gbr_short(_h),
+                             **WF_CONFIG["daily"], purge=h)
+        log.info(f"{h}-day WF-CV: MAPE={cv['mape']:.3f}, MAE={cv['mae']:.1f}")
+
+        df_train = daily.dropna(subset=[target_col] + feats_short)
+        m = _gbr_short(h)
+        m.fit(df_train[feats_short].values, df_train[target_col].values)
+        joblib.dump(m, str(MODELS_DIR / f"model_{key}.pkl"))
+        results[key] = {"model": m, "features": feats_short, "cv": cv}
 
     # ── 7-day model ──────────────────────────────────────────────────
     feats_7d = _available_feats(daily, FEATS_7D)
@@ -261,6 +290,12 @@ def load_models() -> dict:
     models = {}
 
     for name, files in [
+        ("1d", ["model_1d.pkl"]),
+        ("2d", ["model_2d.pkl"]),
+        ("3d", ["model_3d.pkl"]),
+        ("4d", ["model_4d.pkl"]),
+        ("5d", ["model_5d.pkl"]),
+        ("6d", ["model_6d.pkl"]),
         ("7d", ["model_7d.pkl"]),
         ("14d", ["model_14d.pkl"]),
         ("28d", ["model_28d_lgb.pkl", "model_28d_ridge.pkl", "scaler_28d.pkl"]),
@@ -271,7 +306,9 @@ def load_models() -> dict:
         if not all_exist:
             continue
 
-        if name == "7d":
+        if name in ("1d", "2d", "3d", "4d", "5d", "6d"):
+            models[name] = {"model": joblib.load(str(MODELS_DIR / f"model_{name}.pkl"))}
+        elif name == "7d":
             models["7d"] = {"model": joblib.load(str(MODELS_DIR / "model_7d.pkl"))}
         elif name == "14d":
             models["14d"] = {"model": joblib.load(str(MODELS_DIR / "model_14d.pkl"))}
@@ -326,6 +363,21 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
             if pd.isna(row[col].iloc[0]) and col in medians:
                 row[col] = medians[col]
         return row.values
+
+    # 1d–6d daily forecasts
+    for h in range(1, 7):
+        key = f"{h}d"
+        if key in models:
+            feats = _available_feats(daily, FEATS_7D)
+            X, used = _last_row(daily, feats)
+            if X is not None:
+                pred = float(models[key]["model"].predict(X)[0])
+                target_date = (pd.Timestamp(today) + timedelta(days=h)).strftime("%Y-%m-%d")
+                forecasts["predictions"].append({
+                    "horizon_days": h, "target_date": target_date,
+                    "predicted_price": round(pred, 1),
+                })
+                log.info(f"{h}-day forecast: ₹{pred:.0f} for {target_date}")
 
     # 7-day
     if "7d" in models:
