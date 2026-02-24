@@ -129,7 +129,9 @@ def export_json():
         }
     _write_json(EXPORT_DIR / "track_record.json", track_record)
 
-    # ── 4. archive.csv — for backward compatibility with existing UI ──
+    # ── 4. archive.csv — historical actuals + predictions ────────────
+    # Include all auction dates (with any matching 7-day prediction),
+    # plus forward forecasts whose target dates have no auction yet.
     archive = pd.read_sql(
         """SELECT a.date,
                   a.avg_price AS actual_avg_price_inr_per_kg,
@@ -140,7 +142,16 @@ def export_json():
            FROM auction_daily a
            LEFT JOIN forecast_ledger f
              ON a.date = f.target_date AND f.horizon_days = 7
-           ORDER BY a.date""",
+        UNION
+        SELECT f2.target_date AS date,
+               NULL AS actual_avg_price_inr_per_kg,
+               f2.predicted_price AS predicted_avg_price_inr_per_kg,
+               f2.forecast_date AS model_run_date,
+               f2.horizon_days,
+               f2.model_version
+           FROM forecast_ledger f2
+           WHERE f2.target_date NOT IN (SELECT date FROM auction_daily)
+           ORDER BY date""",
         conn,
     )
     archive.to_csv(str(EXPORT_DIR / "archive.csv"), index=False)
