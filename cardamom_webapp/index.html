@@ -1101,13 +1101,13 @@ async function loadAll() {
 
   if (histRes.status === "fulfilled" && histRes.value) {
     priceHistory = histRes.value.prices || [];
-    renderForecastChart();
-    renderHistoryChart();
-    renderIntelChart(180);
-    renderLedger();
+    try { renderForecastChart(); } catch(e) { console.warn("Forecast chart:", e.message); }
+    try { renderHistoryChart(); } catch(e) { console.warn("History chart:", e.message); }
+    try { renderIntelChart(180); } catch(e) { console.warn("Intel chart:", e.message); }
+    try { renderLedger(); } catch(e) { console.warn("Ledger:", e.message); }
   }
 
-  if (archRes.status === "fulfilled" && archRes.value) {
+  if (archRes.status === "fulfilled" && archRes.value) { try {
     Papa.parse(archRes.value, {
       header: true, skipEmptyLines: true,
       complete: (res) => {
@@ -1119,7 +1119,7 @@ async function loadAll() {
         }
       }
     });
-  }
+  } catch(e) { console.warn("Archive parse:", e.message); } }
 
   if (insRes.status === "fulfilled" && insRes.value) {
     insightsData = insRes.value;
@@ -1572,7 +1572,7 @@ function renderInsights(data) {
   $("ins-ath").textContent = "ATH: " + INR(data.price_timeline.all_time_high);
   $("ins-atl").textContent = "ATL: " + INR(data.price_timeline.all_time_low);
 
-  renderTimelineChart(data.price_timeline);
+  try { renderTimelineChart(data.price_timeline); } catch(e) { console.warn("Timeline chart:", e.message); }
   renderRegimeTimeline(data.regimes);
   renderSeasonality(data.seasonality);
   renderDrivers(data.drivers);
@@ -1797,7 +1797,7 @@ function renderPlantingAnalysis(planting) {
 
   // Cost floor chart
   const costHist = planting.cost_floor_history;
-  if (costHist && costHist.length) {
+  if (costHist && costHist.length) { try {
     const ctx = $("chart-costfloor").getContext("2d");
     if (chartCostFloor) chartCostFloor.destroy();
 
@@ -1856,7 +1856,7 @@ function renderPlantingAnalysis(planting) {
         }
       }
     });
-  }
+  } catch(e) { console.warn("Cost floor chart:", e.message); } }
 
   // Best / worst planting years
   function renderPlantingList(containerId, items, isGood) {
