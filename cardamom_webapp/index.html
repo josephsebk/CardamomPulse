@@ -510,13 +510,46 @@
       .metric-grid { grid-template-columns: 1fr; }
       .plans-grid { grid-template-columns: 1fr; }
       .enterprise-cta { flex-direction: column; gap: 16px; text-align: center; }
+      .navbar-inner { gap: 16px; }
+      .nav-search { width: 140px; }
+      .nav-tab { padding: 0 10px; font-size: 13px; }
     }
+    /* Hamburger button — hidden on desktop */
+    .nav-hamburger {
+      display: none; width: 36px; height: 36px; border: none; background: none;
+      cursor: pointer; flex-direction: column; justify-content: center; align-items: center;
+      gap: 5px; padding: 6px; border-radius: 8px; flex-shrink: 0;
+    }
+    .nav-hamburger span {
+      display: block; width: 20px; height: 2px; background: var(--ink);
+      border-radius: 2px; transition: transform 0.25s, opacity 0.25s;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
     @media (max-width: 600px) {
       .kpi-grid { grid-template-columns: 1fr; }
-      .navbar-inner { gap: 12px; }
-      .nav-search { width: 120px; }
-      .nav-tabs { gap: 0; }
-      .nav-tab { padding: 0 10px; font-size: 13px; }
+
+      /* Show hamburger, hide desktop tabs and search */
+      .nav-hamburger { display: flex; }
+      .nav-tabs {
+        display: none; position: absolute; top: 56px; left: 0; right: 0;
+        flex-direction: column; background: #fff; border-bottom: 1px solid var(--border);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1); z-index: 99; padding: 8px 0;
+      }
+      .nav-tabs.open { display: flex; }
+      .nav-tab {
+        padding: 12px 24px; height: auto; font-size: 15px;
+        border-bottom: none; justify-content: flex-start;
+      }
+      .nav-tab.active { background: var(--green-light); border-bottom: none; }
+      .nav-tab:hover { background: #f3f4f6; }
+
+      .navbar-inner { gap: 8px; position: relative; }
+      .nav-search { display: none; }
+      .nav-icon-btn { display: none; }
+      .nav-right { margin-left: auto; gap: 8px; }
     }
   </style>
 </head>
@@ -531,7 +564,7 @@
       <svg viewBox="0 0 32 32" fill="none"><path d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14 14-6.268 14-14S23.732 2 16 2z" fill="#1a472a"/><path d="M16 6c-1.5 4-1 8 1 11s5 5 7 6c-2 1-5 1-8-1s-5-5-6-8c-.5-2 0-5 1-7 1-1.5 3-2 5-1z" fill="#22c55e" opacity="0.8"/><path d="M14 8c1-2 3-3 5-2.5s3 2 3.5 4-0.5 4-2 5.5-4 2-5.5 1.5" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>
       CardamomPulse
     </a>
-    <div class="nav-tabs">
+    <div class="nav-tabs" id="nav-tabs">
       <button class="nav-tab active" data-page="dashboard">Dashboard</button>
       <button class="nav-tab" data-page="insights">Insights</button>
       <button class="nav-tab" data-page="intelligence">Intelligence</button>
@@ -547,6 +580,9 @@
         <span class="pro-badge">PRO</span>
       </div>
     </div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 
@@ -1068,7 +1104,18 @@ function switchPage(pageName) {
   if (tab) tab.classList.add('active');
 }
 document.querySelectorAll('.nav-tab').forEach(tab => {
-  tab.addEventListener('click', () => switchPage(tab.dataset.page));
+  tab.addEventListener('click', () => {
+    switchPage(tab.dataset.page);
+    // Close mobile menu on tab click
+    $("nav-tabs").classList.remove("open");
+    $("nav-hamburger").classList.remove("open");
+  });
+});
+
+// ── Mobile hamburger menu toggle ──────────────────────────
+$("nav-hamburger").addEventListener("click", () => {
+  $("nav-tabs").classList.toggle("open");
+  $("nav-hamburger").classList.toggle("open");
 });
 
 // ── Billing toggle ─────────────────────────────────────────
