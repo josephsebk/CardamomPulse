@@ -1,0 +1,399 @@
+{
+  "updated_at": "2026-02-27T11:44:14.119921Z",
+  "price_timeline": {
+    "yearly_summary": [
+      {
+        "year": 2015,
+        "avg_price": 632.0,
+        "max_price": 1176.0,
+        "min_price": 570.0,
+        "total_volume_mt": 17242.0
+      },
+      {
+        "year": 2016,
+        "avg_price": 824.0,
+        "max_price": 1578.0,
+        "min_price": 495.0,
+        "total_volume_mt": 26469.0
+      },
+      {
+        "year": 2017,
+        "avg_price": 1047.0,
+        "max_price": 1767.0,
+        "min_price": 782.0,
+        "total_volume_mt": 23199.0
+      },
+      {
+        "year": 2018,
+        "avg_price": 1062.0,
+        "max_price": 2253.0,
+        "min_price": 760.0,
+        "total_volume_mt": 26306.0
+      },
+      {
+        "year": 2019,
+        "avg_price": 2496.0,
+        "max_price": 7000.0,
+        "min_price": 1326.0,
+        "total_volume_mt": 17549.0
+      },
+      {
+        "year": 2020,
+        "avg_price": 2085.0,
+        "max_price": 7000.0,
+        "min_price": 1070.0,
+        "total_volume_mt": 16857.0
+      },
+      {
+        "year": 2021,
+        "avg_price": 1182.0,
+        "max_price": 2647.0,
+        "min_price": 861.0,
+        "total_volume_mt": 21758.0
+      },
+      {
+        "year": 2022,
+        "avg_price": 903.0,
+        "max_price": 2555.0,
+        "min_price": 771.0,
+        "total_volume_mt": 31227.0
+      },
+      {
+        "year": 2023,
+        "avg_price": 1445.0,
+        "max_price": 4006.0,
+        "min_price": 868.0,
+        "total_volume_mt": 28476.0
+      },
+      {
+        "year": 2024,
+        "avg_price": 2122.0,
+        "max_price": 4002.0,
+        "min_price": 1316.0,
+        "total_volume_mt": 26548.0
+      },
+      {
+        "year": 2025,
+        "avg_price": 2570.0,
+        "max_price": 4511.0,
+        "min_price": 2037.0,
+        "total_volume_mt": 31077.0
+      },
+      {
+        "year": 2026,
+        "avg_price": 2481.0,
+        "max_price": 3458.0,
+        "min_price": 2404.0,
+        "total_volume_mt": 4636.0
+      }
+    ],
+    "date_range": {
+      "start": "2014-11-07",
+      "end": "2026-02-27",
+      "total_trading_days": 3032
+    },
+    "all_time_high": 4675.0,
+    "all_time_low": 495.0
+  },
+  "seasonality": {
+    "monthly": [
+      {
+        "month": 1,
+        "month_name": "Jan",
+        "avg_price": 1734.0,
+        "deviation_pct": 13.5
+      },
+      {
+        "month": 2,
+        "month_name": "Feb",
+        "avg_price": 1605.0,
+        "deviation_pct": 5.1
+      },
+      {
+        "month": 3,
+        "month_name": "Mar",
+        "avg_price": 1400.0,
+        "deviation_pct": -8.3
+      },
+      {
+        "month": 4,
+        "month_name": "Apr",
+        "avg_price": 1344.0,
+        "deviation_pct": -12.0
+      },
+      {
+        "month": 5,
+        "month_name": "May",
+        "avg_price": 1319.0,
+        "deviation_pct": -13.6
+      },
+      {
+        "month": 6,
+        "month_name": "Jun",
+        "avg_price": 1397.0,
+        "deviation_pct": -8.5
+      },
+      {
+        "month": 7,
+        "month_name": "Jul",
+        "avg_price": 1515.0,
+        "deviation_pct": -0.8
+      },
+      {
+        "month": 8,
+        "month_name": "Aug",
+        "avg_price": 1615.0,
+        "deviation_pct": 5.7
+      },
+      {
+        "month": 9,
+        "month_name": "Sep",
+        "avg_price": 1691.0,
+        "deviation_pct": 10.7
+      },
+      {
+        "month": 10,
+        "month_name": "Oct",
+        "avg_price": 1488.0,
+        "deviation_pct": -2.6
+      },
+      {
+        "month": 11,
+        "month_name": "Nov",
+        "avg_price": 1544.0,
+        "deviation_pct": 1.1
+      },
+      {
+        "month": 12,
+        "month_name": "Dec",
+        "avg_price": 1601.0,
+        "deviation_pct": 4.8
+      }
+    ],
+    "best_months": [
+      "Jan",
+      "Sep",
+      "Aug"
+    ],
+    "worst_months": [
+      "Jun",
+      "Apr",
+      "May"
+    ]
+  },
+  "regimes": [
+    {
+      "name": "Gradual Rise",
+      "period": "Nov 2014 - Jul 2018",
+      "driver": "Indian production growth, steady demand, cost floor rising",
+      "direction": "up",
+      "start_price": 766.0,
+      "end_price": 1000.0,
+      "peak_price": 1393.0,
+      "trough_price": 495.0,
+      "change_pct": 30.6
+    },
+    {
+      "name": "Kerala Flood Spike",
+      "period": "Aug 2018 - Dec 2020",
+      "driver": "2018 Kerala floods (La Nina) destroyed crops, supply crunch",
+      "direction": "up",
+      "start_price": 986.0,
+      "end_price": 1691.0,
+      "peak_price": 4675.0,
+      "trough_price": 949.0,
+      "change_pct": 71.5
+    },
+    {
+      "name": "Supply Glut Correction",
+      "period": "Jan 2021 - Jun 2023",
+      "driver": "New plantings from 2019-20 boom hit market, auction volumes surged",
+      "direction": "down",
+      "start_price": 1711.0,
+      "end_price": 1372.0,
+      "peak_price": 1711.0,
+      "trough_price": 771.0,
+      "change_pct": -19.8
+    },
+    {
+      "name": "Guatemala Crisis Bull Run",
+      "period": "Jul 2023 - Present",
+      "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
+      "direction": "up",
+      "start_price": 1347.0,
+      "end_price": 2420.0,
+      "peak_price": 3182.0,
+      "trough_price": 1205.0,
+      "change_pct": 79.7
+    }
+  ],
+  "drivers": {
+    "enso": {
+      "latest_anomaly": -0.51,
+      "latest_season": "2025 SON",
+      "phase": "La Nina",
+      "impact_note": "La Nina (excess rain) leads to crop damage and HIGHER prices with ~12 month lag. El Nino (drier) tends to be manageable with LOWER prices."
+    },
+    "guatemala_supply": {
+      "recent_12m_qty_mt": 15087.0,
+      "yoy_change_pct": -51.5,
+      "impact_note": "Guatemala supplies 60-70% of global cardamom exports. The 2024-25 thrips crisis collapsed exports, driving Indian prices up."
+    },
+    "rainfall": {
+      "last_90d_rain_mm": 65.0,
+      "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
+    },
+    "exchange_rate": {
+      "current_rate": 91.02,
+      "monthly_change_pct": 0.35,
+      "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
+    }
+  },
+  "planting_analysis": {
+    "best_years": [
+      {
+        "planting_year": 2022,
+        "harvest_window": "2025-2029",
+        "avg_harvest_price": 2526.0,
+        "estimated_roi_pct": 415.0
+      },
+      {
+        "planting_year": 2021,
+        "harvest_window": "2024-2028",
+        "avg_harvest_price": 2391.0,
+        "estimated_roi_pct": 420.0
+      },
+      {
+        "planting_year": 2020,
+        "harvest_window": "2023-2027",
+        "avg_harvest_price": 2155.0,
+        "estimated_roi_pct": 401.0
+      }
+    ],
+    "worst_years": [
+      {
+        "planting_year": 2016,
+        "harvest_window": "2019-2023",
+        "avg_harvest_price": 1622.0,
+        "estimated_roi_pct": 423.0
+      },
+      {
+        "planting_year": 2017,
+        "harvest_window": "2020-2024",
+        "avg_harvest_price": 1547.0,
+        "estimated_roi_pct": 355.0
+      },
+      {
+        "planting_year": 2015,
+        "harvest_window": "2018-2022",
+        "avg_harvest_price": 1546.0,
+        "estimated_roi_pct": 452.0
+      }
+    ],
+    "current_price_to_cost": 3.8,
+    "cost_floor_history": [
+      {
+        "year": 2014,
+        "mgnrega_wage": 212.0,
+        "estimated_cost_per_kg": 350.0
+      },
+      {
+        "year": 2015,
+        "mgnrega_wage": 223.0,
+        "estimated_cost_per_kg": 368.0
+      },
+      {
+        "year": 2016,
+        "mgnrega_wage": 235.0,
+        "estimated_cost_per_kg": 387.0
+      },
+      {
+        "year": 2017,
+        "mgnrega_wage": 247.0,
+        "estimated_cost_per_kg": 407.0
+      },
+      {
+        "year": 2018,
+        "mgnrega_wage": 260.0,
+        "estimated_cost_per_kg": 429.0
+      },
+      {
+        "year": 2019,
+        "mgnrega_wage": 273.0,
+        "estimated_cost_per_kg": 451.0
+      },
+      {
+        "year": 2020,
+        "mgnrega_wage": 287.0,
+        "estimated_cost_per_kg": 474.0
+      },
+      {
+        "year": 2021,
+        "mgnrega_wage": 302.0,
+        "estimated_cost_per_kg": 499.0
+      },
+      {
+        "year": 2022,
+        "mgnrega_wage": 318.0,
+        "estimated_cost_per_kg": 525.0
+      },
+      {
+        "year": 2023,
+        "mgnrega_wage": 335.0,
+        "estimated_cost_per_kg": 552.0
+      },
+      {
+        "year": 2024,
+        "mgnrega_wage": 352.0,
+        "estimated_cost_per_kg": 581.0
+      },
+      {
+        "year": 2025,
+        "mgnrega_wage": 370.0,
+        "estimated_cost_per_kg": 611.0
+      },
+      {
+        "year": 2026,
+        "mgnrega_wage": 390.0,
+        "estimated_cost_per_kg": 643.0
+      },
+      {
+        "year": 2027,
+        "mgnrega_wage": 410.0,
+        "estimated_cost_per_kg": 677.0
+      }
+    ]
+  },
+  "farmer_qa": [
+    {
+      "question": "When is the best time to sell my harvest?",
+      "answer": "Historically, Jan-Sep and Aug fetch the highest prices (+13.5% above annual average). Avoid selling in Jun-Apr when prices typically dip -13.6% below average.",
+      "category": "selling"
+    },
+    {
+      "question": "Is it a good time to plant new cardamom?",
+      "answer": "Current prices are 3.8x the estimated cost floor \u2014 historically very profitable. However, high prices trigger planting booms. The 2024-25 planting wave will likely flood the market by 2027-28, potentially crashing prices. Consider planting when prices are depressed (1-2x cost) for better long-term returns.",
+      "category": "planting"
+    },
+    {
+      "question": "How does weather affect my crop and prices?",
+      "answer": "La Nina (excess rain) causes flooding and crop damage in Idukki, leading to higher prices 12 months later. El Nino (drier conditions) is generally manageable. Monitor the NOAA ENSO index \u2014 transitions to La Nina are the biggest weather risk.",
+      "category": "weather"
+    },
+    {
+      "question": "Why are prices so high right now?",
+      "answer": "The dominant driver is the Guatemala thrips crisis (2024-25), which collapsed 60-70% of global cardamom exports. Guatemala normally supplies the majority of world cardamom. Until Guatemala recovers, Indian prices stay elevated.",
+      "category": "market"
+    },
+    {
+      "question": "When might prices fall significantly?",
+      "answer": "Watch for three signals: (1) Guatemala export volumes recovering \u2014 this would increase global supply, (2) Indian auction volumes rising sharply \u2014 indicating new domestic supply, (3) Google Trends 'cardamom plantation' interest declining \u2014 suggesting planting wave is maturing. Current regime risk is LOW.",
+      "category": "risk"
+    },
+    {
+      "question": "What is the cost floor for cardamom farming?",
+      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92419/kg are 3.8x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "category": "economics"
+    }
+  ]
+}
