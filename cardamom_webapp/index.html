@@ -389,7 +389,7 @@
     }
 
     /* Timeline chart */
-    .timeline-chart { height: 240px; position: relative; }
+    .timeline-chart { height: 320px; position: relative; }
     .timeline-chart canvas { width: 100% !important; height: 100% !important; }
 
     /* Regime timeline */
@@ -1572,7 +1572,7 @@ function renderInsights(data) {
   $("ins-ath").textContent = "ATH: " + INR(data.price_timeline.all_time_high);
   $("ins-atl").textContent = "ATL: " + INR(data.price_timeline.all_time_low);
 
-  try { renderTimelineChart(data.price_timeline); } catch(e) { console.warn("Timeline chart:", e.message); }
+  try { renderTimelineChart(data.price_timeline, data.regimes); } catch(e) { console.warn("Timeline chart:", e.message); }
   renderRegimeTimeline(data.regimes);
   renderSeasonality(data.seasonality);
   renderDrivers(data.drivers);
@@ -1580,72 +1580,212 @@ function renderInsights(data) {
   renderFarmerQA(data.farmer_qa);
 }
 
-// ── 1. Yearly timeline chart ─────────────────────────────
-function renderTimelineChart(timeline) {
+// ── 1. Yearly timeline chart (candlestick + regime bands) ─
+function renderTimelineChart(timeline, regimes) {
   const years = timeline.yearly_summary;
   if (!years.length) return;
 
   const ctx = $("chart-timeline").getContext("2d");
   if (chartTimeline) chartTimeline.destroy();
 
+  // Parse regime periods into year ranges
+  const regimeBands = (regimes || []).map(r => {
+    const m = r.period.match(/(\w+)\s+(\d{4})\s*-\s*(Present|\w+\s+\d{4})/);
+    if (!m) return null;
+    const startYear = parseInt(m[2]);
+    const endYear = m[3] === "Present" ? 2099 : parseInt(m[3].split(/\s+/)[1]);
+    return { name: r.name, direction: r.direction, startYear, endYear, change_pct: r.change_pct };
+  }).filter(Boolean);
+
+  // Map each year index to its regime
+  const yearLabels = years.map(y => y.year);
+
+  // Custom plugin: regime background bands + labels
+  const regimeBackgroundPlugin = {
+    id: "regimeBackground",
+    beforeDraw(chart) {
+      const { ctx: c, chartArea: area, scales: { x } } = chart;
+      if (!area) return;
+      c.save();
+
+      regimeBands.forEach(band => {
+        // Find first and last bar index within this regime
+        let firstIdx = -1, lastIdx = -1;
+        yearLabels.forEach((yr, i) => {
+          if (yr >= band.startYear && yr <= band.endYear) {
+            if (firstIdx === -1) firstIdx = i;
+            lastIdx = i;
+          }
+        });
+        if (firstIdx === -1) return;
+
+        const barWidth = (x.getPixelForValue(1) - x.getPixelForValue(0));
+        const xStart = x.getPixelForValue(firstIdx) - barWidth * 0.5;
+        const xEnd   = x.getPixelForValue(lastIdx) + barWidth * 0.5;
+        const w = xEnd - xStart;
+
+        // Draw regime band
+        const isUp = band.direction === "up";
+        c.fillStyle = isUp ? "rgba(34,197,94,0.08)" : "rgba(220,38,38,0.08)";
+        c.fillRect(xStart, area.top, w, area.bottom - area.top);
+
+        // Side accent line
+        c.fillStyle = isUp ? "rgba(34,197,94,0.35)" : "rgba(220,38,38,0.35)";
+        c.fillRect(xStart, area.top, 2.5, area.bottom - area.top);
+
+        // Label at top of band
+        c.font = "600 9px system-ui, sans-serif";
+        c.fillStyle = isUp ? "#166534" : "#991b1b";
+        c.textAlign = "center";
+        c.textBaseline = "top";
+        const labelX = xStart + w / 2;
+        const sign = band.change_pct > 0 ? "+" : "";
+        const arrow = isUp ? "\u25B2" : "\u25BC";
+        c.fillText(band.name, labelX, area.top + 4);
+        c.font = "700 8px system-ui, sans-serif";
+        c.fillText(arrow + " " + sign + band.change_pct + "%", labelX, area.top + 16);
+      });
+      c.restore();
+    }
+  };
+
+  // Custom plugin: draw avg price tick mark + price labels on candles
+  const candleAnnotationPlugin = {
+    id: "candleAnnotations",
+    afterDatasetsDraw(chart) {
+      const { ctx: c, chartArea: area, scales: { x, y: yScale } } = chart;
+      if (!area) return;
+      const meta = chart.getDatasetMeta(0);
+      c.save();
+
+      years.forEach((yr, i) => {
+        const bar = meta.data[i];
+        if (!bar) return;
+        const bx = bar.x;
+        const halfW = (bar.width || 20) / 2;
+
+        // Draw avg price horizontal tick
+        const avgY = yScale.getPixelForValue(yr.avg_price);
+        c.strokeStyle = "#ffffff";
+        c.lineWidth = 2.5;
+        c.beginPath();
+        c.moveTo(bx - halfW + 2, avgY);
+        c.lineTo(bx + halfW - 2, avgY);
+        c.stroke();
+        c.strokeStyle = "#1a472a";
+        c.lineWidth = 1.5;
+        c.beginPath();
+        c.moveTo(bx - halfW + 2, avgY);
+        c.lineTo(bx + halfW - 2, avgY);
+        c.stroke();
+
+        // Draw vertical wick line (thin line through center, extends full min-max)
+        const minY = yScale.getPixelForValue(yr.min_price);
+        const maxY = yScale.getPixelForValue(yr.max_price);
+        c.strokeStyle = "rgba(0,0,0,0.2)";
+        c.lineWidth = 1;
+        c.beginPath();
+        c.moveTo(bx, Math.min(maxY, bar.y) - 2);
+        c.lineTo(bx, Math.max(minY, bar.base) + 2);
+        c.stroke();
+
+        // Price labels: max above, min below
+        c.font = "600 8px system-ui, sans-serif";
+        c.textAlign = "center";
+        c.fillStyle = "#6b7280";
+        // Max label above candle
+        const topY = Math.min(maxY, bar.y);
+        c.textBaseline = "bottom";
+        c.fillText(INR(yr.max_price), bx, topY - 3);
+        // Min label below candle
+        const botY = Math.max(minY, bar.base);
+        c.textBaseline = "top";
+        c.fillText(INR(yr.min_price), bx, botY + 3);
+      });
+      c.restore();
+    }
+  };
+
+  // Determine candle colors: bull (close > open proxy: avg in upper half of range) vs bear
+  const candleColors = years.map(y => {
+    const mid = (y.min_price + y.max_price) / 2;
+    return y.avg_price >= mid
+      ? { bg: "rgba(34,134,58,0.75)", border: "#1a472a" }   // bullish
+      : { bg: "rgba(220,38,38,0.65)", border: "#991b1b" };  // bearish
+  });
+
   chartTimeline = new Chart(ctx, {
     type: "bar",
     data: {
-      labels: years.map(y => y.year.toString()),
+      labels: yearLabels.map(y => y.toString()),
       datasets: [
         {
-          label: "Avg Price",
-          data: years.map(y => y.avg_price),
-          backgroundColor: years.map(y => {
-            if (y.avg_price > 1800) return "rgba(26,71,42,0.85)";
-            if (y.avg_price > 1200) return "rgba(34,134,58,0.7)";
-            return "rgba(34,197,94,0.5)";
-          }),
-          borderRadius: 4,
-          barPercentage: 0.6,
+          label: "Price Range (Min–Max)",
+          data: years.map(y => [y.min_price, y.max_price]),
+          backgroundColor: candleColors.map(c => c.bg),
+          borderColor: candleColors.map(c => c.border),
+          borderWidth: 1,
+          borderRadius: 2,
+          borderSkipped: false,
+          barPercentage: 0.5,
+          categoryPercentage: 0.8,
           yAxisID: "y",
         },
         {
-          label: "Price Range",
+          label: "Avg Price",
+          data: years.map(y => y.avg_price),
           type: "line",
-          data: years.map(y => y.max_price),
-          borderColor: "#dc2626",
-          borderWidth: 1.5,
-          borderDash: [4, 4],
+          borderColor: "#1a472a",
+          borderWidth: 2,
+          borderDash: [5, 3],
           pointRadius: 3,
-          pointBackgroundColor: "#dc2626",
+          pointBackgroundColor: "#1a472a",
+          pointBorderColor: "#fff",
+          pointBorderWidth: 1.5,
           fill: false,
           yAxisID: "y",
+          order: -1,
         },
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { top: 28, bottom: 4 } },
       interaction: { mode: "index", intersect: false },
       scales: {
-        x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+        x: {
+          grid: { display: false },
+          ticks: { font: { size: 11, weight: "600" } },
+        },
         y: {
           ticks: { callback: v => INR(v), font: { size: 10 }, color: "#9ca3af" },
           grid: { color: "#f3f4f6" },
+          beginAtZero: false,
         },
       },
       plugins: {
         legend: {
           display: true, position: "top", align: "end",
-          labels: { boxWidth: 12, font: { size: 11 }, usePointStyle: true },
+          labels: {
+            boxWidth: 12, font: { size: 11 }, usePointStyle: true,
+            filter: item => item.text !== "Price Range (Min–Max)" || item.datasetIndex === 0,
+          },
         },
         tooltip: {
           callbacks: {
-            label: ctx => {
-              const y = years[ctx.dataIndex];
-              if (ctx.datasetIndex === 0) return "Avg: " + INR(y.avg_price) + " | Vol: " + fmtK(y.total_volume_mt * 1000) + " MT";
-              return "Max: " + INR(y.max_price);
+            label: tip => {
+              const y = years[tip.dataIndex];
+              if (tip.datasetIndex === 0) {
+                return "Range: " + INR(y.min_price) + " – " + INR(y.max_price);
+              }
+              return "Avg: " + INR(y.avg_price) + " | Vol: " + fmtK(y.total_volume_mt * 1000) + " MT";
             }
           }
         }
       }
-    }
+    },
+    plugins: [regimeBackgroundPlugin, candleAnnotationPlugin]
   });
 }
 
