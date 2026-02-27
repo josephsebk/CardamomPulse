@@ -516,9 +516,9 @@
     }
     /* Hamburger button — hidden on desktop */
     .nav-hamburger {
-      display: none; width: 36px; height: 36px; border: none; background: none;
+      display: none; width: 44px; height: 44px; border: none; background: none;
       cursor: pointer; flex-direction: column; justify-content: center; align-items: center;
-      gap: 5px; padding: 6px; border-radius: 8px; flex-shrink: 0;
+      gap: 5px; padding: 10px; border-radius: 8px; flex-shrink: 0;
     }
     .nav-hamburger span {
       display: block; width: 20px; height: 2px; background: var(--ink);
@@ -540,10 +540,11 @@
       }
       .nav-tabs.open { display: flex; }
       .nav-tab {
-        padding: 12px 24px; height: auto; font-size: 15px;
+        padding: 14px 24px; height: auto; min-height: 48px; font-size: 15px;
         border-bottom: none; justify-content: flex-start;
       }
       .nav-tab.active { background: var(--green-light); border-bottom: none; }
+      .nav-tab.active:hover { background: var(--green-light); }
       .nav-tab:hover { background: #f3f4f6; }
 
       .navbar-inner { gap: 8px; position: relative; }
@@ -575,14 +576,14 @@
       <button class="nav-icon-btn" title="Notifications">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       </button>
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
       <div class="nav-avatar">
         AP
         <span class="pro-badge">PRO</span>
       </div>
     </div>
-    <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
   </div>
 </nav>
 
@@ -1113,9 +1114,24 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
 });
 
 // ── Mobile hamburger menu toggle ──────────────────────────
-$("nav-hamburger").addEventListener("click", () => {
+function closeMobileMenu() {
+  $("nav-tabs").classList.remove("open");
+  $("nav-hamburger").classList.remove("open");
+}
+$("nav-hamburger").addEventListener("click", (e) => {
+  e.stopPropagation();
   $("nav-tabs").classList.toggle("open");
   $("nav-hamburger").classList.toggle("open");
+});
+// Close menu on outside click
+document.addEventListener("click", (e) => {
+  if (!$("nav-tabs").classList.contains("open")) return;
+  if (e.target.closest("#nav-tabs") || e.target.closest("#nav-hamburger")) return;
+  closeMobileMenu();
+});
+// Close menu on Escape key
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeMobileMenu();
 });
 
 // ── Billing toggle ─────────────────────────────────────────
