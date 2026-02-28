@@ -1,6 +1,25 @@
 {
-  "updated_at": "2026-02-27T13:38:45.337876Z",
-  "total_predictions": 0,
-  "metrics_by_horizon": {},
-  "recent_validations": []
+  "updated_at": "2026-02-28T13:12:28.977363Z",
+  "total_predictions": 1,
+  "metrics_by_horizon": {
+    "7": {
+      "n": 1,
+      "mape": 0.0497,
+      "mae": 116.7,
+      "rmse": 116.7,
+      "hit_5pct": 1.0
+    }
+  },
+  "recent_validations": [
+    {
+      "id": 1,
+      "date": "2026-02-28",
+      "horizon_days": 7,
+      "predicted_price": 2466.8,
+      "actual_price": 2350.08,
+      "abs_error": 116.72000000000025,
+      "pct_error": 0.04966639433551209,
+      "created_at": "2026-02-28 13:12:27"
+    }
+  ]
 }
