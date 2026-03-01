@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-02-28T13:12:29.026906Z",
+  "updated_at": "2026-03-01T13:27:09.102480Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -83,8 +83,8 @@
         "year": 2026,
         "avg_price": 2474.0,
         "max_price": 3458.0,
-        "min_price": 2350.0,
-        "total_volume_mt": 4919.0
+        "min_price": 2361.0,
+        "total_volume_mt": 4980.0
       }
     ],
     "date_range": {
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 2350.0,
+      "end_price": 2361.0,
       "peak_price": 3182.0,
       "trough_price": 1205.0,
-      "change_pct": 74.5
+      "change_pct": 75.4
     }
   ],
   "drivers": {
@@ -240,7 +240,7 @@
       "impact_note": "Guatemala supplies 60-70% of global cardamom exports. The 2024-25 thrips crisis collapsed exports, driving Indian prices up."
     },
     "rainfall": {
-      "last_90d_rain_mm": 62.0,
+      "last_90d_rain_mm": 63.0,
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
@@ -392,7 +392,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92350/kg are 3.7x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92361/kg are 3.7x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
