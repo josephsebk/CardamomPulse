@@ -1,16 +1,43 @@
 {
-  "updated_at": "2026-03-01T13:27:09.053488Z",
-  "total_predictions": 1,
+  "updated_at": "2026-03-02T13:41:05.320611Z",
+  "total_predictions": 3,
   "metrics_by_horizon": {
     "7": {
+      "n": 2,
+      "mape": 0.0554,
+      "mae": 128.5,
+      "rmse": 130.5,
+      "hit_5pct": 0.5
+    },
+    "2": {
       "n": 1,
-      "mape": 0.0447,
-      "mae": 105.5,
-      "rmse": 105.5,
-      "hit_5pct": 1.0
+      "mape": 0.0511,
+      "mae": 117.2,
+      "rmse": 117.2,
+      "hit_5pct": 0.0
     }
   },
   "recent_validations": [
+    {
+      "id": 3,
+      "date": "2026-03-02",
+      "horizon_days": 7,
+      "predicted_price": 2445.7,
+      "actual_price": 2294.2324263426904,
+      "abs_error": 151.46757365730946,
+      "pct_error": 0.06602102381525868,
+      "created_at": "2026-03-02 13:41:03"
+    },
+    {
+      "id": 4,
+      "date": "2026-03-02",
+      "horizon_days": 2,
+      "predicted_price": 2411.4,
+      "actual_price": 2294.2324263426904,
+      "abs_error": 117.16757365730973,
+      "pct_error": 0.051070489769029344,
+      "created_at": "2026-03-02 13:41:03"
+    },
     {
       "id": 2,
       "date": "2026-02-28",
