@@ -22,11 +22,11 @@ log = logging.getLogger(__name__)
 # ── Feature sets per horizon ─────────────────────────────────────────────
 # We select the subset that each model actually uses (matching the notebook)
 
-# 7-day: T1 + first 5 of T2 daily
-FEATS_7D = T1_FEATURES + T2_FEATURES_DAILY[:5]
+# 1d–7d: T1 + first 5 of T2 daily + T4 macro
+FEATS_7D = T1_FEATURES + T2_FEATURES_DAILY[:5] + T4_FEATURES
 
-# 14-day: T1 + all T2 daily
-FEATS_14D = T1_FEATURES + T2_FEATURES_DAILY
+# 14-day: T1 + all T2 daily + T4 macro
+FEATS_14D = T1_FEATURES + T2_FEATURES_DAILY + T4_FEATURES
 
 # 28-day (weekly): T1 + T2 + T3 + T4 + T5 (selected down during training)
 FEATS_28D_CANDIDATES = T1_FEATURES + T2_FEATURES_DAILY + T3_FEATURES + T4_FEATURES + T5_FEATURES
