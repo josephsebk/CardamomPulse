@@ -107,9 +107,12 @@ def build_daily_df() -> pd.DataFrame:
 
     conn.close()
 
+    # Compute days since previous auction (gap detection feature)
+    df = df.sort_values("date").reset_index(drop=True)
+    df["days_since_last_auction"] = df["date"].diff().dt.days.fillna(1).astype(int)
+
     # Convert date back to string for consistency
     df["date"] = df["date"].dt.strftime("%Y-%m-%d")
-    df = df.sort_values("date").reset_index(drop=True)
     log.info(f"Assembled daily DataFrame: {df.shape}")
     return df
 

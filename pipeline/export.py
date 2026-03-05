@@ -52,6 +52,23 @@ def export_json():
             entry["upper_bound"] = f["upper_bound"]
         forecast_list.append(entry)
 
+    # Check for data gaps that affect forecast confidence
+    from pipeline.collectors.auction import detect_gaps
+    recent_gaps = detect_gaps(min_gap_days=5)
+    data_gap_warning = None
+    if recent_gaps:
+        latest_gap = recent_gaps[-1]
+        data_gap_warning = {
+            "gap_start": latest_gap["gap_start"],
+            "gap_end": latest_gap["gap_end"],
+            "gap_days": latest_gap["gap_days"],
+            "message": (
+                f"Data gap of {latest_gap['gap_days']} days detected "
+                f"({latest_gap['gap_start']} to {latest_gap['gap_end']}). "
+                f"Short-horizon forecasts may be unreliable."
+            ),
+        }
+
     # Latest regime
     regime_row = pd.read_sql(
         "SELECT * FROM regime_ledger ORDER BY forecast_date DESC LIMIT 1", conn
@@ -78,6 +95,7 @@ def export_json():
         "forecasts": forecast_list,
         "regime": regime,
         "model_version": MODEL_VERSION,
+        "data_gap_warning": data_gap_warning,
     }
     _write_json(EXPORT_DIR / "dashboard.json", dashboard)
 

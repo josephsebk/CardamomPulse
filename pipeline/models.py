@@ -339,11 +339,48 @@ def load_models() -> dict:
 
 # ── Generate predictions ─────────────────────────────────────────────────
 
+# ── Gap detection thresholds ─────────────────────────────────────────────
+# Normal auction gaps are 1-3 days (weekends/holidays).
+# Anything beyond GAP_WARN_DAYS triggers a low-confidence flag.
+GAP_WARN_DAYS = 5
+
+
+def _assess_confidence(daily: pd.DataFrame) -> dict | None:
+    """Check for data gaps that undermine feature quality.
+
+    Returns a confidence dict if there's a problem, or None if OK.
+    """
+    if "days_since_last_auction" not in daily.columns:
+        return None
+
+    latest_gap = int(daily["days_since_last_auction"].iloc[-1])
+    if latest_gap <= GAP_WARN_DAYS:
+        return None
+
+    return {
+        "low_confidence": True,
+        "gap_days": latest_gap,
+        "reason": (
+            f"Data gap of {latest_gap} days detected. Lag features, rolling "
+            f"averages, and momentum indicators are stale. Mean-reversion "
+            f"signals may be unreliable."
+        ),
+    }
+
+
 def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
                 monthly: pd.DataFrame, models: dict) -> dict:
     """Generate predictions from the latest data row for each model."""
     today = daily["date"].max()
     forecasts = {"forecast_date": today, "predictions": []}
+
+    # Check for data gaps that affect prediction reliability
+    confidence = _assess_confidence(daily)
+    if confidence:
+        forecasts["confidence"] = confidence
+        log.warning(
+            f"Low confidence: {confidence['reason']}"
+        )
 
     # Helper to get last non-NaN feature row
     def _last_row(df, feats):
@@ -373,11 +410,15 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
             if X is not None:
                 pred = float(models[key]["model"].predict(X)[0])
                 target_date = (pd.Timestamp(today) + timedelta(days=h)).strftime("%Y-%m-%d")
-                forecasts["predictions"].append({
+                entry = {
                     "horizon_days": h, "target_date": target_date,
                     "predicted_price": round(pred, 1),
-                })
-                log.info(f"{h}-day forecast: ₹{pred:.0f} for {target_date}")
+                }
+                if confidence:
+                    entry["low_confidence"] = True
+                forecasts["predictions"].append(entry)
+                log.info(f"{h}-day forecast: ₹{pred:.0f} for {target_date}"
+                         + (" [LOW CONFIDENCE]" if confidence else ""))
 
     # 7-day
     if "7d" in models:
@@ -386,11 +427,15 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
         if X is not None:
             pred = float(models["7d"]["model"].predict(X)[0])
             target_date = (pd.Timestamp(today) + timedelta(days=7)).strftime("%Y-%m-%d")
-            forecasts["predictions"].append({
+            entry = {
                 "horizon_days": 7, "target_date": target_date,
                 "predicted_price": round(pred, 1),
-            })
-            log.info(f"7-day forecast: ₹{pred:.0f} for {target_date}")
+            }
+            if confidence:
+                entry["low_confidence"] = True
+            forecasts["predictions"].append(entry)
+            log.info(f"7-day forecast: ₹{pred:.0f} for {target_date}"
+                     + (" [LOW CONFIDENCE]" if confidence else ""))
 
     # 14-day
     if "14d" in models:
@@ -399,11 +444,15 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
         if X is not None:
             pred = float(models["14d"]["model"].predict(X)[0])
             target_date = (pd.Timestamp(today) + timedelta(days=14)).strftime("%Y-%m-%d")
-            forecasts["predictions"].append({
+            entry = {
                 "horizon_days": 14, "target_date": target_date,
                 "predicted_price": round(pred, 1),
-            })
-            log.info(f"14-day forecast: ₹{pred:.0f} for {target_date}")
+            }
+            if confidence:
+                entry["low_confidence"] = True
+            forecasts["predictions"].append(entry)
+            log.info(f"14-day forecast: ₹{pred:.0f} for {target_date}"
+                     + (" [LOW CONFIDENCE]" if confidence else ""))
 
     # 28-day (stacked)
     if "28d" in models:

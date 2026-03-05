@@ -165,7 +165,13 @@ def step_predict(daily, weekly, monthly, models):
 
     conn.commit()
     conn.close()
-    log.info(f"Stored {len(forecasts.get('predictions', []))} predictions in ledger")
+
+    n_preds = len(forecasts.get("predictions", []))
+    confidence = forecasts.get("confidence")
+    if confidence:
+        log.warning(f"⚠ {n_preds} predictions stored — LOW CONFIDENCE: {confidence['reason']}")
+    else:
+        log.info(f"Stored {n_preds} predictions in ledger")
     return forecasts
 
 
@@ -235,9 +241,20 @@ def main():
                         help="Force full model retrain")
     parser.add_argument("--export-only", action="store_true",
                         help="Only regenerate JSON exports")
+    parser.add_argument("--backfill", action="store_true",
+                        help="Detect and backfill gaps in auction data")
     args = parser.parse_args()
 
     try:
+        if args.backfill:
+            from pipeline.collectors.auction import backfill_auction
+            step_init()
+            result = backfill_auction()
+            log.info(f"Backfill complete: {result['gaps_found']} gaps found, "
+                     f"{result['gaps_filled']} filled, "
+                     f"{len(result['gaps_remaining'])} remaining")
+            return
+
         run_pipeline(seed=args.seed, retrain=args.retrain, export_only=args.export_only)
     except Exception:
         log.exception("Pipeline failed")

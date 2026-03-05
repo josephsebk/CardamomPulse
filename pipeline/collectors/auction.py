@@ -112,6 +112,78 @@ def aggregate_daily(df: pd.DataFrame) -> pd.DataFrame:
     return daily
 
 
+def detect_gaps(min_gap_days: int = 3) -> list[dict]:
+    """Detect gaps in auction_daily where consecutive trading days are too far apart.
+
+    Returns list of dicts with 'gap_start', 'gap_end', 'gap_days' for each gap.
+    Weekends (2 days) and normal holidays (up to min_gap_days-1) are ignored.
+    """
+    conn = get_conn()
+    dates = pd.read_sql("SELECT date FROM auction_daily ORDER BY date", conn)
+    conn.close()
+
+    if len(dates) < 2:
+        return []
+
+    dates["date"] = pd.to_datetime(dates["date"])
+    gaps = []
+    for i in range(1, len(dates)):
+        delta = (dates["date"].iloc[i] - dates["date"].iloc[i - 1]).days
+        if delta >= min_gap_days:
+            gaps.append({
+                "gap_start": dates["date"].iloc[i - 1].strftime("%Y-%m-%d"),
+                "gap_end": dates["date"].iloc[i].strftime("%Y-%m-%d"),
+                "gap_days": delta,
+            })
+    return gaps
+
+
+def backfill_auction() -> dict:
+    """Detect gaps in auction data and attempt to fill them from XLS.
+
+    Returns summary dict with gaps found, filled, and remaining.
+    """
+    gaps_before = detect_gaps()
+    if not gaps_before:
+        log.info("No data gaps detected in auction_daily")
+        return {"gaps_found": 0, "gaps_filled": 0, "gaps_remaining": []}
+
+    log.info(f"Found {len(gaps_before)} gap(s) in auction_daily")
+    for g in gaps_before:
+        log.info(f"  Gap: {g['gap_start']} → {g['gap_end']} ({g['gap_days']} days)")
+
+    # Try to fill from XLS
+    try:
+        raw = load_xls_fallback()
+        daily = aggregate_daily(raw)
+        conn = get_conn()
+        cols = "date, lots, arrived_kg, sold_kg, avg_price, max_price"
+        placeholders = "?, ?, ?, ?, ?, ?"
+        sql = f"INSERT OR IGNORE INTO auction_daily ({cols}) VALUES ({placeholders})"
+        conn.executemany(sql, daily.values.tolist())
+        conn.commit()
+        conn.close()
+        log.info(f"Backfilled from XLS ({len(daily)} rows available)")
+    except FileNotFoundError:
+        log.warning("XLS fallback file not found — cannot backfill from XLS")
+
+    # Check remaining gaps
+    gaps_after = detect_gaps()
+    filled = len(gaps_before) - len(gaps_after)
+
+    for g in gaps_after:
+        log.warning(
+            f"Unfilled gap: {g['gap_start']} → {g['gap_end']} ({g['gap_days']} days) "
+            f"— market may have been closed, or data source needs manual update"
+        )
+
+    return {
+        "gaps_found": len(gaps_before),
+        "gaps_filled": filled,
+        "gaps_remaining": gaps_after,
+    }
+
+
 def collect_auction() -> pd.DataFrame:
     """Main entry: load XLS history, merge with fresh scrape, aggregate, upsert."""
     # Always load XLS baseline for historical data
