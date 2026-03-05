@@ -139,7 +139,11 @@ def detect_gaps(min_gap_days: int = 3) -> list[dict]:
 
 
 def backfill_auction() -> dict:
-    """Detect gaps in auction data and attempt to fill them from XLS.
+    """Detect gaps in auction data and attempt to fill them.
+
+    Tries two sources in order:
+      1. Scrape the Spices Board page (may contain multiple recent days)
+      2. Re-import the XLS fallback (covers historical data)
 
     Returns summary dict with gaps found, filled, and remaining.
     """
@@ -152,18 +156,35 @@ def backfill_auction() -> dict:
     for g in gaps_before:
         log.info(f"  Gap: {g['gap_start']} → {g['gap_end']} ({g['gap_days']} days)")
 
-    # Try to fill from XLS
-    try:
-        raw = load_xls_fallback()
-        daily = aggregate_daily(raw)
+    # Source 1: Scrape the Spices Board page — it sometimes shows
+    # multiple days of ticker entries, not just today's.
+    scraped = scrape_auction_page()
+    if scraped is not None and len(scraped) > 0:
+        daily_scraped = aggregate_daily(scraped)
         conn = get_conn()
         cols = "date, lots, arrived_kg, sold_kg, avg_price, max_price"
         placeholders = "?, ?, ?, ?, ?, ?"
         sql = f"INSERT OR IGNORE INTO auction_daily ({cols}) VALUES ({placeholders})"
-        conn.executemany(sql, daily.values.tolist())
+        conn.executemany(sql, daily_scraped.values.tolist())
         conn.commit()
         conn.close()
-        log.info(f"Backfilled from XLS ({len(daily)} rows available)")
+        log.info(f"Scraped {len(daily_scraped)} day(s) from Spices Board for backfill")
+    else:
+        log.info("No data available from Spices Board scrape")
+
+    # Source 2: Re-import XLS — useful if the file was updated externally
+    # since the last collect_auction() run.
+    try:
+        raw = load_xls_fallback()
+        daily_xls = aggregate_daily(raw)
+        conn = get_conn()
+        cols = "date, lots, arrived_kg, sold_kg, avg_price, max_price"
+        placeholders = "?, ?, ?, ?, ?, ?"
+        sql = f"INSERT OR IGNORE INTO auction_daily ({cols}) VALUES ({placeholders})"
+        conn.executemany(sql, daily_xls.values.tolist())
+        conn.commit()
+        conn.close()
+        log.info(f"Re-imported XLS fallback ({len(daily_xls)} rows)")
     except FileNotFoundError:
         log.warning("XLS fallback file not found — cannot backfill from XLS")
 
@@ -174,7 +195,7 @@ def backfill_auction() -> dict:
     for g in gaps_after:
         log.warning(
             f"Unfilled gap: {g['gap_start']} → {g['gap_end']} ({g['gap_days']} days) "
-            f"— market may have been closed, or data source needs manual update"
+            f"— market may have been closed, or update the XLS file manually"
         )
 
     return {
