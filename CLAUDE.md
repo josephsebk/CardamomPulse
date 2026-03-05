@@ -157,6 +157,30 @@ Yearly summaries, seasonality, regimes, drivers (ENSO, Guatemala, rainfall, FX),
 - **Cost floor**: ~550/kg (2025), rising ~5%/yr with Kerala labour inflation
 - **Model accuracy** (validated): 0.04% to 2% error on short horizons (1d-7d), larger on shocks
 
+## Multi-Chat Workflow
+
+Use separate Claude Code sessions for different concerns. Each session reads this file automatically — no need to re-explain the project.
+
+### Chat Scopes
+
+| Chat | Scope | Files |
+|------|-------|-------|
+| **ML Pipeline** | Models, features, data, validation | `pipeline/`, `data/`, `external_*.csv` |
+| **Frontend** | UI, charts, styling | `cardamom_webapp/` |
+| **Infra** (when needed) | Deploy, cron, CI | Root config, GitHub Actions |
+
+### Starting a Chat
+
+State the scope and reference specific files:
+- *"This is a **pipeline session**. In `pipeline/models.py`, change the 28d ensemble to..."*
+- *"This is a **frontend session**. In `cardamom_webapp/index.html` lines 916-930, make metric cards dynamic."*
+
+### Cross-Chat Rules
+
+1. **Pipeline changes export format** → Update "Data Contract" section of this file in the same commit
+2. **Frontend needs new data** → Note it here, handle in a pipeline chat
+3. **Bug found in the other scope** → Don't fix it inline. Add to "Known Issues / TODOs" below
+
 ## Session-Specific Notes
 
 ### For ML Pipeline sessions (Chat 1)
