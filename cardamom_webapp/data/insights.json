@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-05T07:54:44.833606Z",
+  "updated_at": "2026-03-05T09:36:26.181327Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -81,16 +81,16 @@
       },
       {
         "year": 2026,
-        "avg_price": 2476.0,
+        "avg_price": 2481.0,
         "max_price": 3458.0,
         "min_price": 2288.0,
-        "total_volume_mt": 4717.0
+        "total_volume_mt": 4270.0
       }
     ],
     "date_range": {
       "start": "2014-11-07",
       "end": "2026-03-04",
-      "total_trading_days": 3033
+      "total_trading_days": 3029
     },
     "all_time_high": 4675.0,
     "all_time_low": 495.0
@@ -101,31 +101,31 @@
         "month": 1,
         "month_name": "Jan",
         "avg_price": 1734.0,
-        "deviation_pct": 13.5
+        "deviation_pct": 13.6
       },
       {
         "month": 2,
         "month_name": "Feb",
-        "avg_price": 1605.0,
-        "deviation_pct": 5.1
+        "avg_price": 1592.0,
+        "deviation_pct": 4.3
       },
       {
         "month": 3,
         "month_name": "Mar",
         "avg_price": 1404.0,
-        "deviation_pct": -8.1
+        "deviation_pct": -8.0
       },
       {
         "month": 4,
         "month_name": "Apr",
         "avg_price": 1344.0,
-        "deviation_pct": -12.0
+        "deviation_pct": -11.9
       },
       {
         "month": 5,
         "month_name": "May",
         "avg_price": 1319.0,
-        "deviation_pct": -13.7
+        "deviation_pct": -13.6
       },
       {
         "month": 6,
@@ -137,25 +137,25 @@
         "month": 7,
         "month_name": "Jul",
         "avg_price": 1515.0,
-        "deviation_pct": -0.9
+        "deviation_pct": -0.8
       },
       {
         "month": 8,
         "month_name": "Aug",
         "avg_price": 1615.0,
-        "deviation_pct": 5.7
+        "deviation_pct": 5.8
       },
       {
         "month": 9,
         "month_name": "Sep",
         "avg_price": 1691.0,
-        "deviation_pct": 10.7
+        "deviation_pct": 10.8
       },
       {
         "month": 10,
         "month_name": "Oct",
         "avg_price": 1488.0,
-        "deviation_pct": -2.6
+        "deviation_pct": -2.5
       },
       {
         "month": 11,
@@ -167,7 +167,7 @@
         "month": 12,
         "month_name": "Dec",
         "avg_price": 1601.0,
-        "deviation_pct": 4.8
+        "deviation_pct": 4.9
       }
     ],
     "best_months": [
@@ -244,8 +244,8 @@
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
-      "current_rate": 91.62,
-      "monthly_change_pct": 0.07,
+      "current_rate": 91.51,
+      "monthly_change_pct": -0.05,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -254,19 +254,19 @@
       {
         "planting_year": 2022,
         "harvest_window": "2025-2029",
-        "avg_harvest_price": 2523.0,
+        "avg_harvest_price": 2526.0,
         "estimated_roi_pct": 415.0
       },
       {
         "planting_year": 2021,
         "harvest_window": "2024-2028",
-        "avg_harvest_price": 2389.0,
-        "estimated_roi_pct": 419.0
+        "avg_harvest_price": 2391.0,
+        "estimated_roi_pct": 420.0
       },
       {
         "planting_year": 2020,
         "harvest_window": "2023-2027",
-        "avg_harvest_price": 2153.0,
+        "avg_harvest_price": 2155.0,
         "estimated_roi_pct": 401.0
       }
     ],
@@ -367,7 +367,7 @@
   "farmer_qa": [
     {
       "question": "When is the best time to sell my harvest?",
-      "answer": "Historically, Jan-Sep and Aug fetch the highest prices (+13.5% above annual average). Avoid selling in Jun-Apr when prices typically dip -13.7% below average.",
+      "answer": "Historically, Jan-Sep and Aug fetch the highest prices (+13.6% above annual average). Avoid selling in Jun-Apr when prices typically dip -13.6% below average.",
       "category": "selling"
     },
     {
