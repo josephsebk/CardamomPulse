@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-05T09:36:26.181327Z",
+  "updated_at": "2026-03-05T10:58:01.932054Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -244,8 +244,8 @@
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
-      "current_rate": 91.51,
-      "monthly_change_pct": -0.05,
+      "current_rate": 91.55,
+      "monthly_change_pct": -0.01,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
