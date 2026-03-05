@@ -667,12 +667,8 @@
     <div class="card">
       <div class="card-header">
         <div>
-          <div class="card-title">Price Forecast Model</div>
-          <div class="card-subtitle">8-Week LSTM Projection &bull; Beta v2.1</div>
-        </div>
-        <div class="chart-toggle">
-          <button class="active">Chart</button>
-          <button>Data</button>
+          <div class="card-title">Price History &amp; Projections</div>
+          <div class="card-subtitle">Recent prices with forecast &amp; key levels</div>
         </div>
       </div>
       <div class="chart-wrap" style="height:240px;">
@@ -689,28 +685,8 @@
         </div>
         <a class="card-link">View All</a>
       </div>
-      <div>
-        <div class="intel-item">
-          <div class="intel-dot supply"></div>
-          <div>
-            <div class="intel-meta"><span class="tag" style="color:var(--green-mid)">Supply Chain</span><span>2h ago</span></div>
-            <div class="intel-text">Heavy rains in Idukki district may delay harvest by 2 weeks.</div>
-          </div>
-        </div>
-        <div class="intel-item">
-          <div class="intel-dot export"></div>
-          <div>
-            <div class="intel-meta"><span class="tag" style="color:var(--red)">Export</span><span>5h ago</span></div>
-            <div class="intel-text">Saudi Arabia demand spikes ahead of Ramadan season.</div>
-          </div>
-        </div>
-        <div class="intel-item">
-          <div class="intel-dot auction"></div>
-          <div>
-            <div class="intel-meta"><span class="tag" style="color:var(--orange)">Auction</span><span>1d ago</span></div>
-            <div class="intel-text">Spices Board auction concludes with mixed sentiments.</div>
-          </div>
-        </div>
+      <div id="intel-items-container">
+        <div style="color:var(--muted);font-size:13px;padding:14px 0;">Loading intelligence...</div>
       </div>
     </div>
   </div>
@@ -1164,6 +1140,8 @@ async function loadAll() {
 
   if (histRes.status === "fulfilled" && histRes.value) {
     priceHistory = histRes.value.prices || [];
+    // Re-render dashboard with price history now available (fixes 14-day range, YTD badge)
+    if (dashboardData) renderDashboard(dashboardData);
     try { renderForecastChart(); } catch(e) { console.warn("Forecast chart:", e.message); }
     try { renderHistoryChart(); } catch(e) { console.warn("History chart:", e.message); }
     try { renderIntelChart(180); } catch(e) { console.warn("Intel chart:", e.message); }
@@ -1187,19 +1165,17 @@ async function loadAll() {
   if (insRes.status === "fulfilled" && insRes.value) {
     insightsData = insRes.value;
     renderInsights(insightsData);
+    renderIntelligenceItems();
   }
 }
 
 // ── Dashboard rendering ────────────────────────────────────
 function renderDashboard(data) {
-  // Updated time
-  const updatedAt = new Date(data.updated_at);
-  const ageMin = Math.floor((Date.now() - updatedAt) / 60000);
-  let ageText;
-  if (ageMin < 60) ageText = ageMin + "m ago";
-  else if (ageMin < 1440) ageText = Math.floor(ageMin / 60) + "h ago";
-  else ageText = Math.floor(ageMin / 1440) + "d ago";
-  $("dash-updated-text").textContent = "Last updated: " + ageText;
+  // Updated time — show actual date of latest data
+  const spotDate_ = data.spot_price?.date;
+  const updatedDate = spotDate_ ? new Date(spotDate_ + "T00:00:00") : new Date(data.updated_at);
+  const dateStr = updatedDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  $("dash-updated-text").textContent = "Last updated: " + dateStr;
 
   const spot = data.spot_price;
   if (!spot) return;
@@ -1281,15 +1257,92 @@ function renderDashboard(data) {
   }
 }
 
+// ── Latest Intelligence (data-driven) ───────────────────────
+function renderIntelligenceItems() {
+  const container = $("intel-items-container");
+  if (!container) return;
+  const items = [];
+
+  // 1. Guatemala supply crisis — from insights drivers
+  const guatData = insightsData?.drivers?.guatemala_supply;
+  if (guatData && guatData.yoy_change_pct) {
+    items.push({
+      dot: "export",
+      tag: "Supply",
+      tagColor: "var(--red)",
+      text: `Guatemala cardamom exports ${guatData.yoy_change_pct > 0 ? "up" : "down"} ${Math.abs(guatData.yoy_change_pct)}% YoY. ${guatData.recent_12m_qty_mt ? fmtK(guatData.recent_12m_qty_mt * 1000) + " MT shipped in trailing 12 months." : ""}`
+    });
+  }
+
+  // 2. ENSO / climate
+  const enso = insightsData?.drivers?.enso;
+  if (enso) {
+    items.push({
+      dot: "supply",
+      tag: "Climate",
+      tagColor: "var(--green-mid)",
+      text: `ENSO phase: ${enso.phase} (anomaly ${enso.latest_anomaly > 0 ? "+" : ""}${enso.latest_anomaly}). ${enso.impact_note.split(".")[0]}.`
+    });
+  }
+
+  // 3. Latest auction price movement
+  if (dashboardData?.spot_price) {
+    const sp = dashboardData.spot_price;
+    const dir = sp.daily_change_pct >= 0 ? "up" : "down";
+    items.push({
+      dot: "auction",
+      tag: "Auction",
+      tagColor: "var(--orange)",
+      text: `Spot price at ${INR(sp.avg_price)} (${dir} ${Math.abs(sp.daily_change_pct).toFixed(1)}%). Volume: ${fmtK(sp.volume_kg)} kg traded.`
+    });
+  }
+
+  // 4. Regime / forecast outlook
+  const fc28 = (dashboardData?.forecasts || []).find(f => f.horizon_days === 28);
+  if (fc28 && dashboardData?.spot_price) {
+    const change = ((fc28.predicted_price - dashboardData.spot_price.avg_price) / dashboardData.spot_price.avg_price * 100);
+    items.push({
+      dot: change >= 0 ? "supply" : "export",
+      tag: "Forecast",
+      tagColor: change >= 0 ? "var(--green-mid)" : "var(--red)",
+      text: `28-day price forecast: ${INR(fc28.predicted_price)} (${change >= 0 ? "+" : ""}${change.toFixed(1)}% from current). Model: ${fc28.model_version}.`
+    });
+  }
+
+  container.innerHTML = "";
+  items.slice(0, 4).forEach(item => {
+    const el = document.createElement("div");
+    el.className = "intel-item";
+    el.innerHTML = `
+      <div class="intel-dot ${item.dot}"></div>
+      <div>
+        <div class="intel-meta"><span class="tag" style="color:${item.tagColor}">${item.tag}</span></div>
+        <div class="intel-text">${item.text}</div>
+      </div>
+    `;
+    container.appendChild(el);
+  });
+
+  if (!items.length) {
+    container.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:14px 0;">No intelligence data available.</div>';
+  }
+}
+
 // ── Forecast chart (Dashboard) ─────────────────────────────
 function renderForecastChart() {
-  const last60 = priceHistory.slice(-60);
-  if (!last60.length) return;
+  const last30 = priceHistory.slice(-30);
+  if (!last30.length) return;
 
-  // Extend with forecast points
-  const labels = last60.map(p => p.date);
-  const actual = last60.map(p => p.avg_price);
-  const forecast = new Array(last60.length).fill(null);
+  // Build labels and data arrays
+  const labels = last30.map(p => p.date);
+  const actual = last30.map(p => p.avg_price);
+  const forecast = new Array(last30.length).fill(null);
+
+  // Compute price levels from recent history
+  const recentPrices = last30.map(p => p.avg_price);
+  const currentPrice = recentPrices[recentPrices.length - 1];
+  const recentHigh = Math.max(...recentPrices);
+  const recentLow = Math.min(...recentPrices);
 
   if (dashboardData?.forecasts) {
     // Connect forecast line from last actual point
@@ -1301,6 +1354,42 @@ function renderForecastChart() {
     });
   }
 
+  // Price level lines plugin
+  const priceLevelsPlugin = {
+    id: "priceLevels",
+    afterDraw(chart) {
+      const { ctx: c, chartArea: area, scales: { y: yScale } } = chart;
+      if (!area) return;
+      c.save();
+
+      const levels = [
+        { price: recentHigh, label: "Resistance " + INR(recentHigh), color: "#dc2626", dash: [4, 4] },
+        { price: recentLow, label: "Support " + INR(recentLow), color: "#22863a", dash: [4, 4] },
+      ];
+
+      levels.forEach(lv => {
+        const yPx = yScale.getPixelForValue(lv.price);
+        if (yPx < area.top || yPx > area.bottom) return;
+        c.setLineDash(lv.dash);
+        c.strokeStyle = lv.color;
+        c.lineWidth = 1;
+        c.globalAlpha = 0.5;
+        c.beginPath();
+        c.moveTo(area.left, yPx);
+        c.lineTo(area.right, yPx);
+        c.stroke();
+        // Label
+        c.globalAlpha = 0.8;
+        c.font = "600 9px system-ui, sans-serif";
+        c.fillStyle = lv.color;
+        c.textAlign = "right";
+        c.textBaseline = "bottom";
+        c.fillText(lv.label, area.right - 4, yPx - 2);
+      });
+      c.restore();
+    }
+  };
+
   const ctx = $("chart-forecast").getContext("2d");
   if (chartForecast) chartForecast.destroy();
   chartForecast = new Chart(ctx, {
@@ -1309,7 +1398,7 @@ function renderForecastChart() {
       labels,
       datasets: [
         {
-          label: "Actual Price",
+          label: "Price",
           data: actual,
           borderColor: "#1a472a",
           borderWidth: 2.5,
@@ -1338,13 +1427,22 @@ function renderForecastChart() {
       interaction: { mode: "index", intersect: false },
       scales: {
         x: { display: true, ticks: { maxTicksToShow: 6, font: { size: 10 }, color: "#9ca3af" }, grid: { display: false } },
-        y: { ticks: { callback: v => INR(v), font: { size: 10 }, color: "#9ca3af" }, grid: { color: "#f3f4f6" } }
+        y: {
+          ticks: { callback: v => INR(v), font: { size: 10 }, color: "#9ca3af" },
+          grid: { color: "#f3f4f6" },
+          min: recentLow * 0.97,
+          max: recentHigh * 1.03
+        }
       },
       plugins: {
-        legend: { display: false },
+        legend: {
+          display: true, position: "top", align: "end",
+          labels: { boxWidth: 10, font: { size: 10 }, usePointStyle: true, pointStyle: "line" }
+        },
         tooltip: { callbacks: { label: ctx => ctx.dataset.label + ": " + INR(ctx.parsed.y) } }
       }
-    }
+    },
+    plugins: [priceLevelsPlugin]
   });
 }
 
@@ -1389,10 +1487,10 @@ function renderHistoryChart() {
           label: "Volume",
           data: last90.map(p => p.sold_kg || 0),
           type: "bar",
-          backgroundColor: "rgba(26,71,42,0.1)",
+          backgroundColor: "rgba(26,71,42,0.22)",
           borderColor: "transparent",
           yAxisID: "y1",
-          barPercentage: 0.6
+          barPercentage: 0.75
         }
       ]
     },
@@ -1403,7 +1501,7 @@ function renderHistoryChart() {
       scales: {
         x: { ticks: { maxTicksToShow: 6, font: { size: 10 }, color: "#9ca3af" }, grid: { display: false } },
         y: { position: "left", ticks: { callback: v => INR(v), font: { size: 10 }, color: "#9ca3af" }, grid: { color: "#f3f4f6" } },
-        y1: { position: "right", ticks: { display: false }, grid: { display: false }, max: maxVol * 4 }
+        y1: { position: "right", ticks: { display: false }, grid: { display: false }, max: maxVol * 1.8 }
       },
       plugins: {
         legend: { display: false },
