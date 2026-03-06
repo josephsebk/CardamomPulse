@@ -1,5 +1,6 @@
 """Collect daily cardamom auction prices from Spices Board / XLS fallback."""
 
+import json
 import logging
 import re
 import pandas as pd
@@ -10,6 +11,14 @@ from pipeline.db import get_conn, get_latest_date
 log = logging.getLogger(__name__)
 
 SPICES_BOARD_URL = "https://www.indianspices.com/marketing/auction/small-cardamom.html"
+DAILY_PRICE_URL = "https://www.indianspices.com/marketing/price/domestic/daily-price-small.html"
+
+# Regex to extract the auction_array1 JSON from the daily-price page's
+# exportExcel() function.  The array is assigned as a JS literal.
+_AUCTION_ARRAY_RE = re.compile(
+    r"var\s+auction_array1\s*=\s*(\[.*?\])\s*;",
+    re.DOTALL,
+)
 
 # Regex to parse the ticker text format on the Spices Board page.
 # Each Small Cardamom entry looks like:
@@ -28,6 +37,54 @@ _TICKER_RE = re.compile(
     r"Avg\. Price \(Rs\./Kg\):\s*([\d.]+)",
     re.DOTALL,
 )
+
+
+def fetch_daily_price_data() -> pd.DataFrame | None:
+    """Fetch auction records from the Spices Board daily-price page.
+
+    The page embeds a full JSON array (auction_array1) inside its
+    exportExcel() JS function, containing all historical auction rows.
+    This is the same data behind the "Export Excel" button.
+    """
+    try:
+        resp = requests.get(DAILY_PRICE_URL, timeout=60, headers={
+            "User-Agent": "CardamomPulse/1.0 (price-research)"
+        })
+        resp.raise_for_status()
+
+        m = _AUCTION_ARRAY_RE.search(resp.text)
+        if not m:
+            log.warning("Could not find auction_array1 in daily-price page")
+            return None
+
+        records = json.loads(m.group(1))
+        if not records:
+            log.warning("auction_array1 is empty")
+            return None
+
+        df = pd.DataFrame(records)
+        df = df.rename(columns={
+            "auction_date": "Date",
+            "auctioneer": "Auctioneer",
+            "no_of_lots": "Lots",
+            "total_qty_arrived": "Qty_Arrived_Kg",
+            "qty_sold": "Qty_Sold_Kg",
+            "maxprice": "MaxPrice",
+            "avgprice": "AvgPrice",
+        })
+        df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
+        for col in ["Lots", "Qty_Arrived_Kg", "Qty_Sold_Kg", "MaxPrice", "AvgPrice"]:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+        df = df[["Date", "Auctioneer", "Lots", "Qty_Arrived_Kg",
+                  "Qty_Sold_Kg", "MaxPrice", "AvgPrice"]]
+        df = df.dropna(subset=["Date", "AvgPrice"])
+
+        log.info(f"Fetched {len(df)} rows from daily-price page "
+                 f"({df['Date'].min().date()} to {df['Date'].max().date()})")
+        return df
+    except Exception as e:
+        log.warning(f"Daily-price page fetch failed: {e}")
+        return None
 
 
 def scrape_auction_page() -> pd.DataFrame | None:
@@ -138,12 +195,27 @@ def detect_gaps(min_gap_days: int = 3) -> list[dict]:
     return gaps
 
 
+def _upsert_daily(daily: pd.DataFrame, label: str) -> int:
+    """INSERT OR IGNORE aggregated daily rows into auction_daily. Returns row count."""
+    if daily.empty:
+        return 0
+    conn = get_conn()
+    cols = "date, lots, arrived_kg, sold_kg, avg_price, max_price"
+    sql = f"INSERT OR IGNORE INTO auction_daily ({cols}) VALUES (?, ?, ?, ?, ?, ?)"
+    conn.executemany(sql, daily.values.tolist())
+    conn.commit()
+    conn.close()
+    log.info(f"Backfill from {label}: {len(daily)} rows offered")
+    return len(daily)
+
+
 def backfill_auction() -> dict:
     """Detect gaps in auction data and attempt to fill them.
 
-    Tries two sources in order:
-      1. Scrape the Spices Board page (may contain multiple recent days)
-      2. Re-import the XLS fallback (covers historical data)
+    Tries sources in order of coverage:
+      1. Daily-price page (full history as embedded JSON — best source)
+      2. Ticker scrape (recent days only)
+      3. Local XLS fallback (useful if updated manually)
 
     Returns summary dict with gaps found, filled, and remaining.
     """
@@ -156,37 +228,23 @@ def backfill_auction() -> dict:
     for g in gaps_before:
         log.info(f"  Gap: {g['gap_start']} → {g['gap_end']} ({g['gap_days']} days)")
 
-    # Source 1: Scrape the Spices Board page — it sometimes shows
-    # multiple days of ticker entries, not just today's.
+    # Source 1: Daily-price page — embeds full auction history as JSON
+    price_data = fetch_daily_price_data()
+    if price_data is not None and len(price_data) > 0:
+        _upsert_daily(aggregate_daily(price_data), "daily-price page")
+    else:
+        log.info("Daily-price page unavailable, trying other sources")
+
+    # Source 2: Ticker scrape — may have a few recent days
     scraped = scrape_auction_page()
     if scraped is not None and len(scraped) > 0:
-        daily_scraped = aggregate_daily(scraped)
-        conn = get_conn()
-        cols = "date, lots, arrived_kg, sold_kg, avg_price, max_price"
-        placeholders = "?, ?, ?, ?, ?, ?"
-        sql = f"INSERT OR IGNORE INTO auction_daily ({cols}) VALUES ({placeholders})"
-        conn.executemany(sql, daily_scraped.values.tolist())
-        conn.commit()
-        conn.close()
-        log.info(f"Scraped {len(daily_scraped)} day(s) from Spices Board for backfill")
-    else:
-        log.info("No data available from Spices Board scrape")
+        _upsert_daily(aggregate_daily(scraped), "ticker scrape")
 
-    # Source 2: Re-import XLS — useful if the file was updated externally
-    # since the last collect_auction() run.
+    # Source 3: Local XLS — useful if manually refreshed
     try:
-        raw = load_xls_fallback()
-        daily_xls = aggregate_daily(raw)
-        conn = get_conn()
-        cols = "date, lots, arrived_kg, sold_kg, avg_price, max_price"
-        placeholders = "?, ?, ?, ?, ?, ?"
-        sql = f"INSERT OR IGNORE INTO auction_daily ({cols}) VALUES ({placeholders})"
-        conn.executemany(sql, daily_xls.values.tolist())
-        conn.commit()
-        conn.close()
-        log.info(f"Re-imported XLS fallback ({len(daily_xls)} rows)")
+        _upsert_daily(aggregate_daily(load_xls_fallback()), "XLS fallback")
     except FileNotFoundError:
-        log.warning("XLS fallback file not found — cannot backfill from XLS")
+        log.warning("XLS fallback file not found")
 
     # Check remaining gaps
     gaps_after = detect_gaps()
@@ -195,7 +253,7 @@ def backfill_auction() -> dict:
     for g in gaps_after:
         log.warning(
             f"Unfilled gap: {g['gap_start']} → {g['gap_end']} ({g['gap_days']} days) "
-            f"— market may have been closed, or update the XLS file manually"
+            f"— market may have been closed"
         )
 
     return {
@@ -206,25 +264,46 @@ def backfill_auction() -> dict:
 
 
 def collect_auction() -> pd.DataFrame:
-    """Main entry: load XLS history, merge with fresh scrape, aggregate, upsert."""
-    # Always load XLS baseline for historical data
-    raw = load_xls_fallback()
-    log.info(f"Loaded XLS fallback: {len(raw)} rows")
+    """Main entry: fetch auction data, aggregate, and upsert.
 
-    # Try to scrape today's data and merge it in
+    Tries sources in order of freshness:
+      1. Daily-price page (full history, updated daily by Spices Board)
+      2. Ticker scrape (recent days from the auction page)
+      3. Local XLS fallback (static file, may be stale)
+    All available data is merged before aggregation.
+    """
+    frames: list[pd.DataFrame] = []
+
+    # Best source: daily-price page with full embedded JSON
+    price_data = fetch_daily_price_data()
+    if price_data is not None and len(price_data) > 0:
+        frames.append(price_data)
+        log.info(f"Daily-price page: {len(price_data)} rows")
+
+    # Supplement with ticker scrape (may have today's data before
+    # the daily-price page is updated)
     scraped = scrape_auction_page()
     if scraped is not None and len(scraped) > 0:
-        raw = pd.concat([raw, scraped], ignore_index=True)
-        raw = raw.drop_duplicates(subset=["Date", "Auctioneer"], keep="last")
-        log.info(f"Merged {len(scraped)} scraped rows with XLS history")
+        frames.append(scraped)
+        log.info(f"Ticker scrape: {len(scraped)} rows")
 
+    # Fall back to local XLS if online sources failed
+    if not frames:
+        log.warning("Online sources unavailable, falling back to local XLS")
+    try:
+        frames.append(load_xls_fallback())
+    except FileNotFoundError:
+        if not frames:
+            raise RuntimeError("No auction data sources available")
+
+    raw = pd.concat(frames, ignore_index=True)
+    raw = raw.drop_duplicates(subset=["Date", "Auctioneer"], keep="last")
     daily = aggregate_daily(raw)
 
     # Upsert into DB
     conn = get_conn()
     cols = "date, lots, arrived_kg, sold_kg, avg_price, max_price"
-    placeholders = "?, ?, ?, ?, ?, ?"
-    sql = f"INSERT OR REPLACE INTO auction_daily ({cols}) VALUES ({placeholders})"
+    sql = f"INSERT OR REPLACE INTO auction_daily ({cols}) VALUES (?, ?, ?, ?, ?, ?)"
     conn.executemany(sql, daily.values.tolist())
     conn.commit()
     conn.close()
