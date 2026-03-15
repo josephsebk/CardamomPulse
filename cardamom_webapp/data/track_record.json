@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-14T13:28:06.952950Z",
+  "updated_at": "2026-03-15T13:34:40.434989Z",
   "total_predictions": 48,
   "metrics_by_horizon": {
     "14": {
@@ -61,74 +61,74 @@
   },
   "recent_validations": [
     {
-      "id": 43,
+      "id": 50,
       "date": "2026-03-14",
       "horizon_days": 14,
       "predicted_price": 2353.1,
       "actual_price": 2235.125756417617,
       "abs_error": 117.97424358238277,
       "pct_error": 0.05278192658451032,
-      "created_at": "2026-03-14 13:28:05"
+      "created_at": "2026-03-15 13:29:45"
     },
     {
-      "id": 44,
+      "id": 51,
       "date": "2026-03-14",
       "horizon_days": 7,
       "predicted_price": 2334.9,
       "actual_price": 2235.125756417617,
       "abs_error": 99.77424358238295,
       "pct_error": 0.0446392080158826,
-      "created_at": "2026-03-14 13:28:05"
+      "created_at": "2026-03-15 13:29:45"
     },
     {
-      "id": 45,
+      "id": 52,
       "date": "2026-03-14",
       "horizon_days": 5,
       "predicted_price": 2330.3,
       "actual_price": 2235.125756417617,
       "abs_error": 95.17424358238304,
       "pct_error": 0.04258115826776792,
-      "created_at": "2026-03-14 13:28:05"
+      "created_at": "2026-03-15 13:29:45"
     },
     {
-      "id": 46,
+      "id": 53,
       "date": "2026-03-14",
       "horizon_days": 4,
       "predicted_price": 2359.9,
       "actual_price": 2235.125756417617,
       "abs_error": 124.77424358238295,
       "pct_error": 0.05582426099476694,
-      "created_at": "2026-03-14 13:28:05"
+      "created_at": "2026-03-15 13:29:45"
     },
     {
-      "id": 47,
+      "id": 54,
       "date": "2026-03-14",
       "horizon_days": 3,
       "predicted_price": 2327.9,
       "actual_price": 2235.125756417617,
       "abs_error": 92.77424358238295,
       "pct_error": 0.04150739318179498,
-      "created_at": "2026-03-14 13:28:05"
+      "created_at": "2026-03-15 13:29:45"
     },
     {
-      "id": 48,
+      "id": 55,
       "date": "2026-03-14",
       "horizon_days": 2,
       "predicted_price": 2308.3,
       "actual_price": 2235.125756417617,
       "abs_error": 73.17424358238304,
       "pct_error": 0.032738311646349695,
-      "created_at": "2026-03-14 13:28:05"
+      "created_at": "2026-03-15 13:29:45"
     },
     {
-      "id": 49,
+      "id": 56,
       "date": "2026-03-14",
       "horizon_days": 1,
       "predicted_price": 2240.8,
       "actual_price": 2235.125756417617,
       "abs_error": 5.674243582383042,
       "pct_error": 0.0025386686033619533,
-      "created_at": "2026-03-14 13:28:05"
+      "created_at": "2026-03-15 13:29:45"
     },
     {
       "id": 37,
