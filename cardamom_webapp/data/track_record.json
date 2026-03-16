@@ -1,48 +1,55 @@
 {
-  "updated_at": "2026-03-15T13:34:40.434989Z",
-  "total_predictions": 48,
+  "updated_at": "2026-03-16T13:59:40.884697Z",
+  "total_predictions": 55,
   "metrics_by_horizon": {
     "14": {
-      "n": 7,
-      "mape": 0.0287,
-      "mae": 65.8,
-      "rmse": 73.2,
-      "hit_5pct": 0.857
+      "n": 8,
+      "mape": 0.0404,
+      "mae": 90.5,
+      "rmse": 115.7,
+      "hit_5pct": 0.75
     },
     "7": {
-      "n": 9,
-      "mape": 0.0385,
-      "mae": 89.0,
-      "rmse": 99.7,
-      "hit_5pct": 0.778
+      "n": 10,
+      "mape": 0.0434,
+      "mae": 98.9,
+      "rmse": 111.7,
+      "hit_5pct": 0.7
+    },
+    "6": {
+      "n": 4,
+      "mape": 0.0351,
+      "mae": 77.8,
+      "rmse": 102.7,
+      "hit_5pct": 0.75
     },
     "5": {
-      "n": 4,
-      "mape": 0.0212,
-      "mae": 48.3,
-      "rmse": 58.8,
-      "hit_5pct": 1.0
+      "n": 5,
+      "mape": 0.031,
+      "mae": 69.0,
+      "rmse": 86.0,
+      "hit_5pct": 0.8
     },
     "4": {
-      "n": 5,
-      "mape": 0.0317,
-      "mae": 72.2,
-      "rmse": 85.0,
-      "hit_5pct": 0.6
+      "n": 6,
+      "mape": 0.0352,
+      "mae": 79.1,
+      "rmse": 90.5,
+      "hit_5pct": 0.5
     },
     "3": {
-      "n": 6,
-      "mape": 0.0222,
-      "mae": 50.8,
-      "rmse": 62.2,
-      "hit_5pct": 1.0
+      "n": 7,
+      "mape": 0.0279,
+      "mae": 62.6,
+      "rmse": 76.5,
+      "hit_5pct": 0.857
     },
     "2": {
-      "n": 7,
-      "mape": 0.0291,
-      "mae": 66.7,
-      "rmse": 75.6,
-      "hit_5pct": 0.857
+      "n": 8,
+      "mape": 0.0323,
+      "mae": 73.3,
+      "rmse": 82.3,
+      "hit_5pct": 0.75
     },
     "1": {
       "n": 7,
@@ -50,16 +57,79 @@
       "mae": 22.1,
       "rmse": 26.3,
       "hit_5pct": 1.0
-    },
-    "6": {
-      "n": 3,
-      "mape": 0.0173,
-      "mae": 39.9,
-      "rmse": 43.3,
-      "hit_5pct": 1.0
     }
   },
   "recent_validations": [
+    {
+      "id": 57,
+      "date": "2026-03-16",
+      "horizon_days": 14,
+      "predicted_price": 2425.0,
+      "actual_price": 2161.031840706448,
+      "abs_error": 263.96815929355216,
+      "pct_error": 0.12214913002265629,
+      "created_at": "2026-03-16 13:59:39"
+    },
+    {
+      "id": 58,
+      "date": "2026-03-16",
+      "horizon_days": 7,
+      "predicted_price": 2349.0,
+      "actual_price": 2161.031840706448,
+      "abs_error": 187.96815929355216,
+      "pct_error": 0.0869807449167916,
+      "created_at": "2026-03-16 13:59:39"
+    },
+    {
+      "id": 59,
+      "date": "2026-03-16",
+      "horizon_days": 6,
+      "predicted_price": 2352.3,
+      "actual_price": 2161.031840706448,
+      "abs_error": 191.26815929355234,
+      "pct_error": 0.08850779321744108,
+      "created_at": "2026-03-16 13:59:39"
+    },
+    {
+      "id": 60,
+      "date": "2026-03-16",
+      "horizon_days": 5,
+      "predicted_price": 2313.2,
+      "actual_price": 2161.031840706448,
+      "abs_error": 152.16815929355198,
+      "pct_error": 0.0704145845642921,
+      "created_at": "2026-03-16 13:59:39"
+    },
+    {
+      "id": 61,
+      "date": "2026-03-16",
+      "horizon_days": 4,
+      "predicted_price": 2275.1,
+      "actual_price": 2161.031840706448,
+      "abs_error": 114.06815929355207,
+      "pct_error": 0.05278411782043103,
+      "created_at": "2026-03-16 13:59:39"
+    },
+    {
+      "id": 62,
+      "date": "2026-03-16",
+      "horizon_days": 3,
+      "predicted_price": 2294.3,
+      "actual_price": 2161.031840706448,
+      "abs_error": 133.26815929355234,
+      "pct_error": 0.061668762478754864,
+      "created_at": "2026-03-16 13:59:39"
+    },
+    {
+      "id": 63,
+      "date": "2026-03-16",
+      "horizon_days": 2,
+      "predicted_price": 2280.2,
+      "actual_price": 2161.031840706448,
+      "abs_error": 119.16815929355198,
+      "pct_error": 0.05514410155779822,
+      "created_at": "2026-03-16 13:59:39"
+    },
     {
       "id": 50,
       "date": "2026-03-14",
@@ -289,76 +359,6 @@
       "abs_error": 3.0285712945692467,
       "pct_error": 0.0013034923182001612,
       "created_at": "2026-03-11 13:45:06"
-    },
-    {
-      "id": 22,
-      "date": "2026-03-10",
-      "horizon_days": 14,
-      "predicted_price": 2298.8,
-      "actual_price": 2340.97628230636,
-      "abs_error": 42.17628230636001,
-      "pct_error": 0.01801653550492506,
-      "created_at": "2026-03-10 13:43:04"
-    },
-    {
-      "id": 23,
-      "date": "2026-03-10",
-      "horizon_days": 7,
-      "predicted_price": 2344.0,
-      "actual_price": 2340.97628230636,
-      "abs_error": 3.02371769363981,
-      "pct_error": 0.0012916481540175212,
-      "created_at": "2026-03-10 13:43:04"
-    },
-    {
-      "id": 24,
-      "date": "2026-03-10",
-      "horizon_days": 6,
-      "predicted_price": 2357.6,
-      "actual_price": 2340.97628230636,
-      "abs_error": 16.62371769363972,
-      "pct_error": 0.007101190139894035,
-      "created_at": "2026-03-10 13:43:04"
-    },
-    {
-      "id": 25,
-      "date": "2026-03-10",
-      "horizon_days": 3,
-      "predicted_price": 2287.3,
-      "actual_price": 2340.97628230636,
-      "abs_error": 53.67628230636001,
-      "pct_error": 0.0229290158606295,
-      "created_at": "2026-03-10 13:43:04"
-    },
-    {
-      "id": 26,
-      "date": "2026-03-10",
-      "horizon_days": 1,
-      "predicted_price": 2308.1,
-      "actual_price": 2340.97628230636,
-      "abs_error": 32.87628230636028,
-      "pct_error": 0.01404383399987724,
-      "created_at": "2026-03-10 13:43:04"
-    },
-    {
-      "id": 17,
-      "date": "2026-03-09",
-      "horizon_days": 14,
-      "predicted_price": 2398.5,
-      "actual_price": 2359.12,
-      "abs_error": 39.38000000000011,
-      "pct_error": 0.01669266506154842,
-      "created_at": "2026-03-09 13:45:05"
-    },
-    {
-      "id": 18,
-      "date": "2026-03-09",
-      "horizon_days": 7,
-      "predicted_price": 2405.5,
-      "actual_price": 2359.12,
-      "abs_error": 46.38000000000011,
-      "pct_error": 0.019659873173047623,
-      "created_at": "2026-03-09 13:45:05"
     }
   ]
 }

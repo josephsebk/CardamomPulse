@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-15T13:34:40.484292Z",
+  "updated_at": "2026-03-16T13:59:40.937426Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -81,16 +81,16 @@
       },
       {
         "year": 2026,
-        "avg_price": 2438.0,
+        "avg_price": 2432.0,
         "max_price": 3458.0,
-        "min_price": 2235.0,
-        "total_volume_mt": 6000.0
+        "min_price": 2161.0,
+        "total_volume_mt": 6079.0
       }
     ],
     "date_range": {
       "start": "2014-11-07",
-      "end": "2026-03-14",
-      "total_trading_days": 3045
+      "end": "2026-03-16",
+      "total_trading_days": 3046
     },
     "all_time_high": 4675.0,
     "all_time_low": 495.0
@@ -107,13 +107,13 @@
         "month": 2,
         "month_name": "Feb",
         "avg_price": 1614.0,
-        "deviation_pct": 5.5
+        "deviation_pct": 5.4
       },
       {
         "month": 3,
         "month_name": "Mar",
-        "avg_price": 1436.0,
-        "deviation_pct": -6.2
+        "avg_price": 1439.0,
+        "deviation_pct": -6.0
       },
       {
         "month": 4,
@@ -125,7 +125,7 @@
         "month": 5,
         "month_name": "May",
         "avg_price": 1319.0,
-        "deviation_pct": -13.8
+        "deviation_pct": -13.9
       },
       {
         "month": 6,
@@ -173,7 +173,7 @@
     "best_months": [
       "Jan",
       "Sep",
-      "Feb"
+      "Aug"
     ],
     "worst_months": [
       "Jun",
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 2235.0,
+      "end_price": 2161.0,
       "peak_price": 3182.0,
       "trough_price": 1205.0,
-      "change_pct": 66.0
+      "change_pct": 60.5
     }
   ],
   "drivers": {
@@ -244,8 +244,8 @@
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
-      "current_rate": 92.45,
-      "monthly_change_pct": 2.58,
+      "current_rate": 92.14,
+      "monthly_change_pct": 2.03,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -254,20 +254,20 @@
       {
         "planting_year": 2022,
         "harvest_window": "2025-2029",
-        "avg_harvest_price": 2504.0,
-        "estimated_roi_pct": 411.0
+        "avg_harvest_price": 2501.0,
+        "estimated_roi_pct": 410.0
       },
       {
         "planting_year": 2021,
         "harvest_window": "2024-2028",
-        "avg_harvest_price": 2377.0,
-        "estimated_roi_pct": 417.0
+        "avg_harvest_price": 2375.0,
+        "estimated_roi_pct": 416.0
       },
       {
         "planting_year": 2020,
         "harvest_window": "2023-2027",
-        "avg_harvest_price": 2144.0,
-        "estimated_roi_pct": 399.0
+        "avg_harvest_price": 2142.0,
+        "estimated_roi_pct": 398.0
       }
     ],
     "worst_years": [
@@ -290,7 +290,7 @@
         "estimated_roi_pct": 452.0
       }
     ],
-    "current_price_to_cost": 3.5,
+    "current_price_to_cost": 3.4,
     "cost_floor_history": [
       {
         "year": 2014,
@@ -367,12 +367,12 @@
   "farmer_qa": [
     {
       "question": "When is the best time to sell my harvest?",
-      "answer": "Historically, Jan-Sep and Feb fetch the highest prices (+13.2% above annual average). Avoid selling in Jun-Apr when prices typically dip -13.8% below average.",
+      "answer": "Historically, Jan-Sep and Aug fetch the highest prices (+13.2% above annual average). Avoid selling in Jun-Apr when prices typically dip -13.9% below average.",
       "category": "selling"
     },
     {
       "question": "Is it a good time to plant new cardamom?",
-      "answer": "Current prices are 3.5x the estimated cost floor \u2014 historically very profitable. However, high prices trigger planting booms. The 2024-25 planting wave will likely flood the market by 2027-28, potentially crashing prices. Consider planting when prices are depressed (1-2x cost) for better long-term returns.",
+      "answer": "Current prices are 3.4x the estimated cost floor \u2014 historically very profitable. However, high prices trigger planting booms. The 2024-25 planting wave will likely flood the market by 2027-28, potentially crashing prices. Consider planting when prices are depressed (1-2x cost) for better long-term returns.",
       "category": "planting"
     },
     {
@@ -392,7 +392,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92235/kg are 3.5x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92161/kg are 3.4x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
