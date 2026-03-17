@@ -1,48 +1,55 @@
 {
-  "updated_at": "2026-03-16T13:59:40.884697Z",
-  "total_predictions": 55,
+  "updated_at": "2026-03-17T13:57:26.095073Z",
+  "total_predictions": 62,
   "metrics_by_horizon": {
     "14": {
-      "n": 8,
-      "mape": 0.0404,
-      "mae": 90.5,
-      "rmse": 115.7,
-      "hit_5pct": 0.75
+      "n": 9,
+      "mape": 0.0573,
+      "mae": 123.2,
+      "rmse": 168.4,
+      "hit_5pct": 0.667
     },
     "7": {
-      "n": 10,
-      "mape": 0.0434,
-      "mae": 98.9,
-      "rmse": 111.7,
-      "hit_5pct": 0.7
+      "n": 11,
+      "mape": 0.0584,
+      "mae": 127.8,
+      "rmse": 164.9,
+      "hit_5pct": 0.636
     },
     "6": {
-      "n": 4,
-      "mape": 0.0351,
-      "mae": 77.8,
-      "rmse": 102.7,
-      "hit_5pct": 0.75
+      "n": 5,
+      "mape": 0.0597,
+      "mae": 125.5,
+      "rmse": 168.8,
+      "hit_5pct": 0.6
     },
     "5": {
-      "n": 5,
-      "mape": 0.031,
-      "mae": 69.0,
-      "rmse": 86.0,
-      "hit_5pct": 0.8
+      "n": 6,
+      "mape": 0.0536,
+      "mae": 113.0,
+      "rmse": 156.9,
+      "hit_5pct": 0.667
     },
     "4": {
-      "n": 6,
-      "mape": 0.0352,
-      "mae": 79.1,
-      "rmse": 90.5,
-      "hit_5pct": 0.5
+      "n": 7,
+      "mape": 0.0505,
+      "mae": 108.5,
+      "rmse": 136.5,
+      "hit_5pct": 0.429
     },
     "3": {
-      "n": 7,
-      "mape": 0.0279,
-      "mae": 62.6,
-      "rmse": 76.5,
-      "hit_5pct": 0.857
+      "n": 8,
+      "mape": 0.0428,
+      "mae": 91.6,
+      "rmse": 126.3,
+      "hit_5pct": 0.75
+    },
+    "1": {
+      "n": 8,
+      "mape": 0.0237,
+      "mae": 50.0,
+      "rmse": 90.2,
+      "hit_5pct": 0.875
     },
     "2": {
       "n": 8,
@@ -50,16 +57,79 @@
       "mae": 73.3,
       "rmse": 82.3,
       "hit_5pct": 0.75
-    },
-    "1": {
-      "n": 7,
-      "mape": 0.0096,
-      "mae": 22.1,
-      "rmse": 26.3,
-      "hit_5pct": 1.0
     }
   },
   "recent_validations": [
+    {
+      "id": 64,
+      "date": "2026-03-17",
+      "horizon_days": 14,
+      "predicted_price": 2383.7,
+      "actual_price": 1998.9350457150997,
+      "abs_error": 384.7649542849001,
+      "pct_error": 0.1924849709897673,
+      "created_at": "2026-03-17 13:57:24"
+    },
+    {
+      "id": 65,
+      "date": "2026-03-17",
+      "horizon_days": 7,
+      "predicted_price": 2416.4,
+      "actual_price": 1998.9350457150997,
+      "abs_error": 417.4649542849004,
+      "pct_error": 0.20884368162926292,
+      "created_at": "2026-03-17 13:57:24"
+    },
+    {
+      "id": 66,
+      "date": "2026-03-17",
+      "horizon_days": 6,
+      "predicted_price": 2315.6,
+      "actual_price": 1998.9350457150997,
+      "abs_error": 316.6649542849002,
+      "pct_error": 0.15841683048366206,
+      "created_at": "2026-03-17 13:57:24"
+    },
+    {
+      "id": 67,
+      "date": "2026-03-17",
+      "horizon_days": 5,
+      "predicted_price": 2331.7,
+      "actual_price": 1998.9350457150997,
+      "abs_error": 332.7649542849001,
+      "pct_error": 0.16647111920830657,
+      "created_at": "2026-03-17 13:57:24"
+    },
+    {
+      "id": 68,
+      "date": "2026-03-17",
+      "horizon_days": 4,
+      "predicted_price": 2283.9,
+      "actual_price": 1998.9350457150997,
+      "abs_error": 284.9649542849004,
+      "pct_error": 0.14255838622457936,
+      "created_at": "2026-03-17 13:57:24"
+    },
+    {
+      "id": 69,
+      "date": "2026-03-17",
+      "horizon_days": 3,
+      "predicted_price": 2293.3,
+      "actual_price": 1998.9350457150997,
+      "abs_error": 294.3649542849005,
+      "pct_error": 0.14726089020045885,
+      "created_at": "2026-03-17 13:57:24"
+    },
+    {
+      "id": 70,
+      "date": "2026-03-17",
+      "horizon_days": 1,
+      "predicted_price": 2244.5,
+      "actual_price": 1998.9350457150997,
+      "abs_error": 245.5649542849003,
+      "pct_error": 0.1228478908363187,
+      "created_at": "2026-03-17 13:57:24"
+    },
     {
       "id": 57,
       "date": "2026-03-16",
@@ -289,76 +359,6 @@
       "abs_error": 4.6287030576672805,
       "pct_error": 0.002019264937724222,
       "created_at": "2026-03-12 13:42:39"
-    },
-    {
-      "id": 35,
-      "date": "2026-03-12",
-      "horizon_days": 2,
-      "predicted_price": 2325.3,
-      "actual_price": 2292.271296942333,
-      "abs_error": 33.02870305766737,
-      "pct_error": 0.014408723392263583,
-      "created_at": "2026-03-12 13:42:39"
-    },
-    {
-      "id": 36,
-      "date": "2026-03-12",
-      "horizon_days": 1,
-      "predicted_price": 2305.6,
-      "actual_price": 2292.271296942333,
-      "abs_error": 13.328703057667099,
-      "pct_error": 0.005814627210769639,
-      "created_at": "2026-03-12 13:42:39"
-    },
-    {
-      "id": 27,
-      "date": "2026-03-11",
-      "horizon_days": 14,
-      "predicted_price": 2295.5,
-      "actual_price": 2323.4285712945693,
-      "abs_error": 27.928571294569338,
-      "pct_error": 0.012020413125507912,
-      "created_at": "2026-03-11 13:45:06"
-    },
-    {
-      "id": 28,
-      "date": "2026-03-11",
-      "horizon_days": 7,
-      "predicted_price": 2375.5,
-      "actual_price": 2323.4285712945693,
-      "abs_error": 52.07142870543066,
-      "pct_error": 0.02241146095419558,
-      "created_at": "2026-03-11 13:45:06"
-    },
-    {
-      "id": 29,
-      "date": "2026-03-11",
-      "horizon_days": 4,
-      "predicted_price": 2270.8,
-      "actual_price": 2323.4285712945693,
-      "abs_error": 52.628571294569156,
-      "pct_error": 0.022651254247616288,
-      "created_at": "2026-03-11 13:45:06"
-    },
-    {
-      "id": 30,
-      "date": "2026-03-11",
-      "horizon_days": 2,
-      "predicted_price": 2307.4,
-      "actual_price": 2323.4285712945693,
-      "abs_error": 16.028571294569247,
-      "pct_error": 0.006898671856151979,
-      "created_at": "2026-03-11 13:45:06"
-    },
-    {
-      "id": 31,
-      "date": "2026-03-11",
-      "horizon_days": 1,
-      "predicted_price": 2320.4,
-      "actual_price": 2323.4285712945693,
-      "abs_error": 3.0285712945692467,
-      "pct_error": 0.0013034923182001612,
-      "created_at": "2026-03-11 13:45:06"
     }
   ]
 }
