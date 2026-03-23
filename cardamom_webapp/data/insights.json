@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-22T13:31:55.007766Z",
+  "updated_at": "2026-03-23T13:55:25.536653Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -81,16 +81,16 @@
       },
       {
         "year": 2026,
-        "avg_price": 2411.0,
+        "avg_price": 2408.0,
         "max_price": 3458.0,
         "min_price": 1999.0,
-        "total_volume_mt": 6503.0
+        "total_volume_mt": 6610.0
       }
     ],
     "date_range": {
       "start": "2014-11-07",
-      "end": "2026-03-20",
-      "total_trading_days": 3050
+      "end": "2026-03-23",
+      "total_trading_days": 3051
     },
     "all_time_high": 4675.0,
     "all_time_low": 495.0
@@ -112,8 +112,8 @@
       {
         "month": 3,
         "month_name": "Mar",
-        "avg_price": 1450.0,
-        "deviation_pct": -5.3
+        "avg_price": 1453.0,
+        "deviation_pct": -5.1
       },
       {
         "month": 4,
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 2233.0,
+      "end_price": 2300.0,
       "peak_price": 3182.0,
       "trough_price": 1205.0,
-      "change_pct": 65.8
+      "change_pct": 70.8
     }
   ],
   "drivers": {
@@ -244,8 +244,8 @@
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
-      "current_rate": 93.65,
-      "monthly_change_pct": 3.41,
+      "current_rate": 93.21,
+      "monthly_change_pct": 2.91,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -254,19 +254,19 @@
       {
         "planting_year": 2022,
         "harvest_window": "2025-2029",
-        "avg_harvest_price": 2491.0,
+        "avg_harvest_price": 2489.0,
         "estimated_roi_pct": 408.0
       },
       {
         "planting_year": 2021,
         "harvest_window": "2024-2028",
-        "avg_harvest_price": 2368.0,
+        "avg_harvest_price": 2367.0,
         "estimated_roi_pct": 415.0
       },
       {
         "planting_year": 2020,
         "harvest_window": "2023-2027",
-        "avg_harvest_price": 2137.0,
+        "avg_harvest_price": 2136.0,
         "estimated_roi_pct": 397.0
       }
     ],
@@ -290,7 +290,7 @@
         "estimated_roi_pct": 452.0
       }
     ],
-    "current_price_to_cost": 3.5,
+    "current_price_to_cost": 3.6,
     "cost_floor_history": [
       {
         "year": 2014,
@@ -372,7 +372,7 @@
     },
     {
       "question": "Is it a good time to plant new cardamom?",
-      "answer": "Current prices are 3.5x the estimated cost floor \u2014 historically very profitable. However, high prices trigger planting booms. The 2024-25 planting wave will likely flood the market by 2027-28, potentially crashing prices. Consider planting when prices are depressed (1-2x cost) for better long-term returns.",
+      "answer": "Current prices are 3.6x the estimated cost floor \u2014 historically very profitable. However, high prices trigger planting booms. The 2024-25 planting wave will likely flood the market by 2027-28, potentially crashing prices. Consider planting when prices are depressed (1-2x cost) for better long-term returns.",
       "category": "planting"
     },
     {
@@ -392,7 +392,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92232/kg are 3.5x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92299/kg are 3.6x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
