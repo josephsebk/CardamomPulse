@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-24T13:56:41.360446Z",
+  "updated_at": "2026-03-25T13:55:27.868219Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -81,16 +81,16 @@
       },
       {
         "year": 2026,
-        "avg_price": 2407.0,
+        "avg_price": 2405.0,
         "max_price": 3458.0,
         "min_price": 1999.0,
-        "total_volume_mt": 6690.0
+        "total_volume_mt": 6809.0
       }
     ],
     "date_range": {
       "start": "2014-11-07",
-      "end": "2026-03-24",
-      "total_trading_days": 3052
+      "end": "2026-03-25",
+      "total_trading_days": 3053
     },
     "all_time_high": 4675.0,
     "all_time_low": 495.0
@@ -112,8 +112,8 @@
       {
         "month": 3,
         "month_name": "Mar",
-        "avg_price": 1457.0,
-        "deviation_pct": -4.9
+        "avg_price": 1460.0,
+        "deviation_pct": -4.7
       },
       {
         "month": 4,
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 2327.0,
+      "end_price": 2316.0,
       "peak_price": 3182.0,
       "trough_price": 1205.0,
-      "change_pct": 72.8
+      "change_pct": 72.0
     }
   ],
   "drivers": {
@@ -244,8 +244,8 @@
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
-      "current_rate": 93.77,
-      "monthly_change_pct": 3.29,
+      "current_rate": 93.93,
+      "monthly_change_pct": 3.64,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -254,7 +254,7 @@
       {
         "planting_year": 2022,
         "harvest_window": "2025-2029",
-        "avg_harvest_price": 2489.0,
+        "avg_harvest_price": 2488.0,
         "estimated_roi_pct": 408.0
       },
       {
@@ -392,7 +392,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92326/kg are 3.6x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92315/kg are 3.6x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
