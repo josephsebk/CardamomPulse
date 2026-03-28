@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-27T13:49:57.154909Z",
+  "updated_at": "2026-03-28T13:33:03.155434Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -81,16 +81,16 @@
       },
       {
         "year": 2026,
-        "avg_price": 2403.0,
+        "avg_price": 2402.0,
         "max_price": 3458.0,
         "min_price": 1999.0,
-        "total_volume_mt": 6990.0
+        "total_volume_mt": 7057.0
       }
     ],
     "date_range": {
       "start": "2014-11-07",
-      "end": "2026-03-27",
-      "total_trading_days": 3055
+      "end": "2026-03-28",
+      "total_trading_days": 3056
     },
     "all_time_high": 4675.0,
     "all_time_low": 495.0
@@ -112,8 +112,8 @@
       {
         "month": 3,
         "month_name": "Mar",
-        "avg_price": 1467.0,
-        "deviation_pct": -4.3
+        "avg_price": 1470.0,
+        "deviation_pct": -4.1
       },
       {
         "month": 4,
@@ -155,7 +155,7 @@
         "month": 10,
         "month_name": "Oct",
         "avg_price": 1488.0,
-        "deviation_pct": -2.9
+        "deviation_pct": -3.0
       },
       {
         "month": 11,
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 2337.0,
+      "end_price": 2312.0,
       "peak_price": 3182.0,
       "trough_price": 1205.0,
-      "change_pct": 73.6
+      "change_pct": 71.7
     }
   ],
   "drivers": {
@@ -244,8 +244,8 @@
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
-      "current_rate": 94.84,
-      "monthly_change_pct": 4.17,
+      "current_rate": 94.31,
+      "monthly_change_pct": 3.59,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -254,8 +254,8 @@
       {
         "planting_year": 2022,
         "harvest_window": "2025-2029",
-        "avg_harvest_price": 2487.0,
-        "estimated_roi_pct": 408.0
+        "avg_harvest_price": 2486.0,
+        "estimated_roi_pct": 407.0
       },
       {
         "planting_year": 2021,
@@ -267,7 +267,7 @@
         "planting_year": 2020,
         "harvest_window": "2023-2027",
         "avg_harvest_price": 2135.0,
-        "estimated_roi_pct": 397.0
+        "estimated_roi_pct": 396.0
       }
     ],
     "worst_years": [
@@ -392,7 +392,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92337/kg are 3.6x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92312/kg are 3.6x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
