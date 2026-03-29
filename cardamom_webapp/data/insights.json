@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-28T13:33:03.155434Z",
+  "updated_at": "2026-03-29T13:39:44.398022Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -240,12 +240,12 @@
       "impact_note": "Guatemala supplies 60-70% of global cardamom exports. The 2024-25 thrips crisis collapsed exports, driving Indian prices up."
     },
     "rainfall": {
-      "last_90d_rain_mm": 65.0,
+      "last_90d_rain_mm": 69.0,
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
-      "current_rate": 94.31,
-      "monthly_change_pct": 3.59,
+      "current_rate": 94.76,
+      "monthly_change_pct": 4.44,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
