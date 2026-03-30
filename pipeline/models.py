@@ -406,6 +406,112 @@ def _assess_confidence(daily: pd.DataFrame) -> dict | None:
     }
 
 
+# ── Momentum anchor correction ──────────────────────────────────────────
+
+# When model features are stale (data gaps, sharp moves), the raw prediction
+# can be anchored to outdated price levels.  This correction blends the raw
+# model output toward the actual latest price, weighted by how stale the
+# features are and scaled by horizon (short forecasts get more correction,
+# long forecasts less — the market may partially revert).
+#
+# anchor_weight = min(1, drift² / DRIFT_THRESHOLD²)  × horizon_decay
+#   drift = (latest_price - feature_anchor) / feature_anchor
+#   feature_anchor = lag_1 (the price the model's features are based on)
+#
+# corrected_pred = raw_pred × (1 + anchor_weight × drift)
+
+DRIFT_THRESHOLD = 0.03  # 3% — below this, no correction needed
+
+
+def _compute_momentum_anchor(daily: pd.DataFrame) -> dict:
+    """Compute correction parameters from recent price action.
+
+    Compares the latest actual price to the price the model's lag features
+    reference (lag_1 = previous row's price).  When these diverge — typically
+    after data gaps or sharp multi-day moves — the model's predictions will
+    be systematically biased toward the stale level.
+
+    Returns dict with drift info, or empty dict if no correction needed.
+    """
+    if len(daily) < 2:
+        return {}
+
+    latest_price = float(daily["avg_price"].iloc[-1])
+
+    # lag_1 comes from shift(1), so it's the previous row's price.
+    # With a data gap, that previous row could be weeks old.
+    feature_anchor = float(daily["avg_price"].iloc[-2])
+    drift = (latest_price - feature_anchor) / feature_anchor
+
+    if abs(drift) < DRIFT_THRESHOLD:
+        return {}
+
+    # Also compute a 3-week trend if enough data (annualized momentum)
+    prices = daily["avg_price"].values
+    n = len(prices)
+    if n >= 15:
+        p_3w_ago = float(prices[max(0, n - 16)])
+        trend_3w = (latest_price - p_3w_ago) / p_3w_ago
+    else:
+        trend_3w = drift
+
+    log.info(
+        f"Momentum anchor: latest=₹{latest_price:.0f}, "
+        f"feature_anchor=₹{feature_anchor:.0f}, "
+        f"drift={drift:+.1%}, 3w_trend={trend_3w:+.1%}"
+    )
+
+    return {
+        "latest_price": latest_price,
+        "feature_anchor": feature_anchor,
+        "drift": drift,
+        "trend_3w": trend_3w,
+    }
+
+
+def _apply_anchor_correction(raw_pred: float, anchor: dict,
+                             horizon_days: int) -> float:
+    """Adjust a raw model prediction using the momentum anchor.
+
+    Short horizons (1–7d): heavy correction — price is unlikely to snap back.
+    Medium horizons (14–28d): moderate correction — partial mean reversion.
+    Long horizons (90d): light correction — structural factors dominate.
+    """
+    if not anchor:
+        return raw_pred
+
+    drift = anchor["drift"]
+    latest = anchor["latest_price"]
+
+    # Horizon decay: short-term forecasts get nearly full correction,
+    # longer ones less (allows for mean reversion)
+    if horizon_days <= 7:
+        horizon_factor = 1.0
+    elif horizon_days <= 14:
+        horizon_factor = 0.8
+    elif horizon_days <= 28:
+        horizon_factor = 0.6
+    else:
+        horizon_factor = 0.35
+
+    # Anchor strength: how aggressively to correct.
+    # Scales quadratically with drift magnitude — small drifts get gentle
+    # correction, large drifts (like -8%) get strong correction.
+    drift_strength = min(1.0, (drift / DRIFT_THRESHOLD) ** 2)
+    anchor_weight = drift_strength * horizon_factor
+
+    # Blend: pull the raw prediction toward latest_price by anchor_weight.
+    # If anchor_weight=1.0 and drift=-8%, the correction fully re-anchors
+    # the prediction to be relative to the latest price, not the stale one.
+    corrected = raw_pred * (1 + anchor_weight * drift)
+
+    # Safety floor: never predict below 50% or above 200% of latest price
+    corrected = max(corrected, latest * 0.5)
+    corrected = min(corrected, latest * 2.0)
+
+    return corrected
+
+
 def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
                 monthly: pd.DataFrame, models: dict) -> dict:
     """Generate predictions from the latest data row for each model."""
@@ -419,6 +525,16 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
         log.warning(
             f"Low confidence: {confidence['reason']}"
         )
+
+    # Compute momentum anchor correction from recent price action
+    anchor = _compute_momentum_anchor(daily)
+    if anchor:
+        forecasts["momentum_anchor"] = {
+            "drift": round(anchor["drift"], 4),
+            "trend_3w": round(anchor.get("trend_3w", anchor["drift"]), 4),
+            "latest_price": anchor["latest_price"],
+            "feature_anchor": anchor["feature_anchor"],
+        }
 
     # Helper to get last non-NaN feature row
     def _last_row(df, feats):
@@ -446,16 +562,19 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
             feats = _available_feats(daily, FEATS_7D)
             X, used = _last_row(daily, feats)
             if X is not None:
-                pred = float(models[key]["model"].predict(X)[0])
+                raw_pred = float(models[key]["model"].predict(X)[0])
+                pred = _apply_anchor_correction(raw_pred, anchor, h)
                 target_date = (pd.Timestamp(today) + timedelta(days=h)).strftime("%Y-%m-%d")
                 entry = {
                     "horizon_days": h, "target_date": target_date,
                     "predicted_price": round(pred, 1),
                 }
+                if anchor:
+                    entry["raw_model_price"] = round(raw_pred, 1)
                 if confidence:
                     entry["low_confidence"] = True
                 forecasts["predictions"].append(entry)
-                log.info(f"{h}-day forecast: ₹{pred:.0f} for {target_date}"
+                log.info(f"{h}-day forecast: ₹{pred:.0f} (raw ₹{raw_pred:.0f}) for {target_date}"
                          + (" [LOW CONFIDENCE]" if confidence else ""))
 
     # 7-day
@@ -463,16 +582,19 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
         feats = _available_feats(daily, FEATS_7D)
         X, used = _last_row(daily, feats)
         if X is not None:
-            pred = float(models["7d"]["model"].predict(X)[0])
+            raw_pred = float(models["7d"]["model"].predict(X)[0])
+            pred = _apply_anchor_correction(raw_pred, anchor, 7)
             target_date = (pd.Timestamp(today) + timedelta(days=7)).strftime("%Y-%m-%d")
             entry = {
                 "horizon_days": 7, "target_date": target_date,
                 "predicted_price": round(pred, 1),
             }
+            if anchor:
+                entry["raw_model_price"] = round(raw_pred, 1)
             if confidence:
                 entry["low_confidence"] = True
             forecasts["predictions"].append(entry)
-            log.info(f"7-day forecast: ₹{pred:.0f} for {target_date}"
+            log.info(f"7-day forecast: ₹{pred:.0f} (raw ₹{raw_pred:.0f}) for {target_date}"
                      + (" [LOW CONFIDENCE]" if confidence else ""))
 
     # 14-day
@@ -480,16 +602,19 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
         feats = _available_feats(daily, FEATS_14D)
         X, used = _last_row(daily, feats)
         if X is not None:
-            pred = float(models["14d"]["model"].predict(X)[0])
+            raw_pred = float(models["14d"]["model"].predict(X)[0])
+            pred = _apply_anchor_correction(raw_pred, anchor, 14)
             target_date = (pd.Timestamp(today) + timedelta(days=14)).strftime("%Y-%m-%d")
             entry = {
                 "horizon_days": 14, "target_date": target_date,
                 "predicted_price": round(pred, 1),
             }
+            if anchor:
+                entry["raw_model_price"] = round(raw_pred, 1)
             if confidence:
                 entry["low_confidence"] = True
             forecasts["predictions"].append(entry)
-            log.info(f"14-day forecast: ₹{pred:.0f} for {target_date}"
+            log.info(f"14-day forecast: ₹{pred:.0f} (raw ₹{raw_pred:.0f}) for {target_date}"
                      + (" [LOW CONFIDENCE]" if confidence else ""))
 
     # 28-day (stacked)
@@ -500,13 +625,17 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
             p_lgb = float(models["28d"]["model_lgb"].predict(X)[0])
             X_sc = models["28d"]["scaler"].transform(X)
             p_ridge = float(models["28d"]["model_ridge"].predict(X_sc)[0])
-            pred = 0.5 * p_lgb + 0.5 * p_ridge
+            raw_pred = 0.5 * p_lgb + 0.5 * p_ridge
+            pred = _apply_anchor_correction(raw_pred, anchor, 28)
             target_date = (pd.Timestamp(today) + timedelta(days=28)).strftime("%Y-%m-%d")
-            forecasts["predictions"].append({
+            entry = {
                 "horizon_days": 28, "target_date": target_date,
                 "predicted_price": round(pred, 1),
-            })
-            log.info(f"28-day forecast: ₹{pred:.0f} for {target_date}")
+            }
+            if anchor:
+                entry["raw_model_price"] = round(raw_pred, 1)
+            forecasts["predictions"].append(entry)
+            log.info(f"28-day forecast: ₹{pred:.0f} (raw ₹{raw_pred:.0f}) for {target_date}")
 
     # 90-day (with prediction intervals)
     if "90d" in models:
@@ -515,17 +644,22 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
         if X is not None:
             X_sc = models["90d"]["scaler"].transform(X)
             p_mean, p_std = models["90d"]["model"].predict(X_sc, return_std=True)
-            pred = float(p_mean[0])
-            lo = float(pred - 1.28 * p_std[0])  # 80% lower
-            hi = float(pred + 1.28 * p_std[0])  # 80% upper
+            raw_pred = float(p_mean[0])
+            pred = _apply_anchor_correction(raw_pred, anchor, 90)
+            std_val = float(p_std[0])
+            lo = float(pred - 1.28 * std_val)  # 80% lower
+            hi = float(pred + 1.28 * std_val)  # 80% upper
             target_date = (pd.Timestamp(today) + timedelta(days=90)).strftime("%Y-%m-%d")
-            forecasts["predictions"].append({
+            entry = {
                 "horizon_days": 90, "target_date": target_date,
                 "predicted_price": round(pred, 1),
                 "lower_bound": round(lo, 1),
                 "upper_bound": round(hi, 1),
-            })
-            log.info(f"90-day forecast: ₹{pred:.0f} [{lo:.0f}–{hi:.0f}] for {target_date}")
+            }
+            if anchor:
+                entry["raw_model_price"] = round(raw_pred, 1)
+            forecasts["predictions"].append(entry)
+            log.info(f"90-day forecast: ₹{pred:.0f} (raw ₹{raw_pred:.0f}) [{lo:.0f}–{hi:.0f}] for {target_date}")
 
     # Regime
     if "regime" in models:
@@ -533,6 +667,12 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
         X = _last_row_imputed(monthly, feats, models["regime"].get("medians", {}))
         if X is not None:
             prob = float(models["regime"]["model"].predict_proba(X)[0, 1])
+            # Boost bear probability when momentum anchor shows significant
+            # downward drift — the model's features may understate risk
+            if anchor and anchor["drift"] < -DRIFT_THRESHOLD:
+                drift_boost = min(0.3, abs(anchor["drift"]))
+                prob = min(1.0, prob + drift_boost)
+                log.info(f"Regime bear prob boosted by {drift_boost:.1%} due to negative drift")
             label = "LOW" if prob < 0.3 else ("MODERATE" if prob < 0.6 else "HIGH")
             forecasts["regime"] = {
                 "bear_probability": round(prob, 3),
