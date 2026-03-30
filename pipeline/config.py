@@ -36,7 +36,7 @@ WF_CONFIG = {
 }
 
 # ── Model versions ────────────────────────────────────────────────────────
-MODEL_VERSION = "v1.0"
+MODEL_VERSION = "v1.1"  # Added T7 geopolitical features + decay weighting
 
 # ── Pipeline schedule (IST offsets in comments) ──────────────────────────
 DAILY_RUN_HOUR_UTC = 12  # 6 PM IST = 12:30 UTC; run at 12 UTC

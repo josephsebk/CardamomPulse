@@ -14,7 +14,7 @@ from sklearn.preprocessing import StandardScaler
 from pipeline.config import MODELS_DIR, MODEL_VERSION, WF_CONFIG, ensure_dirs
 from pipeline.features import (
     T1_FEATURES, T2_FEATURES_DAILY, T2_FEATURES_MONTHLY,
-    T3_FEATURES, T4_FEATURES, T5_FEATURES, T6_FEATURES,
+    T3_FEATURES, T4_FEATURES, T5_FEATURES, T6_FEATURES, T7_FEATURES,
 )
 
 log = logging.getLogger(__name__)
@@ -22,26 +22,30 @@ log = logging.getLogger(__name__)
 # ── Feature sets per horizon ─────────────────────────────────────────────
 # We select the subset that each model actually uses (matching the notebook)
 
-# 1d–7d: T1 + first 5 of T2 daily + T4 macro
-FEATS_7D = T1_FEATURES + T2_FEATURES_DAILY[:5] + T4_FEATURES
+# 1d–7d: T1 + first 5 of T2 daily + T4 macro + T7 geopolitical
+FEATS_7D = T1_FEATURES + T2_FEATURES_DAILY[:5] + T4_FEATURES + T7_FEATURES
 
-# 14-day: T1 + all T2 daily + T4 macro
-FEATS_14D = T1_FEATURES + T2_FEATURES_DAILY + T4_FEATURES
+# 14-day: T1 + all T2 daily + T4 macro + T7 geopolitical
+FEATS_14D = T1_FEATURES + T2_FEATURES_DAILY + T4_FEATURES + T7_FEATURES
 
-# 28-day (weekly): T1 + T2 + T3 + T4 + T5 (selected down during training)
-FEATS_28D_CANDIDATES = T1_FEATURES + T2_FEATURES_DAILY + T3_FEATURES + T4_FEATURES + T5_FEATURES
+# 28-day (weekly): T1 + T2 + T3 + T4 + T5 + T7
+FEATS_28D_CANDIDATES = (
+    T1_FEATURES + T2_FEATURES_DAILY + T3_FEATURES
+    + T4_FEATURES + T5_FEATURES + T7_FEATURES
+)
 
-# 90-day (monthly): T1 subset + T2 monthly + T3 tail + T5 + T6
+# 90-day (monthly): T1 subset + T2 monthly + T3 tail + T5 + T6 + T7
 FEATS_90D = (
     T1_FEATURES[:10]
     + T2_FEATURES_MONTHLY[:2]
     + T3_FEATURES[-5:]
     + T5_FEATURES
     + T6_FEATURES
+    + T7_FEATURES
 )
 
-# Regime: T1 subset + T3 + T5 + T6
-FEATS_REGIME = T1_FEATURES[:10] + T3_FEATURES + T5_FEATURES + T6_FEATURES
+# Regime: T1 subset + T3 + T5 + T6 + T7
+FEATS_REGIME = T1_FEATURES[:10] + T3_FEATURES + T5_FEATURES + T6_FEATURES + T7_FEATURES
 
 
 def _available_feats(df: pd.DataFrame, feat_list: list[str]) -> list[str]:
@@ -49,16 +53,39 @@ def _available_feats(df: pd.DataFrame, feat_list: list[str]) -> list[str]:
     return [f for f in feat_list if f in df.columns]
 
 
+# ── Sample weighting for regime adaptation ──────────────────────────────
+
+# Half-life in rows: recent data gets exponentially more weight.
+# Daily: ~180 trading days (~9 months), Weekly: ~26 weeks, Monthly: ~12 months.
+HALF_LIFE = {"daily": 180, "weekly": 26, "monthly": 12}
+
+
+def _exp_decay_weights(n: int, half_life: int) -> np.ndarray:
+    """Exponential decay weights: most recent sample = 1.0, decaying backward.
+
+    Half-life controls how quickly old data loses influence.
+    A sample `half_life` rows before the end gets weight 0.5.
+    """
+    decay = np.log(2) / max(half_life, 1)
+    ages = np.arange(n, 0, -1, dtype=float)  # n, n-1, ..., 1
+    weights = np.exp(-decay * ages)
+    # Normalize so mean weight = 1 (preserves effective sample size semantics)
+    weights *= len(weights) / weights.sum()
+    return weights
+
+
 # ── Walk-Forward Cross-Validation ────────────────────────────────────────
 
 def walk_forward_cv(df: pd.DataFrame, features: list[str], target_col: str,
                     model_fn, min_train: int, step: int, eval_win: int,
-                    purge: int = 0) -> dict:
-    """Run walk-forward cross-validation. Returns metrics dict."""
+                    purge: int = 0, granularity: str = "daily") -> dict:
+    """Run walk-forward cross-validation with exponential decay weighting."""
     df_clean = df.dropna(subset=[target_col] + features)
     X = df_clean[features].values
     y = df_clean[target_col].values
     n = len(df_clean)
+
+    half_life = HALF_LIFE.get(granularity, 180)
 
     all_preds, all_actuals = [], []
     fold = 0
@@ -73,8 +100,9 @@ def walk_forward_cv(df: pd.DataFrame, features: list[str], target_col: str,
             i += step
             continue
 
+        sw = _exp_decay_weights(len(X_train), half_life)
         model = model_fn()
-        model.fit(X_train, y_train)
+        model.fit(X_train, y_train, sample_weight=sw)
         preds = model.predict(X_test)
 
         all_preds.extend(preds)
@@ -169,12 +197,14 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
         daily[target_col] = daily["avg_price"].shift(-h)
         cv = walk_forward_cv(daily, feats_short, target_col,
                              lambda _h=h: _gbr_short(_h),
-                             **WF_CONFIG["daily"], purge=h)
+                             **WF_CONFIG["daily"], purge=h, granularity="daily")
         log.info(f"{h}-day WF-CV: MAPE={cv['mape']:.3f}, MAE={cv['mae']:.1f}")
 
         df_train = daily.dropna(subset=[target_col] + feats_short)
+        sw = _exp_decay_weights(len(df_train), HALF_LIFE["daily"])
         m = _gbr_short(h)
-        m.fit(df_train[feats_short].values, df_train[target_col].values)
+        m.fit(df_train[feats_short].values, df_train[target_col].values,
+              sample_weight=sw)
         joblib.dump(m, str(MODELS_DIR / f"model_{key}.pkl"))
         results[key] = {"model": m, "features": feats_short, "cv": cv}
 
@@ -182,12 +212,14 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     feats_7d = _available_feats(daily, FEATS_7D)
     daily["target_7d"] = daily["avg_price"].shift(-7)
     cv_7d = walk_forward_cv(daily, feats_7d, "target_7d", _gbr_7d,
-                            **WF_CONFIG["daily"], purge=7)
+                            **WF_CONFIG["daily"], purge=7, granularity="daily")
     log.info(f"7-day WF-CV: MAPE={cv_7d['mape']:.3f}, MAE={cv_7d['mae']:.1f}")
 
     df_train = daily.dropna(subset=["target_7d"] + feats_7d)
+    sw = _exp_decay_weights(len(df_train), HALF_LIFE["daily"])
     m7 = _gbr_7d()
-    m7.fit(df_train[feats_7d].values, df_train["target_7d"].values)
+    m7.fit(df_train[feats_7d].values, df_train["target_7d"].values,
+           sample_weight=sw)
     joblib.dump(m7, str(MODELS_DIR / "model_7d.pkl"))
     results["7d"] = {"model": m7, "features": feats_7d, "cv": cv_7d}
 
@@ -195,12 +227,14 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     feats_14d = _available_feats(daily, FEATS_14D)
     daily["target_14d"] = daily["avg_price"].shift(-14)
     cv_14d = walk_forward_cv(daily, feats_14d, "target_14d", _gbr_14d,
-                             **WF_CONFIG["daily"], purge=14)
+                             **WF_CONFIG["daily"], purge=14, granularity="daily")
     log.info(f"14-day WF-CV: MAPE={cv_14d['mape']:.3f}, MAE={cv_14d['mae']:.1f}")
 
     df_train = daily.dropna(subset=["target_14d"] + feats_14d)
+    sw = _exp_decay_weights(len(df_train), HALF_LIFE["daily"])
     m14 = _gbr_14d()
-    m14.fit(df_train[feats_14d].values, df_train["target_14d"].values)
+    m14.fit(df_train[feats_14d].values, df_train["target_14d"].values,
+            sample_weight=sw)
     joblib.dump(m14, str(MODELS_DIR / "model_14d.pkl"))
     results["14d"] = {"model": m14, "features": feats_14d, "cv": cv_14d}
 
@@ -208,21 +242,22 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     feats_28d = _available_feats(weekly, FEATS_28D_CANDIDATES)
     weekly["target_28d"] = weekly["avg_price"].shift(-4)  # 4 weeks forward
     cv_28d = walk_forward_cv(weekly, feats_28d, "target_28d", _gbr_28d,
-                             **WF_CONFIG["weekly"], purge=4)
+                             **WF_CONFIG["weekly"], purge=4, granularity="weekly")
     log.info(f"28-day WF-CV: MAPE={cv_28d['mape']:.3f}, MAE={cv_28d['mae']:.1f}")
 
     df_train = weekly.dropna(subset=["target_28d"] + feats_28d)
     if len(df_train) > 20:
         X_28 = df_train[feats_28d].values
         y_28 = df_train["target_28d"].values
+        sw_28 = _exp_decay_weights(len(df_train), HALF_LIFE["weekly"])
 
         m28_lgb = _gbr_28d()
-        m28_lgb.fit(X_28, y_28)
+        m28_lgb.fit(X_28, y_28, sample_weight=sw_28)
 
         sc28 = StandardScaler()
         X_28_sc = sc28.fit_transform(X_28)
         m28_ridge = _ridge_28d()
-        m28_ridge.fit(X_28_sc, y_28)
+        m28_ridge.fit(X_28_sc, y_28, sample_weight=sw_28)
 
         joblib.dump(m28_lgb, str(MODELS_DIR / "model_28d_lgb.pkl"))
         joblib.dump(m28_ridge, str(MODELS_DIR / "model_28d_ridge.pkl"))
@@ -242,15 +277,17 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     monthly_90[feats_90d] = monthly_90[feats_90d].fillna(medians_90)
 
     cv_90d = walk_forward_cv(monthly_90, feats_90d, "target_90d",
-                             _bayesian_90d, **WF_CONFIG["monthly"], purge=3)
+                             _bayesian_90d, **WF_CONFIG["monthly"], purge=3,
+                             granularity="monthly")
     log.info(f"90-day WF-CV: MAPE={cv_90d['mape']:.3f}, MAE={cv_90d['mae']:.1f}")
 
     df_train = monthly_90.dropna(subset=["target_90d"])
     if len(df_train) > 20:
         sc90 = StandardScaler()
         X_90 = sc90.fit_transform(df_train[feats_90d].values)
+        sw_90 = _exp_decay_weights(len(df_train), HALF_LIFE["monthly"])
         m90 = _bayesian_90d()
-        m90.fit(X_90, df_train["target_90d"].values)
+        m90.fit(X_90, df_train["target_90d"].values, sample_weight=sw_90)
         joblib.dump(m90, str(MODELS_DIR / "model_90d.pkl"))
         joblib.dump(sc90, str(MODELS_DIR / "scaler_90d.pkl"))
         joblib.dump(medians_90.to_dict(), str(MODELS_DIR / "medians_90d.pkl"))
@@ -271,8 +308,9 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     if len(df_train) > 20:
         X_reg = df_train[feats_regime].values
         y_reg = df_train["bear_signal"].values
+        sw_reg = _exp_decay_weights(len(df_train), HALF_LIFE["monthly"])
         m_regime = _gbc_regime()
-        m_regime.fit(X_reg, y_reg)
+        m_regime.fit(X_reg, y_reg, sample_weight=sw_reg)
         joblib.dump(m_regime, str(MODELS_DIR / "model_regime.pkl"))
         joblib.dump(medians_reg.to_dict(), str(MODELS_DIR / "medians_regime.pkl"))
         results["regime"] = {"model": m_regime, "features": feats_regime,

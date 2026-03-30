@@ -290,6 +290,15 @@ T6_FEATURES = [
 ]
 
 
+# ── Tier 7: Geopolitical / Conflict (7 features) ──────────────────────
+
+T7_FEATURES = [
+    "conflict_me", "oil_vol_28", "oil_vol_90",
+    "gold_oil_ratio", "sa_import_shock",
+    "shipping_stress", "demand_regime",
+]
+
+
 def add_tier6(df: pd.DataFrame, price_col: str = "avg_price") -> list[str]:
     """Add T6 structural/cycle features."""
     added = []
@@ -346,6 +355,74 @@ def add_tier6(df: pd.DataFrame, price_col: str = "avg_price") -> list[str]:
     return added
 
 
+# ── Tier 7: Geopolitical / Conflict ────────────────────────────────────
+
+# Middle East conflict onset: Oct 7 2023 (Israel-Hamas escalation)
+# Red Sea shipping disruptions: Nov 2023 onward (Houthi attacks)
+_CONFLICT_START = pd.Timestamp("2023-10-07")
+
+
+def add_tier7(df: pd.DataFrame, is_monthly: bool = False) -> list[str]:
+    """Add T7 geopolitical / conflict features.
+
+    Captures the structural regime change from Middle East conflict:
+    - Demand disruption (Saudi Arabia = largest cardamom importer)
+    - Shipping stress (Red Sea route disruptions)
+    - Geopolitical risk premium (oil volatility, gold/oil ratio)
+    """
+    added = []
+    dates = pd.to_datetime(df["date"])
+
+    # 1. Binary conflict flag (1 from Oct 2023 onward)
+    df["conflict_me"] = (dates >= _CONFLICT_START).astype(int)
+    added.append("conflict_me")
+
+    # 2. Oil price realized volatility (captures geopolitical uncertainty)
+    if "crude_oil" in df.columns:
+        oil = df["crude_oil"].shift(1)
+        oil_ret = oil.pct_change()
+        win_28 = 28 if not is_monthly else 1
+        win_90 = 90 if not is_monthly else 3
+        min_28 = max(1, win_28 // 2)
+        min_90 = max(1, win_90 // 2)
+        df["oil_vol_28"] = oil_ret.rolling(win_28, min_periods=min_28).std() * 100
+        df["oil_vol_90"] = oil_ret.rolling(win_90, min_periods=min_90).std() * 100
+        added.extend(["oil_vol_28", "oil_vol_90"])
+
+    # 3. Gold/Oil ratio (rises during geopolitical risk → flight to safety)
+    if "gold" in df.columns and "crude_oil" in df.columns:
+        gold = df["gold"].shift(1).clip(lower=1)
+        oil = df["crude_oil"].shift(1).clip(lower=1)
+        df["gold_oil_ratio"] = gold / oil
+        added.append("gold_oil_ratio")
+
+    # 4. Saudi import shock (deviation from 12-month rolling mean)
+    if "sa_qty_kg" in df.columns:
+        sa = df["sa_qty_kg"]
+        win = 12 if is_monthly else 365
+        min_p = 6 if is_monthly else 180
+        sa_trend = sa.shift(1).rolling(win, min_periods=min_p).mean()
+        df["sa_import_shock"] = (sa.shift(1) - sa_trend) / sa_trend.clip(lower=1) * 100
+        added.append("sa_import_shock")
+
+    # 5. Shipping stress: oil volatility × conflict flag interaction
+    if "oil_vol_28" in df.columns:
+        df["shipping_stress"] = df["oil_vol_28"] * df["conflict_me"]
+        added.append("shipping_stress")
+
+    # 6. Demand regime: composite flag capturing sustained demand disruption
+    #    1 if conflict active AND Saudi imports below trend
+    if "sa_import_shock" in df.columns:
+        df["demand_regime"] = (
+            (df["conflict_me"] == 1) & (df["sa_import_shock"] < -10)
+        ).astype(int)
+    else:
+        df["demand_regime"] = df["conflict_me"]
+    added.append("demand_regime")
+
+    return added
+
+
 # ── Master builder ───────────────────────────────────────────────────────
 
 def build_daily_features(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
@@ -355,6 +432,7 @@ def build_daily_features(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     feats += add_tier2(df)
     feats += add_tier3(df, is_monthly=False)
     feats += add_tier4(df)
+    feats += add_tier7(df, is_monthly=False)
     return df, feats
 
 
@@ -366,6 +444,7 @@ def build_weekly_features(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     feats += add_tier3(df, is_monthly=False)
     feats += add_tier4(df)
     feats += add_tier5(df)
+    feats += add_tier7(df, is_monthly=False)
     return df, feats
 
 
@@ -377,4 +456,5 @@ def build_monthly_features(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     feats += add_tier3(df, is_monthly=True)
     feats += add_tier5(df)
     feats += add_tier6(df)
+    feats += add_tier7(df, is_monthly=True)
     return df, feats
