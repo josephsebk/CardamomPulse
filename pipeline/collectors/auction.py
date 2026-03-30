@@ -271,6 +271,9 @@ def collect_auction() -> pd.DataFrame:
       2. Ticker scrape (recent days from the auction page)
       3. Local XLS fallback (static file, may be stale)
     All available data is merged before aggregation.
+
+    After upsert, checks for data staleness and gaps, logging warnings
+    so operators know if the pipeline is falling behind.
     """
     frames: list[pd.DataFrame] = []
 
@@ -308,4 +311,44 @@ def collect_auction() -> pd.DataFrame:
     conn.commit()
     conn.close()
 
+    # Post-collection staleness check
+    _check_data_freshness(daily)
+
     return daily
+
+
+# Maximum acceptable days between the latest DB date and today before
+# logging a warning.  Weekends + 1 holiday ≈ 4 days is normal.
+_STALENESS_WARN_DAYS = 5
+
+
+def _check_data_freshness(daily: pd.DataFrame) -> None:
+    """Warn if the latest auction data is stale or if recent gaps exist."""
+    if daily.empty:
+        log.warning("STALENESS: auction_daily is empty after collection")
+        return
+
+    latest_date = pd.to_datetime(daily["date"].max())
+    today = pd.Timestamp.now().normalize()
+    staleness = (today - latest_date).days
+
+    if staleness > _STALENESS_WARN_DAYS:
+        log.warning(
+            f"STALENESS: latest auction data is {staleness} days old "
+            f"(latest={latest_date.date()}, today={today.date()}). "
+            f"The daily-price page may not have recent data, or auctions "
+            f"may be suspended. Run --backfill when data becomes available."
+        )
+
+    # Check for any gaps in the last 90 days
+    recent_gaps = [
+        g for g in detect_gaps(min_gap_days=5)
+        if pd.to_datetime(g["gap_end"]) >= today - pd.Timedelta(days=90)
+    ]
+    if recent_gaps:
+        for g in recent_gaps:
+            log.warning(
+                f"GAP: {g['gap_start']} → {g['gap_end']} ({g['gap_days']} days) "
+                f"in recent data. Features depending on lags and rolling "
+                f"windows will be unreliable across this gap."
+            )
