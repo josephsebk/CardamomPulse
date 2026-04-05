@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-04T13:34:46.985959Z",
+  "updated_at": "2026-04-05T13:40:19.075079Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -81,10 +81,10 @@
       },
       {
         "year": 2026,
-        "avg_price": 2402.0,
+        "avg_price": 2403.0,
         "max_price": 3549.0,
         "min_price": 1999.0,
-        "total_volume_mt": 7594.0
+        "total_volume_mt": 7649.0
       }
     ],
     "date_range": {
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 2500.0,
+      "end_price": 2520.0,
       "peak_price": 3182.0,
       "trough_price": 1205.0,
-      "change_pct": 85.6
+      "change_pct": 87.1
     }
   ],
   "drivers": {
@@ -240,12 +240,12 @@
       "impact_note": "Guatemala supplies 60-70% of global cardamom exports. The 2024-25 thrips crisis collapsed exports, driving Indian prices up."
     },
     "rainfall": {
-      "last_90d_rain_mm": 65.0,
+      "last_90d_rain_mm": 67.0,
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
       "current_rate": 92.67,
-      "monthly_change_pct": 1.81,
+      "monthly_change_pct": 1.75,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -254,7 +254,7 @@
       {
         "planting_year": 2022,
         "harvest_window": "2025-2029",
-        "avg_harvest_price": 2486.0,
+        "avg_harvest_price": 2487.0,
         "estimated_roi_pct": 407.0
       },
       {
@@ -392,7 +392,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92499/kg are 3.9x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92519/kg are 3.9x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
