@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-07T14:08:49.763298Z",
+  "updated_at": "2026-04-08T14:09:57.327370Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -81,16 +81,16 @@
       },
       {
         "year": 2026,
-        "avg_price": 2405.0,
+        "avg_price": 2407.0,
         "max_price": 3549.0,
         "min_price": 1999.0,
-        "total_volume_mt": 7828.0
+        "total_volume_mt": 7996.0
       }
     ],
     "date_range": {
       "start": "2014-11-07",
-      "end": "2026-04-07",
-      "total_trading_days": 3063
+      "end": "2026-04-08",
+      "total_trading_days": 3064
     },
     "all_time_high": 4675.0,
     "all_time_low": 495.0
@@ -113,13 +113,13 @@
         "month": 3,
         "month_name": "Mar",
         "avg_price": 1477.0,
-        "deviation_pct": -3.8
+        "deviation_pct": -3.9
       },
       {
         "month": 4,
         "month_name": "Apr",
-        "avg_price": 1372.0,
-        "deviation_pct": -10.7
+        "avg_price": 1378.0,
+        "deviation_pct": -10.3
       },
       {
         "month": 5,
@@ -149,7 +149,7 @@
         "month": 9,
         "month_name": "Sep",
         "avg_price": 1691.0,
-        "deviation_pct": 10.2
+        "deviation_pct": 10.1
       },
       {
         "month": 10,
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 2463.0,
+      "end_price": 2532.0,
       "peak_price": 3182.0,
       "trough_price": 1205.0,
-      "change_pct": 82.9
+      "change_pct": 88.0
     }
   ],
   "drivers": {
@@ -244,8 +244,8 @@
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
-      "current_rate": 92.92,
-      "monthly_change_pct": 0.99,
+      "current_rate": 92.23,
+      "monthly_change_pct": 0.12,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -254,7 +254,7 @@
       {
         "planting_year": 2022,
         "harvest_window": "2025-2029",
-        "avg_harvest_price": 2488.0,
+        "avg_harvest_price": 2489.0,
         "estimated_roi_pct": 408.0
       },
       {
@@ -266,7 +266,7 @@
       {
         "planting_year": 2020,
         "harvest_window": "2023-2027",
-        "avg_harvest_price": 2135.0,
+        "avg_harvest_price": 2136.0,
         "estimated_roi_pct": 397.0
       }
     ],
@@ -290,7 +290,7 @@
         "estimated_roi_pct": 452.0
       }
     ],
-    "current_price_to_cost": 3.8,
+    "current_price_to_cost": 3.9,
     "cost_floor_history": [
       {
         "year": 2014,
@@ -372,7 +372,7 @@
     },
     {
       "question": "Is it a good time to plant new cardamom?",
-      "answer": "Current prices are 3.8x the estimated cost floor \u2014 historically very profitable. However, high prices trigger planting booms. The 2024-25 planting wave will likely flood the market by 2027-28, potentially crashing prices. Consider planting when prices are depressed (1-2x cost) for better long-term returns.",
+      "answer": "Current prices are 3.9x the estimated cost floor \u2014 historically very profitable. However, high prices trigger planting booms. The 2024-25 planting wave will likely flood the market by 2027-28, potentially crashing prices. Consider planting when prices are depressed (1-2x cost) for better long-term returns.",
       "category": "planting"
     },
     {
@@ -392,7 +392,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92463/kg are 3.8x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92531/kg are 3.9x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
