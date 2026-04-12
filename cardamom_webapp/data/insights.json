@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-11T13:37:20.694608Z",
+  "updated_at": "2026-04-12T13:45:32.378843Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -84,7 +84,7 @@
         "avg_price": 2409.0,
         "max_price": 3549.0,
         "min_price": 1999.0,
-        "total_volume_mt": 8142.0
+        "total_volume_mt": 8228.0
       }
     ],
     "date_range": {
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 2488.0,
+      "end_price": 2515.0,
       "peak_price": 3182.0,
       "trough_price": 1205.0,
-      "change_pct": 84.8
+      "change_pct": 86.8
     }
   ],
   "drivers": {
@@ -245,7 +245,7 @@
     },
     "exchange_rate": {
       "current_rate": 93.05,
-      "monthly_change_pct": 1.24,
+      "monthly_change_pct": 1.21,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -266,7 +266,7 @@
       {
         "planting_year": 2020,
         "harvest_window": "2023-2027",
-        "avg_harvest_price": 2136.0,
+        "avg_harvest_price": 2137.0,
         "estimated_roi_pct": 397.0
       }
     ],
@@ -392,7 +392,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92487/kg are 3.9x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92515/kg are 3.9x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
