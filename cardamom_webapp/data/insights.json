@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-23T14:18:48.101727Z",
+  "updated_at": "2026-04-24T14:14:06.460285Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -81,16 +81,16 @@
       },
       {
         "year": 2026,
-        "avg_price": 2437.0,
+        "avg_price": 2441.0,
         "max_price": 6024.0,
         "min_price": 1999.0,
-        "total_volume_mt": 9271.0
+        "total_volume_mt": 9344.0
       }
     ],
     "date_range": {
       "start": "2014-11-07",
-      "end": "2026-04-22",
-      "total_trading_days": 3073
+      "end": "2026-04-24",
+      "total_trading_days": 3074
     },
     "all_time_high": 4675.0,
     "all_time_low": 495.0
@@ -118,8 +118,8 @@
       {
         "month": 4,
         "month_name": "Apr",
-        "avg_price": 1432.0,
-        "deviation_pct": -7.0
+        "avg_price": 1438.0,
+        "deviation_pct": -6.6
       },
       {
         "month": 5,
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 2657.0,
+      "end_price": 2696.0,
       "peak_price": 3182.0,
       "trough_price": 1205.0,
-      "change_pct": 97.3
+      "change_pct": 100.2
     }
   ],
   "drivers": {
@@ -244,8 +244,8 @@
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
-      "current_rate": 94.08,
-      "monthly_change_pct": 1.08,
+      "current_rate": 94.23,
+      "monthly_change_pct": 0.62,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -254,20 +254,20 @@
       {
         "planting_year": 2022,
         "harvest_window": "2025-2029",
-        "avg_harvest_price": 2504.0,
+        "avg_harvest_price": 2505.0,
         "estimated_roi_pct": 411.0
       },
       {
         "planting_year": 2021,
         "harvest_window": "2024-2028",
-        "avg_harvest_price": 2376.0,
+        "avg_harvest_price": 2378.0,
         "estimated_roi_pct": 417.0
       },
       {
         "planting_year": 2020,
         "harvest_window": "2023-2027",
-        "avg_harvest_price": 2143.0,
-        "estimated_roi_pct": 398.0
+        "avg_harvest_price": 2144.0,
+        "estimated_roi_pct": 399.0
       }
     ],
     "worst_years": [
@@ -290,7 +290,7 @@
         "estimated_roi_pct": 452.0
       }
     ],
-    "current_price_to_cost": 4.1,
+    "current_price_to_cost": 4.2,
     "cost_floor_history": [
       {
         "year": 2014,
@@ -372,7 +372,7 @@
     },
     {
       "question": "Is it a good time to plant new cardamom?",
-      "answer": "Current prices are 4.1x the estimated cost floor \u2014 historically very profitable. However, high prices trigger planting booms. The 2024-25 planting wave will likely flood the market by 2027-28, potentially crashing prices. Consider planting when prices are depressed (1-2x cost) for better long-term returns.",
+      "answer": "Current prices are 4.2x the estimated cost floor \u2014 historically very profitable. However, high prices trigger planting booms. The 2024-25 planting wave will likely flood the market by 2027-28, potentially crashing prices. Consider planting when prices are depressed (1-2x cost) for better long-term returns.",
       "category": "planting"
     },
     {
@@ -392,7 +392,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92657/kg are 4.1x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92696/kg are 4.2x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
