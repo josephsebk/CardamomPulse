@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-25T13:43:54.972028Z",
+  "updated_at": "2026-04-26T13:51:35.141193Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -81,10 +81,10 @@
       },
       {
         "year": 2026,
-        "avg_price": 2444.0,
+        "avg_price": 2443.0,
         "max_price": 6024.0,
         "min_price": 1999.0,
-        "total_volume_mt": 9409.0
+        "total_volume_mt": 9501.0
       }
     ],
     "date_range": {
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 2702.0,
+      "end_price": 2663.0,
       "peak_price": 3182.0,
       "trough_price": 1205.0,
-      "change_pct": 100.7
+      "change_pct": 97.8
     }
   ],
   "drivers": {
@@ -245,7 +245,7 @@
     },
     "exchange_rate": {
       "current_rate": 94.22,
-      "monthly_change_pct": 0.35,
+      "monthly_change_pct": 1.05,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -260,7 +260,7 @@
       {
         "planting_year": 2021,
         "harvest_window": "2024-2028",
-        "avg_harvest_price": 2379.0,
+        "avg_harvest_price": 2378.0,
         "estimated_roi_pct": 417.0
       },
       {
@@ -290,7 +290,7 @@
         "estimated_roi_pct": 452.0
       }
     ],
-    "current_price_to_cost": 4.2,
+    "current_price_to_cost": 4.1,
     "cost_floor_history": [
       {
         "year": 2014,
@@ -372,7 +372,7 @@
     },
     {
       "question": "Is it a good time to plant new cardamom?",
-      "answer": "Current prices are 4.2x the estimated cost floor \u2014 historically very profitable. However, high prices trigger planting booms. The 2024-25 planting wave will likely flood the market by 2027-28, potentially crashing prices. Consider planting when prices are depressed (1-2x cost) for better long-term returns.",
+      "answer": "Current prices are 4.1x the estimated cost floor \u2014 historically very profitable. However, high prices trigger planting booms. The 2024-25 planting wave will likely flood the market by 2027-28, potentially crashing prices. Consider planting when prices are depressed (1-2x cost) for better long-term returns.",
       "category": "planting"
     },
     {
@@ -392,7 +392,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92702/kg are 4.2x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92663/kg are 4.1x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
