@@ -71,7 +71,7 @@ def build_daily_df() -> pd.DataFrame:
     guatemala = read_table("trade_guatemala", conn)
     if not guatemala.empty:
         guatemala["date"] = pd.to_datetime(guatemala["period"].apply(
-            lambda p: pd.Timestamp(year=int(str(int(p))[:4]), month=int(str(int(p))[4:6]), day=1)
+            lambda p: pd.Timestamp(year=int(str(float(p))[:4]), month=int(str(float(p))[4:6]), day=1)
             + pd.offsets.MonthEnd(0)
         ))
         gt = guatemala[["date", "qty_kg", "net_wgt_kg", "value_usd"]].copy()
@@ -86,7 +86,7 @@ def build_daily_df() -> pd.DataFrame:
     saudi = read_table("trade_saudi", conn)
     if not saudi.empty:
         saudi["date"] = pd.to_datetime(saudi["period"].apply(
-            lambda p: pd.Timestamp(year=int(str(int(p))[:4]), month=int(str(int(p))[4:6]), day=1)
+            lambda p: pd.Timestamp(year=int(str(float(p))[:4]), month=int(str(float(p))[4:6]), day=1)
             + pd.offsets.MonthEnd(0)
         ))
         sa = saudi[["date", "net_wgt_kg", "value_usd"]].copy()

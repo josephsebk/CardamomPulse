@@ -25,8 +25,8 @@ log = logging.getLogger(__name__)
 # 1d–7d: T1 + first 5 of T2 daily + T4 macro + T7 geopolitical
 FEATS_7D = T1_FEATURES + T2_FEATURES_DAILY[:5] + T4_FEATURES + T7_FEATURES
 
-# 14-day: T1 + all T2 daily + T4 macro + T7 geopolitical
-FEATS_14D = T1_FEATURES + T2_FEATURES_DAILY + T4_FEATURES + T7_FEATURES
+# 14-day: T1 + all T2 daily + T4 macro (T7 adds noise at this horizon)
+FEATS_14D = T1_FEATURES + T2_FEATURES_DAILY + T4_FEATURES
 
 # 28-day (weekly): T1 + T2 + T3 + T4 + T5 + T7
 FEATS_28D_CANDIDATES = (
@@ -241,11 +241,19 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     # ── 28-day model (stacked GBM + Ridge) ───────────────────────────
     feats_28d = _available_feats(weekly, FEATS_28D_CANDIDATES)
     weekly["target_28d"] = weekly["avg_price"].shift(-4)  # 4 weeks forward
-    cv_28d = walk_forward_cv(weekly, feats_28d, "target_28d", _gbr_28d,
+
+    # Impute NaN with column medians — weekly data has high-NaN features
+    # (enso_lag12m 67%, rain_anomaly 33%, etc.) that would otherwise
+    # discard 2/3 of training rows via dropna.
+    medians_28 = weekly[feats_28d].median()
+    weekly_28 = weekly.copy()
+    weekly_28[feats_28d] = weekly_28[feats_28d].fillna(medians_28)
+
+    cv_28d = walk_forward_cv(weekly_28, feats_28d, "target_28d", _gbr_28d,
                              **WF_CONFIG["weekly"], purge=4, granularity="weekly")
     log.info(f"28-day WF-CV: MAPE={cv_28d['mape']:.3f}, MAE={cv_28d['mae']:.1f}")
 
-    df_train = weekly.dropna(subset=["target_28d"] + feats_28d)
+    df_train = weekly_28.dropna(subset=["target_28d"])
     if len(df_train) > 20:
         X_28 = df_train[feats_28d].values
         y_28 = df_train["target_28d"].values
@@ -262,9 +270,11 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
         joblib.dump(m28_lgb, str(MODELS_DIR / "model_28d_lgb.pkl"))
         joblib.dump(m28_ridge, str(MODELS_DIR / "model_28d_ridge.pkl"))
         joblib.dump(sc28, str(MODELS_DIR / "scaler_28d.pkl"))
+        joblib.dump(medians_28.to_dict(), str(MODELS_DIR / "medians_28d.pkl"))
         results["28d"] = {
             "model_lgb": m28_lgb, "model_ridge": m28_ridge,
-            "scaler": sc28, "features": feats_28d, "cv": cv_28d,
+            "scaler": sc28, "features": feats_28d,
+            "medians": medians_28.to_dict(), "cv": cv_28d,
         }
 
     # ── 90-day model (Bayesian Ridge) ────────────────────────────────
@@ -351,11 +361,15 @@ def load_models() -> dict:
         elif name == "14d":
             models["14d"] = {"model": joblib.load(str(MODELS_DIR / "model_14d.pkl"))}
         elif name == "28d":
-            models["28d"] = {
+            m = {
                 "model_lgb": joblib.load(str(MODELS_DIR / "model_28d_lgb.pkl")),
                 "model_ridge": joblib.load(str(MODELS_DIR / "model_28d_ridge.pkl")),
                 "scaler": joblib.load(str(MODELS_DIR / "scaler_28d.pkl")),
             }
+            med_path = MODELS_DIR / "medians_28d.pkl"
+            if med_path.exists():
+                m["medians"] = joblib.load(str(med_path))
+            models["28d"] = m
         elif name == "90d":
             m = {
                 "model": joblib.load(str(MODELS_DIR / "model_90d.pkl")),
@@ -617,10 +631,10 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
             log.info(f"14-day forecast: ₹{pred:.0f} (raw ₹{raw_pred:.0f}) for {target_date}"
                      + (" [LOW CONFIDENCE]" if confidence else ""))
 
-    # 28-day (stacked)
+    # 28-day (stacked, with median imputation for sparse weekly features)
     if "28d" in models:
         feats = _available_feats(weekly, FEATS_28D_CANDIDATES)
-        X, used = _last_row(weekly, feats)
+        X = _last_row_imputed(weekly, feats, models["28d"].get("medians", {}))
         if X is not None:
             p_lgb = float(models["28d"]["model_lgb"].predict(X)[0])
             X_sc = models["28d"]["scaler"].transform(X)

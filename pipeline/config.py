@@ -31,12 +31,12 @@ YF_TICKERS = {
 # ── Walk-forward CV config ────────────────────────────────────────────────
 WF_CONFIG = {
     "daily": {"min_train": 500, "step": 120, "eval_win": 120},
-    "weekly": {"min_train": 104, "step": 13, "eval_win": 13},
+    "weekly": {"min_train": 60, "step": 13, "eval_win": 13},
     "monthly": {"min_train": 48, "step": 6, "eval_win": 6},
 }
 
 # ── Model versions ────────────────────────────────────────────────────────
-MODEL_VERSION = "v1.1"  # Added T7 geopolitical features + decay weighting
+MODEL_VERSION = "v1.2"  # Fixed 14d/28d accuracy: removed T7 from 14d, added NaN imputation for 28d
 
 # ── Pipeline schedule (IST offsets in comments) ──────────────────────────
 DAILY_RUN_HOUR_UTC = 12  # 6 PM IST = 12:30 UTC; run at 12 UTC
