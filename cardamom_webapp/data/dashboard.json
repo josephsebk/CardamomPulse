@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-02T13:53:34.565589Z",
+  "updated_at": "2026-05-03T13:59:38.576073Z",
   "spot_price": {
     "date": "2026-05-02",
     "avg_price": 2636.417897813445,
@@ -12,68 +12,68 @@
     {
       "horizon_days": 1,
       "target_date": "2026-05-03",
-      "predicted_price": 2632.5,
+      "predicted_price": 2657.9,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 2,
       "target_date": "2026-05-04",
-      "predicted_price": 2625.1,
+      "predicted_price": 2621.7,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 3,
       "target_date": "2026-05-05",
-      "predicted_price": 2621.5,
+      "predicted_price": 2595.3,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 4,
       "target_date": "2026-05-06",
-      "predicted_price": 2631.3,
+      "predicted_price": 2636.7,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 5,
       "target_date": "2026-05-07",
-      "predicted_price": 2580.8,
+      "predicted_price": 2607.5,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 6,
       "target_date": "2026-05-08",
-      "predicted_price": 2566.0,
+      "predicted_price": 2567.3,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 7,
       "target_date": "2026-05-09",
-      "predicted_price": 2557.1,
+      "predicted_price": 2512.1,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 14,
       "target_date": "2026-05-16",
-      "predicted_price": 2470.6,
+      "predicted_price": 2509.7,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 28,
       "target_date": "2026-05-30",
-      "predicted_price": 2717.3,
+      "predicted_price": 2691.3,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 90,
       "target_date": "2026-07-31",
-      "predicted_price": 2440.8,
+      "predicted_price": 2514.2,
       "model_version": "v1.0",
-      "lower_bound": 1871.5,
-      "upper_bound": 3010.1
+      "lower_bound": 1950.3,
+      "upper_bound": 3078.0
     }
   ],
   "regime": {
-    "bear_probability": 0.087,
+    "bear_probability": 0.023,
     "label": "LOW",
     "forecast_date": "2026-05-02"
   },
