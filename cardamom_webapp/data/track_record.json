@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-16T14:06:06.044902Z",
+  "updated_at": "2026-05-17T14:08:49.680937Z",
   "total_predictions": 200,
   "metrics_by_horizon": {
     "28": {
@@ -75,74 +75,74 @@
   },
   "recent_validations": [
     {
-      "id": 443,
+      "id": 450,
       "date": "2026-05-16",
       "horizon_days": 28,
       "predicted_price": 2672.1,
       "actual_price": 2442.9470449280734,
       "abs_error": 229.1529550719265,
       "pct_error": 0.09380185114846537,
-      "created_at": "2026-05-16 14:06:04"
+      "created_at": "2026-05-17 14:04:37"
     },
     {
-      "id": 444,
+      "id": 451,
       "date": "2026-05-16",
       "horizon_days": 14,
       "predicted_price": 2509.7,
       "actual_price": 2442.9470449280734,
       "abs_error": 66.75295507192641,
       "pct_error": 0.027324765475582293,
-      "created_at": "2026-05-16 14:06:04"
+      "created_at": "2026-05-17 14:04:37"
     },
     {
-      "id": 445,
+      "id": 452,
       "date": "2026-05-16",
       "horizon_days": 5,
       "predicted_price": 2435.7,
       "actual_price": 2442.9470449280734,
       "abs_error": 7.247044928073592,
       "pct_error": 0.0029665174049186005,
-      "created_at": "2026-05-16 14:06:04"
+      "created_at": "2026-05-17 14:04:37"
     },
     {
-      "id": 446,
+      "id": 453,
       "date": "2026-05-16",
       "horizon_days": 4,
       "predicted_price": 2459.5,
       "actual_price": 2442.9470449280734,
       "abs_error": 16.55295507192659,
       "pct_error": 0.006775814116107438,
-      "created_at": "2026-05-16 14:06:04"
+      "created_at": "2026-05-17 14:04:37"
     },
     {
-      "id": 447,
+      "id": 454,
       "date": "2026-05-16",
       "horizon_days": 3,
       "predicted_price": 2480.3,
       "actual_price": 2442.9470449280734,
       "abs_error": 37.35295507192677,
       "pct_error": 0.015290120655491547,
-      "created_at": "2026-05-16 14:06:04"
+      "created_at": "2026-05-17 14:04:37"
     },
     {
-      "id": 448,
+      "id": 455,
       "date": "2026-05-16",
       "horizon_days": 2,
       "predicted_price": 2469.5,
       "actual_price": 2442.9470449280734,
       "abs_error": 26.55295507192659,
       "pct_error": 0.010869230721580532,
-      "created_at": "2026-05-16 14:06:04"
+      "created_at": "2026-05-17 14:04:37"
     },
     {
-      "id": 449,
+      "id": 456,
       "date": "2026-05-16",
       "horizon_days": 1,
       "predicted_price": 2502.9,
       "actual_price": 2442.9470449280734,
       "abs_error": 59.95295507192668,
       "pct_error": 0.024541242183860702,
-      "created_at": "2026-05-16 14:06:04"
+      "created_at": "2026-05-17 14:04:37"
     },
     {
       "id": 437,
