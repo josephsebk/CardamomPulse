@@ -7,7 +7,10 @@ from pathlib import Path
 import joblib
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import GradientBoostingRegressor, GradientBoostingClassifier
+from sklearn.ensemble import (
+    GradientBoostingRegressor, GradientBoostingClassifier,
+    HistGradientBoostingRegressor,
+)
 from sklearn.linear_model import Ridge, BayesianRidge
 from sklearn.preprocessing import StandardScaler
 
@@ -25,8 +28,15 @@ log = logging.getLogger(__name__)
 # 1d–7d: T1 + first 5 of T2 daily + T4 macro + T7 geopolitical
 FEATS_7D = T1_FEATURES + T2_FEATURES_DAILY[:5] + T4_FEATURES + T7_FEATURES
 
-# 14-day: T1 + all T2 daily + T4 macro (T7 adds noise at this horizon)
-FEATS_14D = T1_FEATURES + T2_FEATURES_DAILY + T4_FEATURES
+# 14-day: T1 + price-relative + T2 daily + T4 macro (T7 adds noise at this horizon)
+# Price-relative features reduce regime-dependent bias where models
+# systematically under-predict at high price levels.
+FEATS_14D_RELATIVE = (
+    [f"lag_{l}_rel" for l in [1, 2, 3, 5, 7, 14, 21, 30]]
+    + [f"ma_{w}_rel" for w in [7, 14, 30, 60, 90]]
+    + [f"std_{w}_rel" for w in [7, 14, 30]]
+)
+FEATS_14D = T1_FEATURES + FEATS_14D_RELATIVE + T2_FEATURES_DAILY + T4_FEATURES
 
 # 28-day (weekly): T1 + T2 + T3 + T4 + T5 + T7
 FEATS_28D_CANDIDATES = (
@@ -157,9 +167,9 @@ def _gbr_14d():
 
 
 def _gbr_28d():
-    return GradientBoostingRegressor(
-        n_estimators=150, max_depth=4, learning_rate=0.05,
-        subsample=0.8, min_samples_leaf=10, random_state=42,
+    return HistGradientBoostingRegressor(
+        max_iter=150, max_depth=4, learning_rate=0.05,
+        min_samples_leaf=10, random_state=42,
     )
 
 
@@ -223,7 +233,7 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     joblib.dump(m7, str(MODELS_DIR / "model_7d.pkl"))
     results["7d"] = {"model": m7, "features": feats_7d, "cv": cv_7d}
 
-    # ── 14-day model ─────────────────────────────────────────────────
+    # ── 14-day model (stacked GBR + Ridge) ─────────────────────────
     feats_14d = _available_feats(daily, FEATS_14D)
     daily["target_14d"] = daily["avg_price"].shift(-14)
     cv_14d = walk_forward_cv(daily, feats_14d, "target_14d", _gbr_14d,
@@ -232,19 +242,30 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
 
     df_train = daily.dropna(subset=["target_14d"] + feats_14d)
     sw = _exp_decay_weights(len(df_train), HALF_LIFE["daily"])
-    m14 = _gbr_14d()
-    m14.fit(df_train[feats_14d].values, df_train["target_14d"].values,
-            sample_weight=sw)
-    joblib.dump(m14, str(MODELS_DIR / "model_14d.pkl"))
-    results["14d"] = {"model": m14, "features": feats_14d, "cv": cv_14d}
+    X_14 = df_train[feats_14d].values
+    y_14 = df_train["target_14d"].values
 
-    # ── 28-day model (stacked GBM + Ridge) ───────────────────────────
+    m14_gbr = _gbr_14d()
+    m14_gbr.fit(X_14, y_14, sample_weight=sw)
+
+    sc14 = StandardScaler()
+    X_14_sc = sc14.fit_transform(X_14)
+    m14_ridge = Ridge(alpha=10.0)
+    m14_ridge.fit(X_14_sc, y_14, sample_weight=sw)
+
+    joblib.dump(m14_gbr, str(MODELS_DIR / "model_14d_gbr.pkl"))
+    joblib.dump(m14_ridge, str(MODELS_DIR / "model_14d_ridge.pkl"))
+    joblib.dump(sc14, str(MODELS_DIR / "scaler_14d.pkl"))
+    results["14d"] = {
+        "model_gbr": m14_gbr, "model_ridge": m14_ridge,
+        "scaler": sc14, "features": feats_14d, "cv": cv_14d,
+    }
+
+    # ── 28-day model (stacked HistGBR + Ridge) ─────────────────────────
     feats_28d = _available_feats(weekly, FEATS_28D_CANDIDATES)
     weekly["target_28d"] = weekly["avg_price"].shift(-4)  # 4 weeks forward
 
-    # Impute NaN with column medians — weekly data has high-NaN features
-    # (enso_lag12m 67%, rain_anomaly 33%, etc.) that would otherwise
-    # discard 2/3 of training rows via dropna.
+    # HistGBR handles NaN natively; Ridge needs median imputation.
     medians_28 = weekly[feats_28d].median()
     weekly_28 = weekly.copy()
     weekly_28[feats_28d] = weekly_28[feats_28d].fillna(medians_28)
@@ -253,17 +274,19 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
                              **WF_CONFIG["weekly"], purge=4, granularity="weekly")
     log.info(f"28-day WF-CV: MAPE={cv_28d['mape']:.3f}, MAE={cv_28d['mae']:.1f}")
 
-    df_train = weekly_28.dropna(subset=["target_28d"])
+    df_train = weekly.dropna(subset=["target_28d"])
     if len(df_train) > 20:
-        X_28 = df_train[feats_28d].values
+        X_28_raw = df_train[feats_28d].values
         y_28 = df_train["target_28d"].values
         sw_28 = _exp_decay_weights(len(df_train), HALF_LIFE["weekly"])
 
         m28_lgb = _gbr_28d()
-        m28_lgb.fit(X_28, y_28, sample_weight=sw_28)
+        m28_lgb.fit(X_28_raw, y_28, sample_weight=sw_28)
 
+        # Ridge needs imputed data
+        X_28_imp = df_train[feats_28d].fillna(medians_28).values
         sc28 = StandardScaler()
-        X_28_sc = sc28.fit_transform(X_28)
+        X_28_sc = sc28.fit_transform(X_28_imp)
         m28_ridge = _ridge_28d()
         m28_ridge.fit(X_28_sc, y_28, sample_weight=sw_28)
 
@@ -345,7 +368,7 @@ def load_models() -> dict:
         ("5d", ["model_5d.pkl"]),
         ("6d", ["model_6d.pkl"]),
         ("7d", ["model_7d.pkl"]),
-        ("14d", ["model_14d.pkl"]),
+        ("14d", ["model_14d_gbr.pkl", "model_14d_ridge.pkl", "scaler_14d.pkl"]),
         ("28d", ["model_28d_lgb.pkl", "model_28d_ridge.pkl", "scaler_28d.pkl"]),
         ("90d", ["model_90d.pkl", "scaler_90d.pkl"]),
         ("regime", ["model_regime.pkl"]),
@@ -359,7 +382,11 @@ def load_models() -> dict:
         elif name == "7d":
             models["7d"] = {"model": joblib.load(str(MODELS_DIR / "model_7d.pkl"))}
         elif name == "14d":
-            models["14d"] = {"model": joblib.load(str(MODELS_DIR / "model_14d.pkl"))}
+            models["14d"] = {
+                "model_gbr": joblib.load(str(MODELS_DIR / "model_14d_gbr.pkl")),
+                "model_ridge": joblib.load(str(MODELS_DIR / "model_14d_ridge.pkl")),
+                "scaler": joblib.load(str(MODELS_DIR / "scaler_14d.pkl")),
+            }
         elif name == "28d":
             m = {
                 "model_lgb": joblib.load(str(MODELS_DIR / "model_28d_lgb.pkl")),
@@ -611,12 +638,15 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
             log.info(f"7-day forecast: ₹{pred:.0f} (raw ₹{raw_pred:.0f}) for {target_date}"
                      + (" [LOW CONFIDENCE]" if confidence else ""))
 
-    # 14-day
+    # 14-day (stacked GBR + Ridge)
     if "14d" in models:
         feats = _available_feats(daily, FEATS_14D)
         X, used = _last_row(daily, feats)
         if X is not None:
-            raw_pred = float(models["14d"]["model"].predict(X)[0])
+            p_gbr = float(models["14d"]["model_gbr"].predict(X)[0])
+            X_sc = models["14d"]["scaler"].transform(X)
+            p_ridge = float(models["14d"]["model_ridge"].predict(X_sc)[0])
+            raw_pred = 0.6 * p_gbr + 0.4 * p_ridge
             pred = _apply_anchor_correction(raw_pred, anchor, 14)
             target_date = (pd.Timestamp(today) + timedelta(days=14)).strftime("%Y-%m-%d")
             entry = {
@@ -631,13 +661,16 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
             log.info(f"14-day forecast: ₹{pred:.0f} (raw ₹{raw_pred:.0f}) for {target_date}"
                      + (" [LOW CONFIDENCE]" if confidence else ""))
 
-    # 28-day (stacked, with median imputation for sparse weekly features)
+    # 28-day (stacked HistGBR + Ridge)
     if "28d" in models:
         feats = _available_feats(weekly, FEATS_28D_CANDIDATES)
-        X = _last_row_imputed(weekly, feats, models["28d"].get("medians", {}))
-        if X is not None:
-            p_lgb = float(models["28d"]["model_lgb"].predict(X)[0])
-            X_sc = models["28d"]["scaler"].transform(X)
+        # HistGBR handles NaN natively; get raw row for it
+        X_raw, used = _last_row(weekly, feats)
+        # Ridge needs imputed row
+        X_imp = _last_row_imputed(weekly, feats, models["28d"].get("medians", {}))
+        if X_raw is not None and X_imp is not None:
+            p_lgb = float(models["28d"]["model_lgb"].predict(X_raw)[0])
+            X_sc = models["28d"]["scaler"].transform(X_imp)
             p_ridge = float(models["28d"]["model_ridge"].predict(X_sc)[0])
             raw_pred = 0.5 * p_lgb + 0.5 * p_ridge
             pred = _apply_anchor_correction(raw_pred, anchor, 28)

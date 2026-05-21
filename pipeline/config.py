@@ -36,7 +36,7 @@ WF_CONFIG = {
 }
 
 # ── Model versions ────────────────────────────────────────────────────────
-MODEL_VERSION = "v1.2"  # Fixed 14d/28d accuracy: removed T7 from 14d, added NaN imputation for 28d
+MODEL_VERSION = "v1.3"  # Stacked 14d ensemble, price-relative features, HistGBR for 28d
 
 # ── Pipeline schedule (IST offsets in comments) ──────────────────────────
 DAILY_RUN_HOUR_UTC = 12  # 6 PM IST = 12:30 UTC; run at 12 UTC

@@ -11,11 +11,11 @@ import numpy as np
 import pandas as pd
 from pipeline.assemble import build_daily_df, resample_weekly, resample_monthly
 from pipeline.features import (
-    add_tier1, add_tier2, add_tier3, add_tier4, add_tier7,
+    add_tier1, add_tier2, add_tier3, add_tier4, add_tier7, add_price_relative,
     T1_FEATURES, T2_FEATURES_DAILY, T3_FEATURES, T4_FEATURES,
     T2_FEATURES_MONTHLY, T5_FEATURES, T6_FEATURES, T7_FEATURES,
 )
-from pipeline.models import walk_forward_cv, _gbr_short, _gbr_7d, _gbr_14d
+from pipeline.models import walk_forward_cv, _gbr_short, _gbr_7d, _gbr_14d, _gbr_28d
 from pipeline.models import _bayesian_90d, _gbc_regime, FEATS_90D, FEATS_REGIME
 from pipeline.config import WF_CONFIG
 
@@ -30,6 +30,7 @@ monthly_raw = resample_monthly(daily_raw)
 # ── Prepare daily DataFrame with ALL tiers ────────────────────────────────
 daily = daily_raw.copy()
 add_tier1(daily)
+add_price_relative(daily)
 add_tier2(daily)
 add_tier3(daily, is_monthly=False)
 add_tier4(daily)

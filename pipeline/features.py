@@ -122,6 +122,32 @@ def add_tier1(df: pd.DataFrame, price_col: str = "avg_price",
     return added
 
 
+def add_price_relative(df: pd.DataFrame, price_col: str = "avg_price") -> list[str]:
+    """Add price-relative versions of lag/MA/std features (normalized by current price).
+
+    Reduces regime-dependent bias where models systematically under-predict
+    at high price levels and over-predict at low levels.
+    """
+    price = df[price_col]
+    added = []
+    for lag in [1, 2, 3, 5, 7, 14, 21, 30]:
+        col = f"lag_{lag}_rel"
+        if f"lag_{lag}" in df.columns:
+            df[col] = df[f"lag_{lag}"] / price - 1
+            added.append(col)
+    for w in [7, 14, 30, 60, 90]:
+        col = f"ma_{w}_rel"
+        if f"ma_{w}" in df.columns:
+            df[col] = df[f"ma_{w}"] / price - 1
+            added.append(col)
+    for w in [7, 14, 30]:
+        col = f"std_{w}_rel"
+        if f"std_{w}" in df.columns:
+            df[col] = df[f"std_{w}"] / price
+            added.append(col)
+    return added
+
+
 # ── Tier 2: Calendar / Seasonal ──────────────────────────────────────────
 
 T2_FEATURES_DAILY = [
@@ -429,6 +455,7 @@ def build_daily_features(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     """Apply all applicable tiers to a daily DataFrame. Returns (df, feature_names)."""
     feats = []
     feats += add_tier1(df)
+    feats += add_price_relative(df)
     feats += add_tier2(df)
     feats += add_tier3(df, is_monthly=False)
     feats += add_tier4(df)
