@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-22T15:34:57.780878Z",
+  "updated_at": "2026-05-23T14:09:01.932717Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -81,16 +81,16 @@
       },
       {
         "year": 2026,
-        "avg_price": 2457.0,
+        "avg_price": 2458.0,
         "max_price": 6103.0,
         "min_price": 1999.0,
-        "total_volume_mt": 11569.0
+        "total_volume_mt": 11652.0
       }
     ],
     "date_range": {
       "start": "2014-11-07",
-      "end": "2026-05-22",
-      "total_trading_days": 3095
+      "end": "2026-05-23",
+      "total_trading_days": 3096
     },
     "all_time_high": 4675.0,
     "all_time_low": 495.0
@@ -124,26 +124,26 @@
       {
         "month": 5,
         "month_name": "May",
-        "avg_price": 1392.0,
-        "deviation_pct": -9.9
+        "avg_price": 1397.0,
+        "deviation_pct": -9.7
       },
       {
         "month": 6,
         "month_name": "Jun",
         "avg_price": 1397.0,
-        "deviation_pct": -9.6
+        "deviation_pct": -9.7
       },
       {
         "month": 7,
         "month_name": "Jul",
         "avg_price": 1515.0,
-        "deviation_pct": -2.0
+        "deviation_pct": -2.1
       },
       {
         "month": 8,
         "month_name": "Aug",
         "avg_price": 1615.0,
-        "deviation_pct": 4.5
+        "deviation_pct": 4.4
       },
       {
         "month": 9,
@@ -167,18 +167,18 @@
         "month": 12,
         "month_name": "Dec",
         "avg_price": 1601.0,
-        "deviation_pct": 3.6
+        "deviation_pct": 3.5
       }
     ],
     "best_months": [
       "Jan",
       "Sep",
-      "Aug"
+      "Feb"
     ],
     "worst_months": [
       "Apr",
-      "Jun",
-      "May"
+      "May",
+      "Jun"
     ]
   },
   "regimes": [
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 2460.0,
+      "end_price": 2554.0,
       "peak_price": 3182.0,
       "trough_price": 1205.0,
-      "change_pct": 82.7
+      "change_pct": 89.7
     }
   ],
   "drivers": {
@@ -245,7 +245,7 @@
     },
     "exchange_rate": {
       "current_rate": 95.68,
-      "monthly_change_pct": 2.0,
+      "monthly_change_pct": 1.67,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -290,7 +290,7 @@
         "estimated_roi_pct": 452.0
       }
     ],
-    "current_price_to_cost": 3.8,
+    "current_price_to_cost": 4.0,
     "cost_floor_history": [
       {
         "year": 2014,
@@ -367,12 +367,12 @@
   "farmer_qa": [
     {
       "question": "When is the best time to sell my harvest?",
-      "answer": "Historically, Jan-Sep and Aug fetch the highest prices (+12.1% above annual average). Avoid selling in Apr-Jun when prices typically dip -9.9% below average.",
+      "answer": "Historically, Jan-Sep and Feb fetch the highest prices (+12.1% above annual average). Avoid selling in Apr-May when prices typically dip -9.7% below average.",
       "category": "selling"
     },
     {
       "question": "Is it a good time to plant new cardamom?",
-      "answer": "Current prices are 3.8x the estimated cost floor \u2014 historically very profitable. However, high prices trigger planting booms. The 2024-25 planting wave will likely flood the market by 2027-28, potentially crashing prices. Consider planting when prices are depressed (1-2x cost) for better long-term returns.",
+      "answer": "Current prices are 4.0x the estimated cost floor \u2014 historically very profitable. However, high prices trigger planting booms. The 2024-25 planting wave will likely flood the market by 2027-28, potentially crashing prices. Consider planting when prices are depressed (1-2x cost) for better long-term returns.",
       "category": "planting"
     },
     {
@@ -392,7 +392,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92460/kg are 3.8x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92553/kg are 4.0x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
