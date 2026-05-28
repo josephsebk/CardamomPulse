@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-27T16:23:42.711181Z",
+  "updated_at": "2026-05-28T16:38:18.580352Z",
   "spot_price": {
     "date": "2026-05-27",
     "avg_price": 2615.507529649119,
@@ -48,13 +48,13 @@
     {
       "horizon_days": 7,
       "target_date": "2026-06-03",
-      "predicted_price": 2549.2,
+      "predicted_price": 2555.7,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 14,
       "target_date": "2026-06-10",
-      "predicted_price": 2483.7,
+      "predicted_price": 2486.8,
       "model_version": "v1.0"
     },
     {
