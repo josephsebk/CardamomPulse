@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-30T14:14:01.441455Z",
+  "updated_at": "2026-05-31T14:23:27.527757Z",
   "spot_price": {
     "date": "2026-05-30",
     "avg_price": 2629.494845261181,
@@ -12,64 +12,64 @@
     {
       "horizon_days": 1,
       "target_date": "2026-05-31",
-      "predicted_price": 2624.6,
+      "predicted_price": 2630.8,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 2,
       "target_date": "2026-06-01",
-      "predicted_price": 2581.6,
+      "predicted_price": 2631.4,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 3,
       "target_date": "2026-06-02",
-      "predicted_price": 2627.2,
+      "predicted_price": 2667.1,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 4,
       "target_date": "2026-06-03",
-      "predicted_price": 2584.7,
+      "predicted_price": 2619.7,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 5,
       "target_date": "2026-06-04",
-      "predicted_price": 2599.0,
+      "predicted_price": 2598.9,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 6,
       "target_date": "2026-06-05",
-      "predicted_price": 2628.7,
+      "predicted_price": 2578.4,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 7,
       "target_date": "2026-06-06",
-      "predicted_price": 2617.8,
+      "predicted_price": 2620.2,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 14,
       "target_date": "2026-06-13",
-      "predicted_price": 2578.8,
+      "predicted_price": 2548.2,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 28,
       "target_date": "2026-06-27",
-      "predicted_price": 2527.7,
+      "predicted_price": 2579.6,
       "model_version": "v1.0"
     },
     {
       "horizon_days": 90,
       "target_date": "2026-08-28",
-      "predicted_price": 2429.4,
+      "predicted_price": 2440.9,
       "model_version": "v1.0",
-      "lower_bound": 1863.0,
-      "upper_bound": 2995.8
+      "lower_bound": 1873.6,
+      "upper_bound": 3008.1
     }
   ],
   "regime": {
