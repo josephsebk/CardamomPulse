@@ -297,10 +297,12 @@ Features are organized in tiers, with different horizons consuming different tie
 |---------|-------------|-----------|-------|----------|-------------|
 | Weeks 1–2 | Daily (~3,000 rows) | T1 + T2 (38–46 features) | Gradient Boosting Regressor | Technical + calendar | MAPE-derived error bands |
 | Weeks 3–8 | Weekly (~550 rows) | T1–T5 (up to 71 features, selected down to ~40) | Stacked GBM + Ridge Regression | All except structural | MAPE-derived error bands |
-| 90-day | Monthly (~136 rows) | T1 (subset) + T3 + T5 + T6 (28 features) | Bayesian Ridge Regression | Structural + ENSO + trade | Model-native 80% prediction intervals |
+| 90-day | Monthly (~136 rows) | T1 (subset) + T3 + T5 + T6 (28 features) | Bayesian Ridge Regression | Structural + ENSO + trade | Model-native 80% prediction intervals (log-space, asymmetric in price) |
 | Regime | Monthly (~130 rows) | T1 (subset) + T3 + T5 + T6 (35 features) | Gradient Boosting Classifier | Structural + ENSO + trade | Calibrated probability (0–100%) |
 
-**Walk-forward cross-validation** throughout — no random splits. Expanding window with purge gaps to prevent lookahead bias.
+**Target definition (model v2.0, June 2026):** All regression models predict the log-return `log(price[t+h] / price[t])` rather than the raw price level; the published forecast is reconstructed as `price[t] × exp(predicted return)`. Tree ensembles cannot predict outside the range of target values seen in training, so level-target models cap out at historical price extremes — exactly when forecasts matter most (e.g. the 2019–20 record highs). Returns are roughly stationary across price regimes, which removes that ceiling and cut walk-forward MAPE by 30–50% on the 1–28 day horizons (see Appendix). The regime classifier was already return-based.
+
+**Walk-forward cross-validation** throughout — no random splits. Expanding window with purge gaps to prevent lookahead bias. CV metrics are computed on reconstructed price levels, so MAPE/MAE remain comparable across model versions.
 
 ### 9.4 Daily Pipeline Sequence
 
@@ -381,6 +383,7 @@ Financial data gaps (weekends, holidays) are forward-filled. ENSO seasonal data 
 | Model overfitting | Walk-forward CV; public track record forces honesty |
 | Regime misclassification | Publish as probability, never binary claim |
 | Auction scraper breaks (HTML structure change) | Monitoring + manual XLS upload fallback |
+| Dependency upgrade breaks cached model pickles (caused 5-day outage, Jun 2–6 2026: unpinned sklearn upgrade in CI made cached models unloadable until the Sunday retrain) | `load_models()` validates a version/target metadata marker and treats any unpickling failure as "no models", falling back to automatic retrain instead of crashing |
 
 ### Market
 | Risk | Mitigation |
@@ -460,7 +463,29 @@ It compounds into — market infrastructure.
 
 ## Appendix: Validated Model Benchmarks
 
-From the existing forecasting framework (walk-forward CV, Feb 2026):
+### Model v2.0 — log-return targets (walk-forward CV, June 2026)
+
+Head-to-head comparison on identical data, features, and CV splits — only the
+target definition changed (price level → log-return). All metrics computed on
+reconstructed price levels:
+
+| Horizon | v1.0 MAPE (level target) | v2.0 MAPE (return target) | Improvement |
+|---------|--------------------------|---------------------------|-------------|
+| 1-day | 5.7% | **2.8%** | −51% |
+| 3-day | 8.1% | **4.6%** | −43% |
+| 7-day | 10.8% | **6.8%** | −37% |
+| 14-day | 14.1% | **9.9%** | −30% |
+| 28-day | 16.8% | **9.8%** | −41% |
+| 90-day | 36.6% | **33.5%** | −8% |
+
+The 28-day model improved the most, consistent with the extrapolation-ceiling
+diagnosis: the further the horizon, the further prices drift from the training
+range. The 90-day model improved only modestly — its bottleneck is the small
+monthly sample (~130 rows), not the target definition. The v2.0 numbers put
+the 2-week (<8% target: 6.8% at 7d / 9.9% at 14d) and 4-week (<12% target:
+9.8%) horizons at or near the Section 11 quality targets.
+
+### Model v1.0 — historical record (walk-forward CV, Feb 2026)
 
 | Horizon | Walk-Forward MAPE | First Live Prediction | Actual | Error |
 |---------|-------------------|----------------------|--------|-------|

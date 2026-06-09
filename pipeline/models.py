@@ -331,7 +331,11 @@ def load_models() -> dict:
         log.warning("No model metadata found — saved models predate the "
                     "log-return target; retraining required")
         return {}
-    meta = joblib.load(str(meta_path))
+    try:
+        meta = joblib.load(str(meta_path))
+    except Exception as e:
+        log.warning(f"Could not read model metadata ({e}) — retraining required")
+        return {}
     if meta.get("target") != "log_return":
         log.warning(f"Saved models use target {meta.get('target')!r} — "
                     "retraining required")
@@ -339,50 +343,58 @@ def load_models() -> dict:
 
     models = {}
 
-    for name, files in [
-        ("1d", ["model_1d.pkl"]),
-        ("2d", ["model_2d.pkl"]),
-        ("3d", ["model_3d.pkl"]),
-        ("4d", ["model_4d.pkl"]),
-        ("5d", ["model_5d.pkl"]),
-        ("6d", ["model_6d.pkl"]),
-        ("7d", ["model_7d.pkl"]),
-        ("14d", ["model_14d.pkl"]),
-        ("28d", ["model_28d_lgb.pkl", "model_28d_ridge.pkl", "scaler_28d.pkl"]),
-        ("90d", ["model_90d.pkl", "scaler_90d.pkl"]),
-        ("regime", ["model_regime.pkl"]),
-    ]:
-        all_exist = all((MODELS_DIR / f).exists() for f in files)
-        if not all_exist:
-            continue
+    # Pickles can become unloadable when a dependency upgrade changes
+    # internal module paths (e.g. sklearn upgrade in CI broke cached models
+    # on 2026-06-02..06). Treat any load failure as "no models" so the
+    # caller retrains instead of crashing the pipeline.
+    try:
+        for name, files in [
+            ("1d", ["model_1d.pkl"]),
+            ("2d", ["model_2d.pkl"]),
+            ("3d", ["model_3d.pkl"]),
+            ("4d", ["model_4d.pkl"]),
+            ("5d", ["model_5d.pkl"]),
+            ("6d", ["model_6d.pkl"]),
+            ("7d", ["model_7d.pkl"]),
+            ("14d", ["model_14d.pkl"]),
+            ("28d", ["model_28d_lgb.pkl", "model_28d_ridge.pkl", "scaler_28d.pkl"]),
+            ("90d", ["model_90d.pkl", "scaler_90d.pkl"]),
+            ("regime", ["model_regime.pkl"]),
+        ]:
+            all_exist = all((MODELS_DIR / f).exists() for f in files)
+            if not all_exist:
+                continue
 
-        if name in ("1d", "2d", "3d", "4d", "5d", "6d"):
-            models[name] = {"model": joblib.load(str(MODELS_DIR / f"model_{name}.pkl"))}
-        elif name == "7d":
-            models["7d"] = {"model": joblib.load(str(MODELS_DIR / "model_7d.pkl"))}
-        elif name == "14d":
-            models["14d"] = {"model": joblib.load(str(MODELS_DIR / "model_14d.pkl"))}
-        elif name == "28d":
-            models["28d"] = {
-                "model_lgb": joblib.load(str(MODELS_DIR / "model_28d_lgb.pkl")),
-                "model_ridge": joblib.load(str(MODELS_DIR / "model_28d_ridge.pkl")),
-                "scaler": joblib.load(str(MODELS_DIR / "scaler_28d.pkl")),
-            }
-        elif name == "90d":
-            m = {
-                "model": joblib.load(str(MODELS_DIR / "model_90d.pkl")),
-                "scaler": joblib.load(str(MODELS_DIR / "scaler_90d.pkl")),
-            }
-            med_path = MODELS_DIR / "medians_90d.pkl"
-            if med_path.exists():
-                m["medians"] = joblib.load(str(med_path))
-            models["90d"] = m
-        elif name == "regime":
-            m = {"model": joblib.load(str(MODELS_DIR / "model_regime.pkl"))}
-            med_path = MODELS_DIR / "medians_regime.pkl"
-            if med_path.exists():
-                m["medians"] = joblib.load(str(med_path))
-            models["regime"] = m
+            if name in ("1d", "2d", "3d", "4d", "5d", "6d"):
+                models[name] = {"model": joblib.load(str(MODELS_DIR / f"model_{name}.pkl"))}
+            elif name == "7d":
+                models["7d"] = {"model": joblib.load(str(MODELS_DIR / "model_7d.pkl"))}
+            elif name == "14d":
+                models["14d"] = {"model": joblib.load(str(MODELS_DIR / "model_14d.pkl"))}
+            elif name == "28d":
+                models["28d"] = {
+                    "model_lgb": joblib.load(str(MODELS_DIR / "model_28d_lgb.pkl")),
+                    "model_ridge": joblib.load(str(MODELS_DIR / "model_28d_ridge.pkl")),
+                    "scaler": joblib.load(str(MODELS_DIR / "scaler_28d.pkl")),
+                }
+            elif name == "90d":
+                m = {
+                    "model": joblib.load(str(MODELS_DIR / "model_90d.pkl")),
+                    "scaler": joblib.load(str(MODELS_DIR / "scaler_90d.pkl")),
+                }
+                med_path = MODELS_DIR / "medians_90d.pkl"
+                if med_path.exists():
+                    m["medians"] = joblib.load(str(med_path))
+                models["90d"] = m
+            elif name == "regime":
+                m = {"model": joblib.load(str(MODELS_DIR / "model_regime.pkl"))}
+                med_path = MODELS_DIR / "medians_regime.pkl"
+                if med_path.exists():
+                    m["medians"] = joblib.load(str(med_path))
+                models["regime"] = m
+    except Exception as e:
+        log.warning(f"Failed to load saved models ({e}) — retraining required")
+        return {}
 
     return models
 
