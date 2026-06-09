@@ -15,9 +15,12 @@ from pipeline.features import (
     T1_FEATURES, T2_FEATURES_DAILY, T3_FEATURES, T4_FEATURES,
     T2_FEATURES_MONTHLY, T5_FEATURES, T6_FEATURES,
 )
-from pipeline.models import walk_forward_cv, make_return_target, _gbr_short, _gbr_7d, _gbr_14d
-from pipeline.models import _bayesian_90d, _gbc_regime, FEATS_90D, FEATS_REGIME
-from pipeline.config import WF_CONFIG
+from pipeline.models import (
+    walk_forward_cv, make_return_target, select_features,
+    _gbr_short, _gbr_7d, _gbr_14d,
+    _bayesian_90d, _gbc_regime, FEATS_90D, FEATS_REGIME,
+)
+from pipeline.config import WF_CONFIG, FEATURE_SELECTION_K
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
 log = logging.getLogger(__name__)
@@ -75,6 +78,26 @@ enhanced_90d   = available(monthly, FEATS_90D + T4_FEATURES)  # add T4
 baseline_regime = available(monthly, FEATS_REGIME)  # current: no T4
 enhanced_regime = available(monthly, FEATS_REGIME + T4_FEATURES)  # add T4
 
+# ── PERMUTATION-SELECTED: full candidate pool, ranked by walk-forward
+# permutation importance (what train_all uses in production) ──────────────
+cand_daily = available(daily, T1_FEATURES + T2_FEATURES_DAILY + T3_FEATURES + T4_FEATURES)
+cand_monthly = available(monthly, T1_FEATURES + T2_FEATURES_MONTHLY + T3_FEATURES + T5_FEATURES + T6_FEATURES)
+
+K_SHORT = FEATURE_SELECTION_K.get("short") or 15
+K_14D = FEATURE_SELECTION_K.get("14d") or 10
+K_90D = FEATURE_SELECTION_K.get("90d") or 5
+K_REGIME = FEATURE_SELECTION_K.get("regime") or 20
+
+log.info("Running permutation feature selection (short horizon)...")
+daily["target_7d"] = make_return_target(daily, 7)
+permsel_short = select_features(daily, cand_daily, "target_7d", _gbr_7d,
+                                **WF_CONFIG["daily"], purge=7, top_k=K_SHORT)
+
+log.info("Running permutation feature selection (14d)...")
+daily["target_14d"] = make_return_target(daily, 14)
+permsel_14d = select_features(daily, cand_daily, "target_14d", _gbr_14d,
+                              **WF_CONFIG["daily"], purge=14, top_k=K_14D)
+
 
 # ── Run walk-forward CV ──────────────────────────────────────────────────
 wf_daily = WF_CONFIG["daily"]
@@ -101,6 +124,7 @@ for h in [1, 2, 3, 5, 7]:
         ("+Weather (T3)", weather_feats_short),
         ("+Macro (T4)", macro_feats_short),
         ("+Both (T3+T4)", enhanced_feats_short),
+        (f"PermSelect top-{K_SHORT}", permsel_short),
     ]:
         cv = walk_forward_cv(daily, feats, target_col, model_fn,
                              **wf_daily, purge=h, anchor_col="avg_price")
@@ -111,12 +135,12 @@ for h in [1, 2, 3, 5, 7]:
     print()
 
 # ── 14-day ────────────────────────────────────────────────────────────────
-daily["target_14d"] = make_return_target(daily, 14)
 for variant, feats in [
     ("Baseline (T1+T2)", baseline_feats_14d),
     ("+Weather (T3)", weather_feats_14d),
     ("+Macro (T4)", macro_feats_14d),
     ("+Both (T3+T4)", enhanced_feats_14d),
+    (f"PermSelect top-{K_14D}", permsel_14d),
 ]:
     cv = walk_forward_cv(daily, feats, "target_14d", _gbr_14d,
                          **wf_daily, purge=14, anchor_col="avg_price")
@@ -137,11 +161,19 @@ medians_enh = monthly[enhanced_90d].median()
 monthly_enh = monthly.copy()
 monthly_enh[enhanced_90d] = monthly_enh[enhanced_90d].fillna(medians_enh)
 
+monthly_sel = monthly.copy()
+monthly_sel[cand_monthly] = monthly_sel[cand_monthly].fillna(monthly[cand_monthly].median())
+log.info("Running permutation feature selection (90d)...")
+permsel_90d = select_features(monthly_sel, cand_monthly, "target_90d",
+                              _bayesian_90d, **WF_CONFIG["monthly"],
+                              purge=3, top_k=K_90D)
+
 from sklearn.preprocessing import StandardScaler
 
 for variant, feats, mdf in [
     ("Baseline (no T4)", baseline_90d, monthly_base),
     ("+Macro (T4)", enhanced_90d, monthly_enh),
+    (f"PermSelect top-{K_90D}", permsel_90d, monthly_sel),
 ]:
     # Scale features for BayesianRidge
     def make_bayesian():
@@ -158,11 +190,20 @@ print("\n" + "-" * 70)
 print("Regime classifier (GradientBoostingClassifier):")
 print("-" * 70)
 monthly["fwd_6m_ret"] = (monthly["avg_price"].shift(-6) / monthly["avg_price"] - 1) * 100
-monthly["bear_signal"] = (monthly["fwd_6m_ret"] < -10).astype(int)
+# Mask rows whose 6-month outcome is unknown (NaN < -10 is False, not NaN)
+monthly["bear_signal"] = (monthly["fwd_6m_ret"] < -10).astype(float)
+monthly.loc[monthly["fwd_6m_ret"].isna(), "bear_signal"] = np.nan
+monthly_sel["bear_signal"] = monthly["bear_signal"]
+
+log.info("Running permutation feature selection (regime)...")
+permsel_regime = select_features(monthly_sel, cand_monthly, "bear_signal",
+                                 _gbc_regime, **WF_CONFIG["monthly"],
+                                 purge=6, top_k=K_REGIME)
 
 for variant, feats in [
     ("Baseline (no T4)", baseline_regime),
     ("+Macro (T4)", enhanced_regime),
+    (f"PermSelect top-{K_REGIME}", permsel_regime),
 ]:
     med = monthly[feats].median()
     mdf = monthly.copy()
@@ -177,7 +218,7 @@ for variant, feats in [
     all_preds, all_actuals = [], []
     i = wf_monthly["min_train"]
     while i + wf_monthly["eval_win"] <= n:
-        train_end = i - 3
+        train_end = i - 6  # purge must cover the 6-month target horizon
         X_tr, y_tr = X[:train_end], y[:train_end]
         X_te, y_te = X[i:i + wf_monthly["eval_win"]], y[i:i + wf_monthly["eval_win"]]
         if len(X_tr) < 20 or len(X_te) == 0:

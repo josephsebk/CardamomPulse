@@ -305,25 +305,30 @@ def add_tier6(df: pd.DataFrame, price_col: str = "avg_price") -> list[str]:
     df["price_to_cost"] = df[price_col].shift(1) / cost_per_kg
     added.append("price_to_cost")
 
-    # Cobweb cycle: months since price trough
-    smoothed = df[price_col].rolling(
-        min(180, max(30, len(df) // 4)), min_periods=30, center=True
-    ).mean()
+    # Cobweb cycle: months since price trough. Causal construction: the
+    # smoothing is trailing-only (no center=True), and a local minimum at
+    # index i is only confirmed once `w` further periods have elapsed, so
+    # it may only influence rows >= i + w. The previous centered version
+    # let trough locations leak future prices into the feature.
+    win = min(180, max(30, len(df) // 4))
+    smoothed = df[price_col].rolling(win, min_periods=min(30, win)).mean()
 
     if len(df) > 24:
         w = min(6, max(1, len(df) // 6))
-        troughs = []
+        trough_idx = []
         for i in range(w, len(df) - w):
-            window = smoothed.iloc[max(0, i - w): min(len(df), i + w + 1)]
+            window = smoothed.iloc[i - w: i + w + 1]
             if not pd.isna(smoothed.iloc[i]) and smoothed.iloc[i] == window.min():
-                troughs.append(dates.iloc[i])
+                trough_idx.append(i)
 
-        if troughs:
-            def _months_since(x):
-                past = [t for t in troughs if t <= x]
-                return (x - past[-1]).days / 30.44 if past else np.nan
+        if trough_idx:
+            def _months_since(j):
+                past = [i for i in trough_idx if i + w <= j]
+                if not past:
+                    return np.nan
+                return (dates.iloc[j] - dates.iloc[past[-1]]).days / 30.44
 
-            df["months_since_trough"] = dates.apply(_months_since)
+            df["months_since_trough"] = [_months_since(j) for j in range(len(df))]
             df["cycle_age_norm"] = df["months_since_trough"] / 48
             added.extend(["months_since_trough", "cycle_age_norm"])
 

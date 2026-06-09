@@ -11,7 +11,9 @@ from sklearn.ensemble import GradientBoostingRegressor, GradientBoostingClassifi
 from sklearn.linear_model import Ridge, BayesianRidge
 from sklearn.preprocessing import StandardScaler
 
-from pipeline.config import MODELS_DIR, MODEL_VERSION, WF_CONFIG, ensure_dirs
+from pipeline.config import (
+    MODELS_DIR, MODEL_VERSION, WF_CONFIG, FEATURE_SELECTION_K, ensure_dirs,
+)
 from pipeline.features import (
     T1_FEATURES, T2_FEATURES_DAILY, T2_FEATURES_MONTHLY,
     T3_FEATURES, T4_FEATURES, T5_FEATURES, T6_FEATURES,
@@ -20,7 +22,8 @@ from pipeline.features import (
 log = logging.getLogger(__name__)
 
 # ── Feature sets per horizon ─────────────────────────────────────────────
-# We select the subset that each model actually uses (matching the notebook)
+# Hand-curated fallback sets, used when FEATURE_SELECTION_K disables
+# selection for a horizon or when no selected list was saved with a model.
 
 # 1d–7d: T1 + first 5 of T2 daily + T4 macro
 FEATS_7D = T1_FEATURES + T2_FEATURES_DAILY[:5] + T4_FEATURES
@@ -42,6 +45,12 @@ FEATS_90D = (
 
 # Regime: T1 subset + T3 + T5 + T6
 FEATS_REGIME = T1_FEATURES[:10] + T3_FEATURES + T5_FEATURES + T6_FEATURES
+
+# Candidate pools for walk-forward permutation feature selection
+FEATS_DAILY_CANDIDATES = T1_FEATURES + T2_FEATURES_DAILY + T3_FEATURES + T4_FEATURES
+FEATS_MONTHLY_CANDIDATES = (
+    T1_FEATURES + T2_FEATURES_MONTHLY + T3_FEATURES + T5_FEATURES + T6_FEATURES
+)
 
 
 def _available_feats(df: pd.DataFrame, feat_list: list[str]) -> list[str]:
@@ -125,6 +134,85 @@ def walk_forward_cv(df: pd.DataFrame, features: list[str], target_col: str,
     return {"mape": mape, "mae": mae, "rmse": rmse, "r2": r2, "folds": fold}
 
 
+def walk_forward_auc(df: pd.DataFrame, features: list[str], target_col: str,
+                     model_fn, min_train: int, step: int, eval_win: int,
+                     purge: int = 0) -> dict:
+    """Walk-forward CV for binary classifiers. Returns AUC/Brier on pooled
+    out-of-sample probabilities."""
+    from sklearn.metrics import roc_auc_score, brier_score_loss
+
+    df_clean = df.dropna(subset=[target_col] + features)
+    X = df_clean[features].values
+    y = df_clean[target_col].values
+    n = len(df_clean)
+
+    probs, actuals = [], []
+    i = min_train
+    while i + eval_win <= n:
+        train_end = i - purge
+        if train_end >= 20 and len(np.unique(y[:train_end])) > 1:
+            model = model_fn()
+            model.fit(X[:train_end], y[:train_end])
+            probs.extend(model.predict_proba(X[i: i + eval_win])[:, 1])
+            actuals.extend(y[i: i + eval_win])
+        i += step
+
+    if len(set(actuals)) < 2:
+        return {"auc": np.nan, "brier": np.nan, "n": len(actuals)}
+    return {
+        "auc": float(roc_auc_score(actuals, probs)),
+        "brier": float(brier_score_loss(actuals, probs)),
+        "n": len(actuals),
+    }
+
+
+# ── Walk-forward permutation feature selection ──────────────────────────
+
+def select_features(df: pd.DataFrame, candidates: list[str], target_col: str,
+                    model_fn, min_train: int, step: int, eval_win: int,
+                    purge: int = 0, top_k: int = 20,
+                    n_repeats: int = 5) -> list[str]:
+    """Rank candidate features by mean permutation importance on the held-out
+    window of each walk-forward fold; return the top_k.
+
+    Importance measured out-of-sample avoids the trap of impurity-based
+    rankings, which favor high-cardinality features the model overfits on.
+    """
+    from sklearn.inspection import permutation_importance
+
+    df_clean = df.dropna(subset=[target_col] + candidates)
+    X = df_clean[candidates].values
+    y = df_clean[target_col].values
+    n = len(df_clean)
+
+    importances = np.zeros(len(candidates))
+    folds = 0
+    i = min_train
+    while i + eval_win <= n:
+        train_end = i - purge
+        X_train, y_train = X[:train_end], y[:train_end]
+        X_test, y_test = X[i: i + eval_win], y[i: i + eval_win]
+
+        if len(X_train) < 20 or len(X_test) == 0 or (
+                len(np.unique(y_train)) < 2):
+            i += step
+            continue
+
+        model = model_fn()
+        model.fit(X_train, y_train)
+        r = permutation_importance(model, X_test, y_test,
+                                   n_repeats=n_repeats, random_state=42)
+        importances += r.importances_mean
+        folds += 1
+        i += step
+
+    if folds == 0:
+        return candidates[:top_k]
+
+    order = np.argsort(importances)[::-1]
+    return [candidates[j] for j in order[:top_k]]
+
+
 # ── Model factories ──────────────────────────────────────────────────────
 
 def _gbr_short(horizon):
@@ -185,9 +273,22 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     """Train all models on full data and save to disk. Returns metrics + models."""
     ensure_dirs()
     results = {}
+    selected = {}  # horizon-group -> feature list, persisted in meta.pkl
+
+    # ── Short-horizon feature set (shared by 1d–7d, ranked on 7d) ────
+    daily["target_7d"] = make_return_target(daily, 7)
+    k_short = FEATURE_SELECTION_K.get("short")
+    if k_short:
+        cand = _available_feats(daily, FEATS_DAILY_CANDIDATES)
+        feats_short = select_features(daily, cand, "target_7d", _gbr_7d,
+                                      **WF_CONFIG["daily"], purge=7,
+                                      top_k=k_short)
+        log.info(f"short-horizon selected top-{k_short}: {feats_short}")
+    else:
+        feats_short = _available_feats(daily, FEATS_7D)
+    selected["short"] = feats_short
 
     # ── 1d–6d daily models (same features as 7d) ──────────────────
-    feats_short = _available_feats(daily, FEATS_7D)
     for h in range(1, 7):
         key = f"{h}d"
         target_col = f"target_{key}"
@@ -205,8 +306,7 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
         results[key] = {"model": m, "features": feats_short, "cv": cv}
 
     # ── 7-day model ──────────────────────────────────────────────────
-    feats_7d = _available_feats(daily, FEATS_7D)
-    daily["target_7d"] = make_return_target(daily, 7)
+    feats_7d = feats_short
     cv_7d = walk_forward_cv(daily, feats_7d, "target_7d", _gbr_7d,
                             **WF_CONFIG["daily"], purge=7,
                             anchor_col="avg_price")
@@ -219,8 +319,17 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     results["7d"] = {"model": m7, "features": feats_7d, "cv": cv_7d}
 
     # ── 14-day model ─────────────────────────────────────────────────
-    feats_14d = _available_feats(daily, FEATS_14D)
     daily["target_14d"] = make_return_target(daily, 14)
+    k_14d = FEATURE_SELECTION_K.get("14d")
+    if k_14d:
+        cand = _available_feats(daily, FEATS_DAILY_CANDIDATES)
+        feats_14d = select_features(daily, cand, "target_14d", _gbr_14d,
+                                    **WF_CONFIG["daily"], purge=14,
+                                    top_k=k_14d)
+        log.info(f"14d selected top-{k_14d}: {feats_14d}")
+    else:
+        feats_14d = _available_feats(daily, FEATS_14D)
+    selected["14d"] = feats_14d
     cv_14d = walk_forward_cv(daily, feats_14d, "target_14d", _gbr_14d,
                              **WF_CONFIG["daily"], purge=14,
                              anchor_col="avg_price")
@@ -233,7 +342,9 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     results["14d"] = {"model": m14, "features": feats_14d, "cv": cv_14d}
 
     # ── 28-day model (stacked GBM + Ridge) ───────────────────────────
+    # No selection here: the manual T1-T5 set beat every selected subset
     feats_28d = _available_feats(weekly, FEATS_28D_CANDIDATES)
+    selected["28d"] = feats_28d
     weekly["target_28d"] = make_return_target(weekly, 4)  # 4 weeks forward
     cv_28d = walk_forward_cv(weekly, feats_28d, "target_28d", _gbr_28d,
                              **WF_CONFIG["weekly"], purge=4,
@@ -262,13 +373,24 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
         }
 
     # ── 90-day model (Bayesian Ridge) ────────────────────────────────
-    feats_90d = _available_feats(monthly, FEATS_90D)
     monthly["target_90d"] = make_return_target(monthly, 3)
 
     # Impute NaN with column medians for monthly models (small dataset)
-    medians_90 = monthly[feats_90d].median()
+    cand_monthly = _available_feats(monthly, FEATS_MONTHLY_CANDIDATES)
+    medians_all = monthly[cand_monthly].median()
     monthly_90 = monthly.copy()
-    monthly_90[feats_90d] = monthly_90[feats_90d].fillna(medians_90)
+    monthly_90[cand_monthly] = monthly_90[cand_monthly].fillna(medians_all)
+
+    k_90d = FEATURE_SELECTION_K.get("90d")
+    if k_90d:
+        feats_90d = select_features(monthly_90, cand_monthly, "target_90d",
+                                    _bayesian_90d, **WF_CONFIG["monthly"],
+                                    purge=3, top_k=k_90d)
+        log.info(f"90d selected top-{k_90d}: {feats_90d}")
+    else:
+        feats_90d = _available_feats(monthly, FEATS_90D)
+    selected["90d"] = feats_90d
+    medians_90 = medians_all[feats_90d]
 
     cv_90d = walk_forward_cv(monthly_90, feats_90d, "target_90d",
                              _bayesian_90d, **WF_CONFIG["monthly"], purge=3,
@@ -288,14 +410,31 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
                           "medians": medians_90.to_dict(), "cv": cv_90d}
 
     # ── Regime classifier ────────────────────────────────────────────
-    feats_regime = _available_feats(monthly, FEATS_REGIME)
     monthly["fwd_6m_ret"] = (monthly["avg_price"].shift(-6) / monthly["avg_price"] - 1) * 100
-    monthly["bear_signal"] = (monthly["fwd_6m_ret"] < -10).astype(int)
+    # Rows whose 6-month outcome is still unknown must be excluded from
+    # training, not labelled 0 (NaN < -10 evaluates to False)
+    monthly["bear_signal"] = (monthly["fwd_6m_ret"] < -10).astype(float)
+    monthly.loc[monthly["fwd_6m_ret"].isna(), "bear_signal"] = np.nan
 
     # Impute NaN with column medians
-    medians_reg = monthly[feats_regime].median()
     monthly_reg = monthly.copy()
-    monthly_reg[feats_regime] = monthly_reg[feats_regime].fillna(medians_reg)
+    monthly_reg[cand_monthly] = monthly_reg[cand_monthly].fillna(medians_all)
+
+    k_reg = FEATURE_SELECTION_K.get("regime")
+    if k_reg:
+        feats_regime = select_features(monthly_reg, cand_monthly,
+                                       "bear_signal", _gbc_regime,
+                                       **WF_CONFIG["monthly"], purge=6,
+                                       top_k=k_reg)
+        log.info(f"regime selected top-{k_reg}: {feats_regime}")
+    else:
+        feats_regime = _available_feats(monthly, FEATS_REGIME)
+    selected["regime"] = feats_regime
+    medians_reg = medians_all[feats_regime]
+
+    cv_reg = walk_forward_auc(monthly_reg, feats_regime, "bear_signal",
+                              _gbc_regime, **WF_CONFIG["monthly"], purge=6)
+    log.info(f"Regime WF-CV: AUC={cv_reg['auc']:.3f}, Brier={cv_reg['brier']:.3f}")
 
     df_train = monthly_reg.dropna(subset=["bear_signal"])
     if len(df_train) > 20:
@@ -306,12 +445,14 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
         joblib.dump(m_regime, str(MODELS_DIR / "model_regime.pkl"))
         joblib.dump(medians_reg.to_dict(), str(MODELS_DIR / "medians_regime.pkl"))
         results["regime"] = {"model": m_regime, "features": feats_regime,
-                             "medians": medians_reg.to_dict()}
+                             "medians": medians_reg.to_dict(), "cv": cv_reg}
         log.info(f"Regime model trained on {len(df_train)} rows")
 
     # Marker so load_models() can reject pickles trained on a different
-    # target definition (pre-v2.0 models predicted price levels)
-    joblib.dump({"model_version": MODEL_VERSION, "target": "log_return"},
+    # target definition (pre-v2.0 models predicted price levels), plus the
+    # per-horizon feature lists the saved models were trained with
+    joblib.dump({"model_version": MODEL_VERSION, "target": "log_return",
+                 "features": selected},
                 str(MODELS_DIR / "meta.pkl"))
 
     return results
@@ -396,6 +537,13 @@ def load_models() -> dict:
         log.warning(f"Failed to load saved models ({e}) — retraining required")
         return {}
 
+    # Attach the feature lists the saved models were trained with
+    feats_map = meta.get("features", {})
+    for key in models:
+        group = "short" if key in ("1d", "2d", "3d", "4d", "5d", "6d", "7d") else key
+        if group in feats_map:
+            models[key]["features"] = feats_map[group]
+
     return models
 
 
@@ -432,7 +580,7 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     for h in range(1, 7):
         key = f"{h}d"
         if key in models:
-            feats = _available_feats(daily, FEATS_7D)
+            feats = models[key].get("features") or _available_feats(daily, FEATS_7D)
             X, used, anchor = _last_row(daily, feats)
             if X is not None:
                 ret = float(models[key]["model"].predict(X)[0])
@@ -446,7 +594,7 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
 
     # 7-day
     if "7d" in models:
-        feats = _available_feats(daily, FEATS_7D)
+        feats = models["7d"].get("features") or _available_feats(daily, FEATS_7D)
         X, used, anchor = _last_row(daily, feats)
         if X is not None:
             ret = float(models["7d"]["model"].predict(X)[0])
@@ -460,7 +608,7 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
 
     # 14-day
     if "14d" in models:
-        feats = _available_feats(daily, FEATS_14D)
+        feats = models["14d"].get("features") or _available_feats(daily, FEATS_14D)
         X, used, anchor = _last_row(daily, feats)
         if X is not None:
             ret = float(models["14d"]["model"].predict(X)[0])
@@ -474,7 +622,7 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
 
     # 28-day (stacked)
     if "28d" in models:
-        feats = _available_feats(weekly, FEATS_28D_CANDIDATES)
+        feats = models["28d"].get("features") or _available_feats(weekly, FEATS_28D_CANDIDATES)
         X, used, anchor = _last_row(weekly, feats)
         if X is not None:
             p_lgb = float(models["28d"]["model_lgb"].predict(X)[0])
@@ -491,7 +639,7 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
 
     # 90-day (with prediction intervals)
     if "90d" in models:
-        feats = _available_feats(monthly, FEATS_90D)
+        feats = models["90d"].get("features") or _available_feats(monthly, FEATS_90D)
         X = _last_row_imputed(monthly, feats, models["90d"].get("medians", {}))
         anchor_series = monthly["avg_price"].dropna()
         if X is not None and len(anchor_series) > 0:
@@ -513,7 +661,7 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
 
     # Regime
     if "regime" in models:
-        feats = _available_feats(monthly, FEATS_REGIME)
+        feats = models["regime"].get("features") or _available_feats(monthly, FEATS_REGIME)
         X = _last_row_imputed(monthly, feats, models["regime"].get("medians", {}))
         if X is not None:
             prob = float(models["regime"]["model"].predict_proba(X)[0, 1])

@@ -289,7 +289,7 @@ Features are organized in tiers, with different horizons consuming different tie
 | **T5: Trade/Supply** | 5 | Weeks 3-8, 90-day, Regime | Guatemala 3-month rolling export qty + YoY, Saudi import qty + YoY, Guatemala unit price |
 | **T6: Structural/Cycle** | 6 | 90-day, Regime | Cost floor (MGNREGA wage × 1.7 × 200 / 0.62 / 350), cobweb cycle position, Google Trends 12m MA |
 
-**Key lesson from prior modeling work:** Using 69 features on 534 weekly rows caused overfitting (negative R²). Production models cap at 15–20 features per horizon via walk-forward feature selection.
+**Key lesson from prior modeling work:** Using 69 features on 534 weekly rows caused overfitting (negative R²). Since model v2.1, feature subsets are selected automatically at retrain time: all applicable tier candidates are ranked by mean permutation importance on the held-out window of each walk-forward fold, and the top-k per horizon is kept (k = 15 for 1–7d, 10 for 14d, 5 for 90d, 20 for regime; the 28-day model keeps the hand-curated T1–T5 set, which outperformed every selected subset). Selected lists are stored with the trained models and used at prediction time.
 
 ### 9.3 Model Architecture
 
@@ -302,7 +302,9 @@ Features are organized in tiers, with different horizons consuming different tie
 
 **Target definition (model v2.0, June 2026):** All regression models predict the log-return `log(price[t+h] / price[t])` rather than the raw price level; the published forecast is reconstructed as `price[t] × exp(predicted return)`. Tree ensembles cannot predict outside the range of target values seen in training, so level-target models cap out at historical price extremes — exactly when forecasts matter most (e.g. the 2019–20 record highs). Returns are roughly stationary across price regimes, which removes that ceiling and cut walk-forward MAPE by 30–50% on the 1–28 day horizons (see Appendix). The regime classifier was already return-based.
 
-**Walk-forward cross-validation** throughout — no random splits. Expanding window with purge gaps to prevent lookahead bias. CV metrics are computed on reconstructed price levels, so MAPE/MAE remain comparable across model versions.
+**Causal cycle features (model v2.1, June 2026):** The cobweb-cycle features (`months_since_trough`, `cycle_age_norm`) were rebuilt causally — trailing-only smoothing, with a price trough only counted once confirmed by subsequent periods. The original centered-window construction let trough locations leak future prices into the regime and 90-day models; all benchmarks below use the causal version.
+
+**Walk-forward cross-validation** throughout — no random splits. Expanding window with purge gaps to prevent lookahead bias. CV metrics are computed on reconstructed price levels, so MAPE/MAE remain comparable across model versions. The regime classifier is additionally tracked with walk-forward AUC/Brier on pooled out-of-sample probabilities.
 
 ### 9.4 Daily Pipeline Sequence
 
@@ -462,6 +464,33 @@ It compounds into — market infrastructure.
 ---
 
 ## Appendix: Validated Model Benchmarks
+
+### Model v2.1 — permutation feature selection + causal cycle features (walk-forward CV, June 2026)
+
+| Horizon | v2.0 MAPE | v2.1 MAPE | Features used |
+|---------|-----------|-----------|---------------|
+| 1-day | 2.8% | **2.6%** | top-15 selected |
+| 7-day | 6.8% | **6.2%** | top-15 selected |
+| 14-day | 9.9% | **9.2%** | top-10 selected |
+| 28-day | 9.8% | 9.8% | manual T1–T5 (selection underperformed) |
+| 90-day | 33.5% | **17.6%** | top-5 selected |
+| Regime | AUC 0.660, Brier 0.270 | **AUC 0.778, Brier 0.208** | top-20 selected |
+
+Notes:
+- The regime baseline of AUC 0.660 is the current GBC re-measured after the
+  cycle-feature lookahead fix (the previously reported 0.575 predates both
+  the fix and this evaluation protocol). Alternatives tested — balanced class
+  weights, regularized logistic regression, simpler 3/6-month direction
+  targets, and a transparent rules-based score (price-to-cost + cycle age +
+  ENSO) — all underperformed the GBC with selected features on the bear
+  target, so the published "price drop >10% within 6 months" definition
+  is unchanged.
+- Selection gains were verified with a holdout protocol (features ranked on
+  the first 70% of history only, evaluated on the untouched last 30%):
+  regime AUC 0.903 vs 0.799 manual, 90-day MAPE 16.3% vs 18.0% manual on
+  the holdout segment. The 90-day model's selected drivers are dominated by
+  cumulative rainfall (Kerala + Guatemala) — consistent with supply-side
+  fundamentals mattering more than price momentum at long horizons.
 
 ### Model v2.0 — log-return targets (walk-forward CV, June 2026)
 
