@@ -15,7 +15,7 @@ from pipeline.features import (
     T1_FEATURES, T2_FEATURES_DAILY, T3_FEATURES, T4_FEATURES,
     T2_FEATURES_MONTHLY, T5_FEATURES, T6_FEATURES,
 )
-from pipeline.models import walk_forward_cv, _gbr_short, _gbr_7d, _gbr_14d
+from pipeline.models import walk_forward_cv, make_return_target, _gbr_short, _gbr_7d, _gbr_14d
 from pipeline.models import _bayesian_90d, _gbc_regime, FEATS_90D, FEATS_REGIME
 from pipeline.config import WF_CONFIG
 
@@ -92,7 +92,7 @@ results = []
 
 for h in [1, 2, 3, 5, 7]:
     target_col = f"target_{h}d"
-    daily[target_col] = daily["avg_price"].shift(-h)
+    daily[target_col] = make_return_target(daily, h)
 
     model_fn = (lambda _h=h: _gbr_short(_h)) if h <= 6 else _gbr_7d
 
@@ -103,7 +103,7 @@ for h in [1, 2, 3, 5, 7]:
         ("+Both (T3+T4)", enhanced_feats_short),
     ]:
         cv = walk_forward_cv(daily, feats, target_col, model_fn,
-                             **wf_daily, purge=h)
+                             **wf_daily, purge=h, anchor_col="avg_price")
         label = f"{h}d"
         print(f"{label:<10} {variant:<20} {len(feats):>6} {cv['mape']:>8.3f} {cv['mae']:>10.1f} {cv['r2']:>8.3f} {cv['folds']:>6}")
         results.append({"horizon": label, "variant": variant,
@@ -111,7 +111,7 @@ for h in [1, 2, 3, 5, 7]:
     print()
 
 # ── 14-day ────────────────────────────────────────────────────────────────
-daily["target_14d"] = daily["avg_price"].shift(-14)
+daily["target_14d"] = make_return_target(daily, 14)
 for variant, feats in [
     ("Baseline (T1+T2)", baseline_feats_14d),
     ("+Weather (T3)", weather_feats_14d),
@@ -119,7 +119,7 @@ for variant, feats in [
     ("+Both (T3+T4)", enhanced_feats_14d),
 ]:
     cv = walk_forward_cv(daily, feats, "target_14d", _gbr_14d,
-                         **wf_daily, purge=14)
+                         **wf_daily, purge=14, anchor_col="avg_price")
     print(f"{'14d':<10} {variant:<20} {len(feats):>6} {cv['mape']:>8.3f} {cv['mae']:>10.1f} {cv['r2']:>8.3f} {cv['folds']:>6}")
     results.append({"horizon": "14d", "variant": variant,
                     "n_feats": len(feats), **cv})
@@ -128,7 +128,7 @@ for variant, feats in [
 print("\n" + "-" * 70)
 print("90-day model (BayesianRidge):")
 print("-" * 70)
-monthly["target_90d"] = monthly["avg_price"].shift(-3)
+monthly["target_90d"] = make_return_target(monthly, 3)
 medians_base = monthly[baseline_90d].median()
 monthly_base = monthly.copy()
 monthly_base[baseline_90d] = monthly_base[baseline_90d].fillna(medians_base)
@@ -148,7 +148,7 @@ for variant, feats, mdf in [
         return _bayesian_90d()
 
     cv = walk_forward_cv(mdf, feats, "target_90d", make_bayesian,
-                         **wf_monthly, purge=3)
+                         **wf_monthly, purge=3, anchor_col="avg_price")
     print(f"{'90d':<10} {variant:<20} {len(feats):>6} {cv['mape']:>8.3f} {cv['mae']:>10.1f} {cv['r2']:>8.3f} {cv['folds']:>6}")
     results.append({"horizon": "90d", "variant": variant,
                     "n_feats": len(feats), **cv})

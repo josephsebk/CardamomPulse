@@ -49,15 +49,35 @@ def _available_feats(df: pd.DataFrame, feat_list: list[str]) -> list[str]:
     return [f for f in feat_list if f in df.columns]
 
 
+# ── Targets ──────────────────────────────────────────────────────────────
+
+def make_return_target(df: pd.DataFrame, horizon: int,
+                       price_col: str = "avg_price") -> pd.Series:
+    """Log-return target: log(price[t+h] / price[t]).
+
+    Returns are roughly stationary across price regimes, so tree models can
+    forecast levels outside the training range (predicted price is
+    reconstructed as price[t] * exp(predicted return)).
+    """
+    return np.log(df[price_col].shift(-horizon) / df[price_col])
+
+
 # ── Walk-Forward Cross-Validation ────────────────────────────────────────
 
 def walk_forward_cv(df: pd.DataFrame, features: list[str], target_col: str,
                     model_fn, min_train: int, step: int, eval_win: int,
-                    purge: int = 0) -> dict:
-    """Run walk-forward cross-validation. Returns metrics dict."""
-    df_clean = df.dropna(subset=[target_col] + features)
+                    purge: int = 0, anchor_col: str | None = None) -> dict:
+    """Run walk-forward cross-validation. Returns metrics dict.
+
+    If anchor_col is given, the target is interpreted as a log-return
+    relative to anchor_col and metrics are computed on reconstructed price
+    levels, keeping MAPE/MAE comparable with level-target runs.
+    """
+    subset = [target_col] + features + ([anchor_col] if anchor_col else [])
+    df_clean = df.dropna(subset=subset)
     X = df_clean[features].values
     y = df_clean[target_col].values
+    anchors = df_clean[anchor_col].values if anchor_col else None
     n = len(df_clean)
 
     all_preds, all_actuals = [], []
@@ -76,6 +96,11 @@ def walk_forward_cv(df: pd.DataFrame, features: list[str], target_col: str,
         model = model_fn()
         model.fit(X_train, y_train)
         preds = model.predict(X_test)
+
+        if anchors is not None:
+            a = anchors[i: i + eval_win]
+            preds = a * np.exp(preds)
+            y_test = a * np.exp(y_test)
 
         all_preds.extend(preds)
         all_actuals.extend(y_test)
@@ -166,10 +191,11 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     for h in range(1, 7):
         key = f"{h}d"
         target_col = f"target_{key}"
-        daily[target_col] = daily["avg_price"].shift(-h)
+        daily[target_col] = make_return_target(daily, h)
         cv = walk_forward_cv(daily, feats_short, target_col,
                              lambda _h=h: _gbr_short(_h),
-                             **WF_CONFIG["daily"], purge=h)
+                             **WF_CONFIG["daily"], purge=h,
+                             anchor_col="avg_price")
         log.info(f"{h}-day WF-CV: MAPE={cv['mape']:.3f}, MAE={cv['mae']:.1f}")
 
         df_train = daily.dropna(subset=[target_col] + feats_short)
@@ -180,9 +206,10 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
 
     # ── 7-day model ──────────────────────────────────────────────────
     feats_7d = _available_feats(daily, FEATS_7D)
-    daily["target_7d"] = daily["avg_price"].shift(-7)
+    daily["target_7d"] = make_return_target(daily, 7)
     cv_7d = walk_forward_cv(daily, feats_7d, "target_7d", _gbr_7d,
-                            **WF_CONFIG["daily"], purge=7)
+                            **WF_CONFIG["daily"], purge=7,
+                            anchor_col="avg_price")
     log.info(f"7-day WF-CV: MAPE={cv_7d['mape']:.3f}, MAE={cv_7d['mae']:.1f}")
 
     df_train = daily.dropna(subset=["target_7d"] + feats_7d)
@@ -193,9 +220,10 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
 
     # ── 14-day model ─────────────────────────────────────────────────
     feats_14d = _available_feats(daily, FEATS_14D)
-    daily["target_14d"] = daily["avg_price"].shift(-14)
+    daily["target_14d"] = make_return_target(daily, 14)
     cv_14d = walk_forward_cv(daily, feats_14d, "target_14d", _gbr_14d,
-                             **WF_CONFIG["daily"], purge=14)
+                             **WF_CONFIG["daily"], purge=14,
+                             anchor_col="avg_price")
     log.info(f"14-day WF-CV: MAPE={cv_14d['mape']:.3f}, MAE={cv_14d['mae']:.1f}")
 
     df_train = daily.dropna(subset=["target_14d"] + feats_14d)
@@ -206,9 +234,10 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
 
     # ── 28-day model (stacked GBM + Ridge) ───────────────────────────
     feats_28d = _available_feats(weekly, FEATS_28D_CANDIDATES)
-    weekly["target_28d"] = weekly["avg_price"].shift(-4)  # 4 weeks forward
+    weekly["target_28d"] = make_return_target(weekly, 4)  # 4 weeks forward
     cv_28d = walk_forward_cv(weekly, feats_28d, "target_28d", _gbr_28d,
-                             **WF_CONFIG["weekly"], purge=4)
+                             **WF_CONFIG["weekly"], purge=4,
+                             anchor_col="avg_price")
     log.info(f"28-day WF-CV: MAPE={cv_28d['mape']:.3f}, MAE={cv_28d['mae']:.1f}")
 
     df_train = weekly.dropna(subset=["target_28d"] + feats_28d)
@@ -234,7 +263,7 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
 
     # ── 90-day model (Bayesian Ridge) ────────────────────────────────
     feats_90d = _available_feats(monthly, FEATS_90D)
-    monthly["target_90d"] = monthly["avg_price"].shift(-3)
+    monthly["target_90d"] = make_return_target(monthly, 3)
 
     # Impute NaN with column medians for monthly models (small dataset)
     medians_90 = monthly[feats_90d].median()
@@ -242,7 +271,8 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     monthly_90[feats_90d] = monthly_90[feats_90d].fillna(medians_90)
 
     cv_90d = walk_forward_cv(monthly_90, feats_90d, "target_90d",
-                             _bayesian_90d, **WF_CONFIG["monthly"], purge=3)
+                             _bayesian_90d, **WF_CONFIG["monthly"], purge=3,
+                             anchor_col="avg_price")
     log.info(f"90-day WF-CV: MAPE={cv_90d['mape']:.3f}, MAE={cv_90d['mae']:.1f}")
 
     df_train = monthly_90.dropna(subset=["target_90d"])
@@ -279,6 +309,11 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
                              "medians": medians_reg.to_dict()}
         log.info(f"Regime model trained on {len(df_train)} rows")
 
+    # Marker so load_models() can reject pickles trained on a different
+    # target definition (pre-v2.0 models predicted price levels)
+    joblib.dump({"model_version": MODEL_VERSION, "target": "log_return"},
+                str(MODELS_DIR / "meta.pkl"))
+
     return results
 
 
@@ -287,6 +322,21 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
 def load_models() -> dict:
     """Load all saved models from disk."""
     ensure_dirs()
+
+    # Regression models predict log-returns since v2.0; refuse to load
+    # older pickles whose outputs are price levels — exp() of a level
+    # would produce garbage forecasts. Returning {} triggers a retrain.
+    meta_path = MODELS_DIR / "meta.pkl"
+    if not meta_path.exists():
+        log.warning("No model metadata found — saved models predate the "
+                    "log-return target; retraining required")
+        return {}
+    meta = joblib.load(str(meta_path))
+    if meta.get("target") != "log_return":
+        log.warning(f"Saved models use target {meta.get('target')!r} — "
+                    "retraining required")
+        return {}
+
     models = {}
 
     for name, files in [
@@ -345,13 +395,15 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     today = daily["date"].max()
     forecasts = {"forecast_date": today, "predictions": []}
 
-    # Helper to get last non-NaN feature row
+    # Helper to get last non-NaN feature row plus its anchor price
+    # (models predict log-returns relative to the anchor row's price)
     def _last_row(df, feats):
         available = [f for f in feats if f in df.columns]
-        sub = df[available].dropna()
+        sub = df.dropna(subset=available + ["avg_price"])
         if len(sub) == 0:
-            return None, available
-        return sub.iloc[-1:].values, available
+            return None, available, None
+        return (sub[available].iloc[-1:].values, available,
+                float(sub["avg_price"].iloc[-1]))
 
     # Helper: get last row with median imputation for NaN
     def _last_row_imputed(df, feats, medians):
@@ -369,9 +421,10 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
         key = f"{h}d"
         if key in models:
             feats = _available_feats(daily, FEATS_7D)
-            X, used = _last_row(daily, feats)
+            X, used, anchor = _last_row(daily, feats)
             if X is not None:
-                pred = float(models[key]["model"].predict(X)[0])
+                ret = float(models[key]["model"].predict(X)[0])
+                pred = anchor * float(np.exp(ret))
                 target_date = (pd.Timestamp(today) + timedelta(days=h)).strftime("%Y-%m-%d")
                 forecasts["predictions"].append({
                     "horizon_days": h, "target_date": target_date,
@@ -382,9 +435,10 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     # 7-day
     if "7d" in models:
         feats = _available_feats(daily, FEATS_7D)
-        X, used = _last_row(daily, feats)
+        X, used, anchor = _last_row(daily, feats)
         if X is not None:
-            pred = float(models["7d"]["model"].predict(X)[0])
+            ret = float(models["7d"]["model"].predict(X)[0])
+            pred = anchor * float(np.exp(ret))
             target_date = (pd.Timestamp(today) + timedelta(days=7)).strftime("%Y-%m-%d")
             forecasts["predictions"].append({
                 "horizon_days": 7, "target_date": target_date,
@@ -395,9 +449,10 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     # 14-day
     if "14d" in models:
         feats = _available_feats(daily, FEATS_14D)
-        X, used = _last_row(daily, feats)
+        X, used, anchor = _last_row(daily, feats)
         if X is not None:
-            pred = float(models["14d"]["model"].predict(X)[0])
+            ret = float(models["14d"]["model"].predict(X)[0])
+            pred = anchor * float(np.exp(ret))
             target_date = (pd.Timestamp(today) + timedelta(days=14)).strftime("%Y-%m-%d")
             forecasts["predictions"].append({
                 "horizon_days": 14, "target_date": target_date,
@@ -408,12 +463,13 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     # 28-day (stacked)
     if "28d" in models:
         feats = _available_feats(weekly, FEATS_28D_CANDIDATES)
-        X, used = _last_row(weekly, feats)
+        X, used, anchor = _last_row(weekly, feats)
         if X is not None:
             p_lgb = float(models["28d"]["model_lgb"].predict(X)[0])
             X_sc = models["28d"]["scaler"].transform(X)
             p_ridge = float(models["28d"]["model_ridge"].predict(X_sc)[0])
-            pred = 0.5 * p_lgb + 0.5 * p_ridge
+            ret = 0.5 * p_lgb + 0.5 * p_ridge
+            pred = anchor * float(np.exp(ret))
             target_date = (pd.Timestamp(today) + timedelta(days=28)).strftime("%Y-%m-%d")
             forecasts["predictions"].append({
                 "horizon_days": 28, "target_date": target_date,
@@ -425,12 +481,15 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     if "90d" in models:
         feats = _available_feats(monthly, FEATS_90D)
         X = _last_row_imputed(monthly, feats, models["90d"].get("medians", {}))
-        if X is not None:
+        anchor_series = monthly["avg_price"].dropna()
+        if X is not None and len(anchor_series) > 0:
+            anchor = float(anchor_series.iloc[-1])
             X_sc = models["90d"]["scaler"].transform(X)
             p_mean, p_std = models["90d"]["model"].predict(X_sc, return_std=True)
-            pred = float(p_mean[0])
-            lo = float(pred - 1.28 * p_std[0])  # 80% lower
-            hi = float(pred + 1.28 * p_std[0])  # 80% upper
+            ret = float(p_mean[0])
+            pred = anchor * float(np.exp(ret))
+            lo = anchor * float(np.exp(ret - 1.28 * p_std[0]))  # 80% lower
+            hi = anchor * float(np.exp(ret + 1.28 * p_std[0]))  # 80% upper
             target_date = (pd.Timestamp(today) + timedelta(days=90)).strftime("%Y-%m-%d")
             forecasts["predictions"].append({
                 "horizon_days": 90, "target_date": target_date,

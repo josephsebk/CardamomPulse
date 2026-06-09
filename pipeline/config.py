@@ -36,7 +36,7 @@ WF_CONFIG = {
 }
 
 # ── Model versions ────────────────────────────────────────────────────────
-MODEL_VERSION = "v1.0"
+MODEL_VERSION = "v2.0"  # v2.0: regression targets switched to log-returns
 
 # ── Pipeline schedule (IST offsets in comments) ──────────────────────────
 DAILY_RUN_HOUR_UTC = 12  # 6 PM IST = 12:30 UTC; run at 12 UTC
