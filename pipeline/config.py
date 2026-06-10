@@ -35,8 +35,24 @@ WF_CONFIG = {
     "monthly": {"min_train": 48, "step": 6, "eval_win": 6},
 }
 
+# ── Feature selection ─────────────────────────────────────────────────────
+# Top-k features kept per horizon, ranked by walk-forward permutation
+# importance over the full candidate pool at retrain time.
+# None = keep the hand-curated set (selection underperformed it in backtests).
+FEATURE_SELECTION_K = {
+    "short": 15,   # 1d-7d models (shared feature set, ranked on 7d target)
+    "14d": 10,
+    "28d": None,   # manual T1-T5 set beat all selected subsets
+    "90d": 5,
+    "regime": 20,
+}
+
 # ── Model versions ────────────────────────────────────────────────────────
-MODEL_VERSION = "v1.0"
+# v2.0: regression targets switched to log-returns
+# v2.1: walk-forward permutation feature selection; causal cycle features
+# v2.2: auction microstructure features (cross-auction dispersion, unsold
+#       share, auction count, lot size) in daily/weekly candidate pools
+MODEL_VERSION = "v2.2"
 
 # ── Pipeline schedule (IST offsets in comments) ──────────────────────────
 DAILY_RUN_HOUR_UTC = 12  # 6 PM IST = 12:30 UTC; run at 12 UTC

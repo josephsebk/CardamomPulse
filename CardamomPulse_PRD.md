@@ -283,13 +283,14 @@ Features are organized in tiers, with different horizons consuming different tie
 | Tier | Features | Used By | Examples |
 |------|----------|---------|----------|
 | **T1: Technical/Momentum** | 33 per granularity | All horizons | Price lags (1-30d), MAs (7-90d), RSI(14), Bollinger position, volume ratios |
+| **T1b: Auction Microstructure** | 7 | 1–28d horizons | Cross-auction price dispersion (CV + range across same-day auctioneers), unsold share, auction count, relative lot size — computed from per-auctioneer rows before daily averaging |
 | **T2: Calendar/Seasonal** | 13 daily, 6 monthly | All horizons | Month/week cyclical encoding (sin/cos), festival flags, lean/strong season |
 | **T3: Weather/ENSO** | 14 | Weeks 3-8, 90-day, Regime | Idukki cumulative rainfall (28-182d), Guatemala rainfall, ENSO current + lag 6m/12m |
 | **T4: Macro** | 6 | Weeks 3-8 | USD/INR level + % change, crude/gold/nifty 28-day % change (not levels) |
 | **T5: Trade/Supply** | 5 | Weeks 3-8, 90-day, Regime | Guatemala 3-month rolling export qty + YoY, Saudi import qty + YoY, Guatemala unit price |
 | **T6: Structural/Cycle** | 6 | 90-day, Regime | Cost floor (MGNREGA wage × 1.7 × 200 / 0.62 / 350), cobweb cycle position, Google Trends 12m MA |
 
-**Key lesson from prior modeling work:** Using 69 features on 534 weekly rows caused overfitting (negative R²). Production models cap at 15–20 features per horizon via walk-forward feature selection.
+**Key lesson from prior modeling work:** Using 69 features on 534 weekly rows caused overfitting (negative R²). Since model v2.1, feature subsets are selected automatically at retrain time: all applicable tier candidates are ranked by mean permutation importance on the held-out window of each walk-forward fold, and the top-k per horizon is kept (k = 15 for 1–7d, 10 for 14d, 5 for 90d, 20 for regime; the 28-day model keeps the hand-curated T1–T5 set, which outperformed every selected subset). Selected lists are stored with the trained models and used at prediction time.
 
 ### 9.3 Model Architecture
 
@@ -297,10 +298,14 @@ Features are organized in tiers, with different horizons consuming different tie
 |---------|-------------|-----------|-------|----------|-------------|
 | Weeks 1–2 | Daily (~3,000 rows) | T1 + T2 (38–46 features) | Gradient Boosting Regressor | Technical + calendar | MAPE-derived error bands |
 | Weeks 3–8 | Weekly (~550 rows) | T1–T5 (up to 71 features, selected down to ~40) | Stacked GBM + Ridge Regression | All except structural | MAPE-derived error bands |
-| 90-day | Monthly (~136 rows) | T1 (subset) + T3 + T5 + T6 (28 features) | Bayesian Ridge Regression | Structural + ENSO + trade | Model-native 80% prediction intervals |
+| 90-day | Monthly (~136 rows) | T1 (subset) + T3 + T5 + T6 (28 features) | Bayesian Ridge Regression | Structural + ENSO + trade | Model-native 80% prediction intervals (log-space, asymmetric in price) |
 | Regime | Monthly (~130 rows) | T1 (subset) + T3 + T5 + T6 (35 features) | Gradient Boosting Classifier | Structural + ENSO + trade | Calibrated probability (0–100%) |
 
-**Walk-forward cross-validation** throughout — no random splits. Expanding window with purge gaps to prevent lookahead bias.
+**Target definition (model v2.0, June 2026):** All regression models predict the log-return `log(price[t+h] / price[t])` rather than the raw price level; the published forecast is reconstructed as `price[t] × exp(predicted return)`. Tree ensembles cannot predict outside the range of target values seen in training, so level-target models cap out at historical price extremes — exactly when forecasts matter most (e.g. the 2019–20 record highs). Returns are roughly stationary across price regimes, which removes that ceiling and cut walk-forward MAPE by 30–50% on the 1–28 day horizons (see Appendix). The regime classifier was already return-based.
+
+**Causal cycle features (model v2.1, June 2026):** The cobweb-cycle features (`months_since_trough`, `cycle_age_norm`) were rebuilt causally — trailing-only smoothing, with a price trough only counted once confirmed by subsequent periods. The original centered-window construction let trough locations leak future prices into the regime and 90-day models; all benchmarks below use the causal version.
+
+**Walk-forward cross-validation** throughout — no random splits. Expanding window with purge gaps to prevent lookahead bias. CV metrics are computed on reconstructed price levels, so MAPE/MAE remain comparable across model versions. The regime classifier is additionally tracked with walk-forward AUC/Brier on pooled out-of-sample probabilities.
 
 ### 9.4 Daily Pipeline Sequence
 
@@ -381,6 +386,7 @@ Financial data gaps (weekends, holidays) are forward-filled. ENSO seasonal data 
 | Model overfitting | Walk-forward CV; public track record forces honesty |
 | Regime misclassification | Publish as probability, never binary claim |
 | Auction scraper breaks (HTML structure change) | Monitoring + manual XLS upload fallback |
+| Dependency upgrade breaks cached model pickles (caused 5-day outage, Jun 2–6 2026: unpinned sklearn upgrade in CI made cached models unloadable until the Sunday retrain) | `load_models()` validates a version/target metadata marker and treats any unpickling failure as "no models", falling back to automatic retrain instead of crashing |
 
 ### Market
 | Risk | Mitigation |
@@ -460,7 +466,75 @@ It compounds into — market infrastructure.
 
 ## Appendix: Validated Model Benchmarks
 
-From the existing forecasting framework (walk-forward CV, Feb 2026):
+### Model v2.2 — auction microstructure features (walk-forward CV, June 2026)
+
+Per-auctioneer auction rows (~5,440) carry cross-auction signals that the
+daily averages destroy. v2.2 computes them at collection time and adds them
+to the daily/weekly candidate pools:
+
+| Horizon | v2.1 MAPE | v2.2 MAPE | Note |
+|---------|-----------|-----------|------|
+| 7-day | 6.2% | 6.3% | `disp_cv_ma14` selected top-3; net neutral |
+| 14-day | 9.2% | **8.8%** | `disp_cv_ma14` selected top-2; MAE −6% |
+| 28-day | 9.8% | 9.9% | microstructure added to feature set; neutral |
+| 90-day | 17.6% | 17.6% | selection ignored microstructure (rainfall dominates) |
+| Regime | AUC 0.778 | AUC 0.778 | microstructure **excluded** from monthly pool — including it degraded AUC to 0.712 (monthly averaging destroys these short-lived signals) |
+
+Key insight: the 14-day average of cross-auction price dispersion
+(`disp_cv_ma14`) — how much the auctioneers' same-day prices disagree —
+is a leading indicator of 1–2 week moves, earning a top-3 permutation
+rank at both 7d and 14d.
+
+### Model v2.1 — permutation feature selection + causal cycle features (walk-forward CV, June 2026)
+
+| Horizon | v2.0 MAPE | v2.1 MAPE | Features used |
+|---------|-----------|-----------|---------------|
+| 1-day | 2.8% | **2.6%** | top-15 selected |
+| 7-day | 6.8% | **6.2%** | top-15 selected |
+| 14-day | 9.9% | **9.2%** | top-10 selected |
+| 28-day | 9.8% | 9.8% | manual T1–T5 (selection underperformed) |
+| 90-day | 33.5% | **17.6%** | top-5 selected |
+| Regime | AUC 0.660, Brier 0.270 | **AUC 0.778, Brier 0.208** | top-20 selected |
+
+Notes:
+- The regime baseline of AUC 0.660 is the current GBC re-measured after the
+  cycle-feature lookahead fix (the previously reported 0.575 predates both
+  the fix and this evaluation protocol). Alternatives tested — balanced class
+  weights, regularized logistic regression, simpler 3/6-month direction
+  targets, and a transparent rules-based score (price-to-cost + cycle age +
+  ENSO) — all underperformed the GBC with selected features on the bear
+  target, so the published "price drop >10% within 6 months" definition
+  is unchanged.
+- Selection gains were verified with a holdout protocol (features ranked on
+  the first 70% of history only, evaluated on the untouched last 30%):
+  regime AUC 0.903 vs 0.799 manual, 90-day MAPE 16.3% vs 18.0% manual on
+  the holdout segment. The 90-day model's selected drivers are dominated by
+  cumulative rainfall (Kerala + Guatemala) — consistent with supply-side
+  fundamentals mattering more than price momentum at long horizons.
+
+### Model v2.0 — log-return targets (walk-forward CV, June 2026)
+
+Head-to-head comparison on identical data, features, and CV splits — only the
+target definition changed (price level → log-return). All metrics computed on
+reconstructed price levels:
+
+| Horizon | v1.0 MAPE (level target) | v2.0 MAPE (return target) | Improvement |
+|---------|--------------------------|---------------------------|-------------|
+| 1-day | 5.7% | **2.8%** | −51% |
+| 3-day | 8.1% | **4.6%** | −43% |
+| 7-day | 10.8% | **6.8%** | −37% |
+| 14-day | 14.1% | **9.9%** | −30% |
+| 28-day | 16.8% | **9.8%** | −41% |
+| 90-day | 36.6% | **33.5%** | −8% |
+
+The 28-day model improved the most, consistent with the extrapolation-ceiling
+diagnosis: the further the horizon, the further prices drift from the training
+range. The 90-day model improved only modestly — its bottleneck is the small
+monthly sample (~130 rows), not the target definition. The v2.0 numbers put
+the 2-week (<8% target: 6.8% at 7d / 9.9% at 14d) and 4-week (<12% target:
+9.8%) horizons at or near the Section 11 quality targets.
+
+### Model v1.0 — historical record (walk-forward CV, Feb 2026)
 
 | Horizon | Walk-Forward MAPE | First Live Prediction | Actual | Error |
 |---------|-------------------|----------------------|--------|-------|

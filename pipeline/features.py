@@ -122,6 +122,49 @@ def add_tier1(df: pd.DataFrame, price_col: str = "avg_price",
     return added
 
 
+# ── Tier 1b: Auction microstructure ──────────────────────────────────────
+# Cross-auction signals from per-auctioneer data (computed in the auction
+# collector): price dispersion across same-day auctions, auction count,
+# unsold share, lot size. Windows are in periods (days/weeks/months).
+
+MICRO_FEATURES = [
+    "disp_cv_1", "disp_cv_ma14", "range_pct_1",
+    "unsold_1", "unsold_ma14",
+    "n_auctions_ma14", "lot_size_rel",
+]
+
+
+def add_micro(df: pd.DataFrame) -> list[str]:
+    """Add microstructure features. Returns list of feature names added."""
+    added = []
+
+    if "price_disp_cv" in df.columns:
+        df["disp_cv_1"] = df["price_disp_cv"].shift(1)
+        df["disp_cv_ma14"] = df["price_disp_cv"].shift(1).rolling(14, min_periods=7).mean()
+        added.extend(["disp_cv_1", "disp_cv_ma14"])
+
+    if "price_range_pct" in df.columns:
+        df["range_pct_1"] = df["price_range_pct"].shift(1)
+        added.append("range_pct_1")
+
+    if "unsold_pct" in df.columns:
+        df["unsold_1"] = df["unsold_pct"].shift(1)
+        df["unsold_ma14"] = df["unsold_pct"].shift(1).rolling(14, min_periods=7).mean()
+        added.extend(["unsold_1", "unsold_ma14"])
+
+    if "n_auctions" in df.columns:
+        df["n_auctions_ma14"] = df["n_auctions"].shift(1).rolling(14, min_periods=7).mean()
+        added.append("n_auctions_ma14")
+
+    if "avg_lot_kg" in df.columns:
+        # relative to its own trailing level — lot sizes drift over years
+        base = df["avg_lot_kg"].shift(1).rolling(60, min_periods=30).mean()
+        df["lot_size_rel"] = df["avg_lot_kg"].shift(1) / base.clip(lower=1)
+        added.append("lot_size_rel")
+
+    return added
+
+
 # ── Tier 2: Calendar / Seasonal ──────────────────────────────────────────
 
 T2_FEATURES_DAILY = [
@@ -305,25 +348,30 @@ def add_tier6(df: pd.DataFrame, price_col: str = "avg_price") -> list[str]:
     df["price_to_cost"] = df[price_col].shift(1) / cost_per_kg
     added.append("price_to_cost")
 
-    # Cobweb cycle: months since price trough
-    smoothed = df[price_col].rolling(
-        min(180, max(30, len(df) // 4)), min_periods=30, center=True
-    ).mean()
+    # Cobweb cycle: months since price trough. Causal construction: the
+    # smoothing is trailing-only (no center=True), and a local minimum at
+    # index i is only confirmed once `w` further periods have elapsed, so
+    # it may only influence rows >= i + w. The previous centered version
+    # let trough locations leak future prices into the feature.
+    win = min(180, max(30, len(df) // 4))
+    smoothed = df[price_col].rolling(win, min_periods=min(30, win)).mean()
 
     if len(df) > 24:
         w = min(6, max(1, len(df) // 6))
-        troughs = []
+        trough_idx = []
         for i in range(w, len(df) - w):
-            window = smoothed.iloc[max(0, i - w): min(len(df), i + w + 1)]
+            window = smoothed.iloc[i - w: i + w + 1]
             if not pd.isna(smoothed.iloc[i]) and smoothed.iloc[i] == window.min():
-                troughs.append(dates.iloc[i])
+                trough_idx.append(i)
 
-        if troughs:
-            def _months_since(x):
-                past = [t for t in troughs if t <= x]
-                return (x - past[-1]).days / 30.44 if past else np.nan
+        if trough_idx:
+            def _months_since(j):
+                past = [i for i in trough_idx if i + w <= j]
+                if not past:
+                    return np.nan
+                return (dates.iloc[j] - dates.iloc[past[-1]]).days / 30.44
 
-            df["months_since_trough"] = dates.apply(_months_since)
+            df["months_since_trough"] = [_months_since(j) for j in range(len(df))]
             df["cycle_age_norm"] = df["months_since_trough"] / 48
             added.extend(["months_since_trough", "cycle_age_norm"])
 
@@ -352,6 +400,7 @@ def build_daily_features(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     """Apply all applicable tiers to a daily DataFrame. Returns (df, feature_names)."""
     feats = []
     feats += add_tier1(df)
+    feats += add_micro(df)
     feats += add_tier2(df)
     feats += add_tier3(df, is_monthly=False)
     feats += add_tier4(df)
@@ -362,6 +411,7 @@ def build_weekly_features(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     """Apply tiers to weekly DataFrame."""
     feats = []
     feats += add_tier1(df, vol_col="sold_kg", arr_col="arrived_kg")
+    feats += add_micro(df)
     feats += add_tier2(df)
     feats += add_tier3(df, is_monthly=False)
     feats += add_tier4(df)
@@ -373,6 +423,7 @@ def build_monthly_features(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     """Apply tiers to monthly DataFrame for 90-day + regime models."""
     feats = []
     feats += add_tier1(df, vol_col="sold_kg", arr_col="arrived_kg")
+    feats += add_micro(df)
     feats += add_tier2(df)
     feats += add_tier3(df, is_monthly=True)
     feats += add_tier5(df)
