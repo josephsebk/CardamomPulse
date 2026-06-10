@@ -132,6 +132,12 @@ def resample_weekly(daily: pd.DataFrame) -> pd.DataFrame:
         if col in df.columns:
             agg[col] = "sum"
 
+    # Auction microstructure: average over the period
+    for col in ["n_auctions", "price_disp_cv", "price_range_pct",
+                "unsold_pct", "avg_lot_kg"]:
+        if col in df.columns:
+            agg[col] = "mean"
+
     # Forward-fill columns (take last value of the week)
     ff_cols = [
         "usdinr", "crude_oil", "gold", "nifty", "ENSO",
@@ -166,6 +172,11 @@ def resample_monthly(daily: pd.DataFrame) -> pd.DataFrame:
     for col in ["rain_mm", "gt_rain_mm"]:
         if col in df.columns:
             agg[col] = "sum"
+
+    for col in ["n_auctions", "price_disp_cv", "price_range_pct",
+                "unsold_pct", "avg_lot_kg"]:
+        if col in df.columns:
+            agg[col] = "mean"
 
     ff_cols = [
         "usdinr", "crude_oil", "gold", "nifty", "ENSO",

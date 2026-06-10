@@ -15,7 +15,7 @@ from pipeline.config import (
     MODELS_DIR, MODEL_VERSION, WF_CONFIG, FEATURE_SELECTION_K, ensure_dirs,
 )
 from pipeline.features import (
-    T1_FEATURES, T2_FEATURES_DAILY, T2_FEATURES_MONTHLY,
+    T1_FEATURES, MICRO_FEATURES, T2_FEATURES_DAILY, T2_FEATURES_MONTHLY,
     T3_FEATURES, T4_FEATURES, T5_FEATURES, T6_FEATURES,
 )
 
@@ -31,8 +31,11 @@ FEATS_7D = T1_FEATURES + T2_FEATURES_DAILY[:5] + T4_FEATURES
 # 14-day: T1 + all T2 daily + T4 macro
 FEATS_14D = T1_FEATURES + T2_FEATURES_DAILY + T4_FEATURES
 
-# 28-day (weekly): T1 + T2 + T3 + T4 + T5 (selected down during training)
-FEATS_28D_CANDIDATES = T1_FEATURES + T2_FEATURES_DAILY + T3_FEATURES + T4_FEATURES + T5_FEATURES
+# 28-day (weekly): T1 + microstructure + T2 + T3 + T4 + T5
+FEATS_28D_CANDIDATES = (
+    T1_FEATURES + MICRO_FEATURES + T2_FEATURES_DAILY
+    + T3_FEATURES + T4_FEATURES + T5_FEATURES
+)
 
 # 90-day (monthly): T1 subset + T2 monthly + T3 tail + T5 + T6
 FEATS_90D = (
@@ -46,8 +49,12 @@ FEATS_90D = (
 # Regime: T1 subset + T3 + T5 + T6
 FEATS_REGIME = T1_FEATURES[:10] + T3_FEATURES + T5_FEATURES + T6_FEATURES
 
-# Candidate pools for walk-forward permutation feature selection
-FEATS_DAILY_CANDIDATES = T1_FEATURES + T2_FEATURES_DAILY + T3_FEATURES + T4_FEATURES
+# Candidate pools for walk-forward permutation feature selection.
+# Microstructure is daily/weekly only: monthly averaging destroys these
+# short-lived signals, and including them degraded regime AUC in backtests.
+FEATS_DAILY_CANDIDATES = (
+    T1_FEATURES + MICRO_FEATURES + T2_FEATURES_DAILY + T3_FEATURES + T4_FEATURES
+)
 FEATS_MONTHLY_CANDIDATES = (
     T1_FEATURES + T2_FEATURES_MONTHLY + T3_FEATURES + T5_FEATURES + T6_FEATURES
 )
@@ -562,6 +569,14 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
         sub = df.dropna(subset=available + ["avg_price"])
         if len(sub) == 0:
             return None, available, None
+        row_date = pd.Timestamp(sub["date"].iloc[-1])
+        max_date = pd.Timestamp(df["date"].max())
+        if (max_date - row_date).days > 7:
+            missing = [f for f in available if pd.isna(df[f].iloc[-1])]
+            log.warning(
+                f"Latest complete feature row is {row_date.date()} but data "
+                f"runs to {max_date.date()} — forecast anchored on stale "
+                f"prices. Features missing on latest row: {missing}")
         return (sub[available].iloc[-1:].values, available,
                 float(sub["avg_price"].iloc[-1]))
 

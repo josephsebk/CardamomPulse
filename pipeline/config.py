@@ -50,7 +50,9 @@ FEATURE_SELECTION_K = {
 # ── Model versions ────────────────────────────────────────────────────────
 # v2.0: regression targets switched to log-returns
 # v2.1: walk-forward permutation feature selection; causal cycle features
-MODEL_VERSION = "v2.1"
+# v2.2: auction microstructure features (cross-auction dispersion, unsold
+#       share, auction count, lot size) in daily/weekly candidate pools
+MODEL_VERSION = "v2.2"
 
 # ── Pipeline schedule (IST offsets in comments) ──────────────────────────
 DAILY_RUN_HOUR_UTC = 12  # 6 PM IST = 12:30 UTC; run at 12 UTC

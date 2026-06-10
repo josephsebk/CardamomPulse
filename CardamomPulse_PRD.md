@@ -283,6 +283,7 @@ Features are organized in tiers, with different horizons consuming different tie
 | Tier | Features | Used By | Examples |
 |------|----------|---------|----------|
 | **T1: Technical/Momentum** | 33 per granularity | All horizons | Price lags (1-30d), MAs (7-90d), RSI(14), Bollinger position, volume ratios |
+| **T1b: Auction Microstructure** | 7 | 1–28d horizons | Cross-auction price dispersion (CV + range across same-day auctioneers), unsold share, auction count, relative lot size — computed from per-auctioneer rows before daily averaging |
 | **T2: Calendar/Seasonal** | 13 daily, 6 monthly | All horizons | Month/week cyclical encoding (sin/cos), festival flags, lean/strong season |
 | **T3: Weather/ENSO** | 14 | Weeks 3-8, 90-day, Regime | Idukki cumulative rainfall (28-182d), Guatemala rainfall, ENSO current + lag 6m/12m |
 | **T4: Macro** | 6 | Weeks 3-8 | USD/INR level + % change, crude/gold/nifty 28-day % change (not levels) |
@@ -464,6 +465,25 @@ It compounds into — market infrastructure.
 ---
 
 ## Appendix: Validated Model Benchmarks
+
+### Model v2.2 — auction microstructure features (walk-forward CV, June 2026)
+
+Per-auctioneer auction rows (~5,440) carry cross-auction signals that the
+daily averages destroy. v2.2 computes them at collection time and adds them
+to the daily/weekly candidate pools:
+
+| Horizon | v2.1 MAPE | v2.2 MAPE | Note |
+|---------|-----------|-----------|------|
+| 7-day | 6.2% | 6.3% | `disp_cv_ma14` selected top-3; net neutral |
+| 14-day | 9.2% | **8.8%** | `disp_cv_ma14` selected top-2; MAE −6% |
+| 28-day | 9.8% | 9.9% | microstructure added to feature set; neutral |
+| 90-day | 17.6% | 17.6% | selection ignored microstructure (rainfall dominates) |
+| Regime | AUC 0.778 | AUC 0.778 | microstructure **excluded** from monthly pool — including it degraded AUC to 0.712 (monthly averaging destroys these short-lived signals) |
+
+Key insight: the 14-day average of cross-auction price dispersion
+(`disp_cv_ma14`) — how much the auctioneers' same-day prices disagree —
+is a leading indicator of 1–2 week moves, earning a top-3 permutation
+rank at both 7d and 14d.
 
 ### Model v2.1 — permutation feature selection + causal cycle features (walk-forward CV, June 2026)
 

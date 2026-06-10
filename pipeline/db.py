@@ -25,8 +25,21 @@ def init_db():
         arrived_kg  REAL,
         sold_kg     REAL,
         avg_price   REAL,
-        max_price   REAL
+        max_price   REAL,
+        n_auctions      REAL,
+        price_disp_cv   REAL,
+        price_range_pct REAL,
+        unsold_pct      REAL,
+        avg_lot_kg      REAL
     )""")
+
+    # Migration for pre-existing databases (e.g. the CI cache): add the
+    # microstructure columns if the table predates them
+    existing = {r[1] for r in cur.execute("PRAGMA table_info(auction_daily)")}
+    for col in ["n_auctions", "price_disp_cv", "price_range_pct",
+                "unsold_pct", "avg_lot_kg"]:
+        if col not in existing:
+            cur.execute(f"ALTER TABLE auction_daily ADD COLUMN {col} REAL")
 
     cur.execute("""
     CREATE TABLE IF NOT EXISTS weather_idukki (

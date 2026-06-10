@@ -122,6 +122,49 @@ def add_tier1(df: pd.DataFrame, price_col: str = "avg_price",
     return added
 
 
+# ── Tier 1b: Auction microstructure ──────────────────────────────────────
+# Cross-auction signals from per-auctioneer data (computed in the auction
+# collector): price dispersion across same-day auctions, auction count,
+# unsold share, lot size. Windows are in periods (days/weeks/months).
+
+MICRO_FEATURES = [
+    "disp_cv_1", "disp_cv_ma14", "range_pct_1",
+    "unsold_1", "unsold_ma14",
+    "n_auctions_ma14", "lot_size_rel",
+]
+
+
+def add_micro(df: pd.DataFrame) -> list[str]:
+    """Add microstructure features. Returns list of feature names added."""
+    added = []
+
+    if "price_disp_cv" in df.columns:
+        df["disp_cv_1"] = df["price_disp_cv"].shift(1)
+        df["disp_cv_ma14"] = df["price_disp_cv"].shift(1).rolling(14, min_periods=7).mean()
+        added.extend(["disp_cv_1", "disp_cv_ma14"])
+
+    if "price_range_pct" in df.columns:
+        df["range_pct_1"] = df["price_range_pct"].shift(1)
+        added.append("range_pct_1")
+
+    if "unsold_pct" in df.columns:
+        df["unsold_1"] = df["unsold_pct"].shift(1)
+        df["unsold_ma14"] = df["unsold_pct"].shift(1).rolling(14, min_periods=7).mean()
+        added.extend(["unsold_1", "unsold_ma14"])
+
+    if "n_auctions" in df.columns:
+        df["n_auctions_ma14"] = df["n_auctions"].shift(1).rolling(14, min_periods=7).mean()
+        added.append("n_auctions_ma14")
+
+    if "avg_lot_kg" in df.columns:
+        # relative to its own trailing level — lot sizes drift over years
+        base = df["avg_lot_kg"].shift(1).rolling(60, min_periods=30).mean()
+        df["lot_size_rel"] = df["avg_lot_kg"].shift(1) / base.clip(lower=1)
+        added.append("lot_size_rel")
+
+    return added
+
+
 # ── Tier 2: Calendar / Seasonal ──────────────────────────────────────────
 
 T2_FEATURES_DAILY = [
@@ -357,6 +400,7 @@ def build_daily_features(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     """Apply all applicable tiers to a daily DataFrame. Returns (df, feature_names)."""
     feats = []
     feats += add_tier1(df)
+    feats += add_micro(df)
     feats += add_tier2(df)
     feats += add_tier3(df, is_monthly=False)
     feats += add_tier4(df)
@@ -367,6 +411,7 @@ def build_weekly_features(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     """Apply tiers to weekly DataFrame."""
     feats = []
     feats += add_tier1(df, vol_col="sold_kg", arr_col="arrived_kg")
+    feats += add_micro(df)
     feats += add_tier2(df)
     feats += add_tier3(df, is_monthly=False)
     feats += add_tier4(df)
@@ -378,6 +423,7 @@ def build_monthly_features(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     """Apply tiers to monthly DataFrame for 90-day + regime models."""
     feats = []
     feats += add_tier1(df, vol_col="sold_kg", arr_col="arrived_kg")
+    feats += add_micro(df)
     feats += add_tier2(df)
     feats += add_tier3(df, is_monthly=True)
     feats += add_tier5(df)

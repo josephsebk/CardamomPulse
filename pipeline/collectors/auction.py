@@ -2,6 +2,7 @@
 
 import logging
 import re
+import numpy as np
 import pandas as pd
 import requests
 from pipeline.config import CSV_DIR
@@ -85,17 +86,35 @@ def load_xls_fallback() -> pd.DataFrame:
 
 
 def aggregate_daily(df: pd.DataFrame) -> pd.DataFrame:
-    """Aggregate per-auctioneer rows to daily totals (volume-weighted avg price)."""
+    """Aggregate per-auctioneer rows to daily totals (volume-weighted avg
+    price) plus cross-auction microstructure signals that the plain daily
+    averages destroy: dispersion of prices across same-day auctions, auction
+    count, unsold share, and average lot size."""
 
     def _wavg(group):
         sold = group["Qty_Sold_Kg"]
         weights = sold / sold.sum() if sold.sum() > 0 else 1 / len(sold)
+        wavg = (group["AvgPrice"] * weights).sum()
+        arrived = group["Qty_Arrived_Kg"].sum()
+        lots = group["Lots"].sum()
+        n = len(group)
+        if n > 1 and wavg > 0:
+            disp_cv = group["AvgPrice"].std(ddof=0) / wavg
+            range_pct = (group["AvgPrice"].max() - group["AvgPrice"].min()) / wavg
+        else:
+            # a single auction shows no observable cross-auction dispersion
+            disp_cv, range_pct = 0.0, 0.0
         return pd.Series({
-            "Lots": group["Lots"].sum(),
-            "Qty_Arrived_Kg": group["Qty_Arrived_Kg"].sum(),
+            "Lots": lots,
+            "Qty_Arrived_Kg": arrived,
             "Qty_Sold_Kg": sold.sum(),
-            "AvgPrice": (group["AvgPrice"] * weights).sum(),
+            "AvgPrice": wavg,
             "MaxPrice": group["MaxPrice"].max(),
+            "NAuctions": float(n),
+            "PriceDispCV": disp_cv,
+            "PriceRangePct": range_pct,
+            "UnsoldPct": 1 - sold.sum() / arrived if arrived > 0 else np.nan,
+            "AvgLotKg": arrived / lots if lots > 0 else np.nan,
         })
 
     daily = df.groupby("Date").apply(_wavg, include_groups=False).reset_index()
@@ -106,6 +125,11 @@ def aggregate_daily(df: pd.DataFrame) -> pd.DataFrame:
         "Qty_Sold_Kg": "sold_kg",
         "AvgPrice": "avg_price",
         "MaxPrice": "max_price",
+        "NAuctions": "n_auctions",
+        "PriceDispCV": "price_disp_cv",
+        "PriceRangePct": "price_range_pct",
+        "UnsoldPct": "unsold_pct",
+        "AvgLotKg": "avg_lot_kg",
     })
     daily["date"] = daily["date"].dt.strftime("%Y-%m-%d")
     daily = daily.sort_values("date").reset_index(drop=True)
@@ -129,9 +153,9 @@ def collect_auction() -> pd.DataFrame:
 
     # Upsert into DB
     conn = get_conn()
-    cols = "date, lots, arrived_kg, sold_kg, avg_price, max_price"
-    placeholders = "?, ?, ?, ?, ?, ?"
-    sql = f"INSERT OR REPLACE INTO auction_daily ({cols}) VALUES ({placeholders})"
+    cols = list(daily.columns)
+    sql = (f"INSERT OR REPLACE INTO auction_daily ({', '.join(cols)}) "
+           f"VALUES ({', '.join(['?'] * len(cols))})")
     conn.executemany(sql, daily.values.tolist())
     conn.commit()
     conn.close()
