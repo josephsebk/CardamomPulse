@@ -12,7 +12,8 @@ from sklearn.linear_model import Ridge, BayesianRidge
 from sklearn.preprocessing import StandardScaler
 
 from pipeline.config import (
-    MODELS_DIR, MODEL_VERSION, WF_CONFIG, FEATURE_SELECTION_K, ensure_dirs,
+    MODELS_DIR, MODEL_VERSION, WF_CONFIG, FEATURE_SELECTION_K,
+    MAX_SHORT_HORIZON_DEVIATION, ensure_dirs,
 )
 from pipeline.features import (
     T1_FEATURES, MICRO_FEATURES, T2_FEATURES_DAILY, T2_FEATURES_MONTHLY,
@@ -562,23 +563,29 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     today = daily["date"].max()
     forecasts = {"forecast_date": today, "predictions": []}
 
-    # Helper to get last non-NaN feature row plus its anchor price
-    # (models predict log-returns relative to the anchor row's price)
+    # Helper: features and anchor price for the latest priced row.
+    # The anchor MUST be the most recent actual price — a log-return forecast
+    # is reconstructed as anchor * exp(return), so anchoring on an older row
+    # silently shifts every forecast toward that row's (stale) price level.
+    # Earlier this conflated "latest price" with "row where every selected
+    # feature is non-NaN": a NaN in a selected feature (e.g. microstructure
+    # missing on recently-scraped days) rewound the anchor months back and
+    # produced phantom multi-percent jumps. We now always take the last
+    # priced row and forward-fill / median-impute any residual NaN features.
     def _last_row(df, feats):
         available = [f for f in feats if f in df.columns]
-        sub = df.dropna(subset=available + ["avg_price"])
-        if len(sub) == 0:
+        priced = df.dropna(subset=["avg_price"])
+        if len(priced) == 0:
             return None, available, None
-        row_date = pd.Timestamp(sub["date"].iloc[-1])
-        max_date = pd.Timestamp(df["date"].max())
-        if (max_date - row_date).days > 7:
-            missing = [f for f in available if pd.isna(df[f].iloc[-1])]
-            log.warning(
-                f"Latest complete feature row is {row_date.date()} but data "
-                f"runs to {max_date.date()} — forecast anchored on stale "
-                f"prices. Features missing on latest row: {missing}")
-        return (sub[available].iloc[-1:].values, available,
-                float(sub["avg_price"].iloc[-1]))
+        # causal carry-forward so the latest row inherits the last known
+        # value of any feature that is missing on it
+        row = priced[available].ffill().iloc[-1:].copy()
+        stale = [c for c in available if row[c].isna().iloc[0]]
+        if stale:
+            log.warning(f"Features still NaN on latest row after ffill, "
+                        f"imputing 0: {stale}")
+            row[stale] = 0.0
+        return (row.values, available, float(priced["avg_price"].iloc[-1]))
 
     # Helper: get last row with median imputation for NaN
     def _last_row_imputed(df, feats, medians):
@@ -687,4 +694,24 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
             }
             log.info(f"Regime: {prob:.1%} bear probability ({label})")
 
+    _sanity_check_forecasts(forecasts, daily)
     return forecasts
+
+
+def _sanity_check_forecasts(forecasts: dict, daily: pd.DataFrame) -> None:
+    """Abort the run if the shortest-horizon forecast deviates implausibly
+    from spot. Catches anchor/feature bugs that would otherwise publish a
+    phantom move (the stale-anchor bug produced a ~15% 1-day 'crash')."""
+    priced = daily["avg_price"].dropna()
+    preds = forecasts.get("predictions", [])
+    if len(priced) == 0 or not preds:
+        return
+    spot = float(priced.iloc[-1])
+    nearest = min(preds, key=lambda p: p["horizon_days"])
+    dev = abs(nearest["predicted_price"] / spot - 1)
+    if dev > MAX_SHORT_HORIZON_DEVIATION:
+        raise ValueError(
+            f"{nearest['horizon_days']}-day forecast "
+            f"₹{nearest['predicted_price']:.0f} deviates {dev:.1%} from spot "
+            f"₹{spot:.0f} (limit {MAX_SHORT_HORIZON_DEVIATION:.0%}) — likely a "
+            f"stale anchor or feature bug; aborting before publish.")
