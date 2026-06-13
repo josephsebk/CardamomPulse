@@ -12,7 +12,8 @@ from sklearn.linear_model import Ridge, BayesianRidge
 from sklearn.preprocessing import StandardScaler
 
 from pipeline.config import (
-    MODELS_DIR, MODEL_VERSION, WF_CONFIG, FEATURE_SELECTION_K, ensure_dirs,
+    MODELS_DIR, MODEL_VERSION, WF_CONFIG, FEATURE_SELECTION_K,
+    MAX_SHORT_HORIZON_DEVIATION, ensure_dirs,
 )
 from pipeline.features import (
     T1_FEATURES, MICRO_FEATURES, T2_FEATURES_DAILY, T2_FEATURES_MONTHLY,
@@ -693,4 +694,24 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
             }
             log.info(f"Regime: {prob:.1%} bear probability ({label})")
 
+    _sanity_check_forecasts(forecasts, daily)
     return forecasts
+
+
+def _sanity_check_forecasts(forecasts: dict, daily: pd.DataFrame) -> None:
+    """Abort the run if the shortest-horizon forecast deviates implausibly
+    from spot. Catches anchor/feature bugs that would otherwise publish a
+    phantom move (the stale-anchor bug produced a ~15% 1-day 'crash')."""
+    priced = daily["avg_price"].dropna()
+    preds = forecasts.get("predictions", [])
+    if len(priced) == 0 or not preds:
+        return
+    spot = float(priced.iloc[-1])
+    nearest = min(preds, key=lambda p: p["horizon_days"])
+    dev = abs(nearest["predicted_price"] / spot - 1)
+    if dev > MAX_SHORT_HORIZON_DEVIATION:
+        raise ValueError(
+            f"{nearest['horizon_days']}-day forecast "
+            f"₹{nearest['predicted_price']:.0f} deviates {dev:.1%} from spot "
+            f"₹{spot:.0f} (limit {MAX_SHORT_HORIZON_DEVIATION:.0%}) — likely a "
+            f"stale anchor or feature bug; aborting before publish.")

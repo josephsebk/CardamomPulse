@@ -47,6 +47,14 @@ FEATURE_SELECTION_K = {
     "regime": 20,
 }
 
+# ── Forecast sanity guard ─────────────────────────────────────────────────
+# The shortest-horizon forecast must stay within this fraction of the latest
+# spot price, otherwise the run aborts before archiving/publishing. A 1-day
+# move of this size essentially never occurs in this market (1d CV MAPE is
+# ~2.6%), so a breach signals a bug — e.g. a forecast anchored on a stale
+# price row — not a real prediction.
+MAX_SHORT_HORIZON_DEVIATION = 0.10
+
 # ── Model versions ────────────────────────────────────────────────────────
 # v2.0: regression targets switched to log-returns
 # v2.1: walk-forward permutation feature selection; causal cycle features
