@@ -135,8 +135,23 @@ MICRO_FEATURES = [
 
 
 def add_micro(df: pd.DataFrame) -> list[str]:
-    """Add microstructure features. Returns list of feature names added."""
+    """Add microstructure features. Returns list of feature names added.
+
+    Raw per-auctioneer detail is only available for days present in the XLS
+    history or captured by a live scrape; days that entered the database as
+    pre-aggregated daily rows (before microstructure existed, or via a
+    scrape that did not retain per-auction rows) carry NULL microstructure.
+    We forward-fill the source columns first — a causal carry-forward of the
+    last observed value — so these gaps inherit a stale-but-plausible level
+    instead of going NaN. Without this, a NaN in a *selected* microstructure
+    feature would force prediction to anchor on an old, fully-populated row
+    months in the past (see predict_all)."""
     added = []
+    src = ["price_disp_cv", "price_range_pct", "unsold_pct",
+           "n_auctions", "avg_lot_kg"]
+    present = [c for c in src if c in df.columns]
+    if present:
+        df[present] = df[present].ffill()
 
     if "price_disp_cv" in df.columns:
         df["disp_cv_1"] = df["price_disp_cv"].shift(1)
