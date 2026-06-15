@@ -2,429 +2,616 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>The Cardamom Almanac — A Grower's Guide to the Price</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+<title>The Cardamom Almanac</title>
 <style>
-:root{
-  --ink:#23291f; --ink2:#525b46; --cream:#faf6ec; --paper:#fffdf7;
-  --green:#2f6b40; --green2:#3f8a52; --leaf:#6fae6a; --gold:#c89b3c;
-  --rust:#b5482f; --line:#e6ddc8; --shadow:0 10px 40px rgba(40,50,30,.10);
+:root{--ink:#23291f;--ink2:#525b46;--cream:#faf6ec;--paper:#fffdf7;--green:#2f6b40;--green2:#3f8a52;--gold:#c89b3c;--rust:#b5482f;--line:#e6ddc8;}
+@page{size:A4;margin:14mm 18mm 16mm;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:10pt;}
+body{font-family:Georgia,"Times New Roman",serif;color:var(--ink);background:var(--paper);line-height:1.55;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.page{width:100%;break-after:page;page-break-after:always;overflow:hidden;}
+.page:last-child{break-after:auto;page-break-after:auto;}
+h2{font-family:Georgia,serif;font-size:19pt;font-weight:700;line-height:1.1;margin-bottom:5pt;}
+h3{font-family:Georgia,serif;font-size:11pt;font-weight:700;line-height:1.2;}
+.kicker{font-family:Arial,sans-serif;font-weight:700;letter-spacing:.15em;text-transform:uppercase;font-size:7.5pt;color:#bfe0b7;margin-bottom:8pt;}
+.lede{font-family:Arial,sans-serif;font-size:10pt;color:var(--ink2);line-height:1.5;margin-bottom:10pt;}
+.sec-num{font-family:Georgia,serif;font-weight:600;color:var(--gold);font-size:10pt;margin-bottom:2pt;}
+p{font-size:9.5pt;margin-bottom:7pt;font-family:Arial,sans-serif;}
+/* Cover */
+.cover{background:linear-gradient(160deg,#1f4a2c 0%,#2f6b40 60%,#3f8a52 100%);color:#f4f1e4;padding:46pt 44pt;position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:267mm;}
+.cover-orb{position:absolute;right:-60pt;top:-50pt;width:270pt;height:270pt;background:radial-gradient(circle,rgba(200,155,60,.28),transparent 65%);border-radius:50%;}
+.cover h1{color:#f4f1e4;font-family:Georgia,serif;font-size:37pt;max-width:390pt;margin:.3em 0 .25em;letter-spacing:-.02em;line-height:1.1;}
+.cover .sub{font-family:Arial,sans-serif;font-size:11pt;max-width:360pt;color:#e7eede;margin:0 0 10pt;line-height:1.55;}
+.cover .meta{font-family:Arial,sans-serif;font-size:7.5pt;color:#cfe3c8;letter-spacing:.04em;margin-top:10pt;}
+.cover-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1pt;background:rgba(255,255,255,.15);border:1pt solid rgba(255,255,255,.2);border-radius:10pt;overflow:hidden;margin-top:auto;}
+.cs{background:rgba(255,255,255,.08);padding:13pt 10pt;text-align:center;}
+.cs .big{font-family:Georgia,serif;font-weight:700;font-size:19pt;color:#f4f1e4;line-height:1;}
+.cs .lbl{font-family:Arial,sans-serif;font-size:7pt;color:#cfe3c8;margin-top:4pt;}
+/* Sections */
+.sec-page{padding:18pt 0 8pt;}
+.chart-wrap{margin:8pt 0;}
+.caption{font-family:Arial,sans-serif;font-size:7.5pt;color:var(--ink2);font-style:italic;margin-top:5pt;}
+.takeaway{background:#f0f6ea;border-left:4pt solid var(--green2);border-radius:0 7pt 7pt 0;padding:9pt 13pt;margin:8pt 0;}
+.takeaway .t{font-family:Arial,sans-serif;font-weight:700;color:var(--green);font-size:7pt;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4pt;}
+.takeaway p{margin:0;font-size:9pt;}
+.takeaway.warn{background:#fbefe9;border-color:var(--rust);}
+.takeaway.warn .t{color:var(--rust);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9pt;}
+.pull{font-family:Georgia,serif;font-weight:600;font-size:13pt;color:var(--green);line-height:1.3;margin:12pt 0;text-align:center;padding:0 18pt;}
+.minis{display:grid;grid-template-columns:repeat(4,1fr);gap:7pt;margin:8pt 0;}
+.mini{background:var(--paper);border:1pt solid var(--line);border-radius:7pt;padding:8pt;text-align:center;}
+.mini .v{font-family:Georgia,serif;font-weight:700;font-size:15pt;color:var(--green);}
+.mini .v.bad{color:var(--rust);}
+.mini .k{font-family:Arial,sans-serif;font-size:7pt;color:var(--ink2);margin-top:2pt;}
+.driver-split{display:grid;grid-template-columns:1fr 1fr;gap:12pt;margin:8pt 0;}
+.driver-col{border:1pt solid var(--line);border-radius:7pt;overflow:hidden;}
+.driver-col-head{font-family:Arial,sans-serif;font-weight:700;font-size:7.5pt;letter-spacing:.08em;text-transform:uppercase;padding:7pt 10pt;}
+.driver-col-head.short{background:#e8eef8;color:#234fa0;}
+.driver-col-head.long{background:#eaf4e8;color:var(--green);}
+.driver-row{display:flex;align-items:center;padding:5pt 10pt;border-top:1pt solid var(--line);gap:8pt;}
+.driver-row:nth-child(even){background:rgba(0,0,0,.02);}
+.driver-name{font-family:Arial,sans-serif;font-size:8.5pt;flex:1;}
+.driver-note{font-family:Arial,sans-serif;font-size:7pt;color:var(--ink2);}
+.driver-bar-wrap{flex:0 0 52pt;height:5pt;background:var(--line);border-radius:3pt;}
+.driver-bar{height:5pt;border-radius:3pt;}
+.playbook{background:#1f4a2c;color:#eef3e8;border-radius:10pt;padding:22pt 26pt;margin:8pt 0;}
+.playbook h3{color:#fff;font-size:15pt;margin-bottom:4pt;font-family:Georgia,serif;}
+.playbook ol{margin:10pt 0 0;padding-left:17pt;}
+.playbook li{font-family:Arial,sans-serif;margin:0 0 9pt;font-size:9.5pt;line-height:1.45;}
+.playbook li b{color:#c89b3c;font-weight:700;}
+.rot-grid{display:grid;grid-template-columns:1fr 1fr;border:1pt solid var(--line);border-radius:7pt;overflow:hidden;margin:6pt 0;}
+.rot-row{display:flex;justify-content:space-between;align-items:center;padding:5pt 10pt;border-bottom:1pt solid var(--line);font-family:Arial,sans-serif;font-size:8pt;}
+.rot-row:last-child,.rot-row:nth-last-child(2){border-bottom:none;}
+.rot-row:nth-child(odd){background:rgba(0,0,0,.02);}
+.rot-day{color:var(--green);font-weight:600;}
+.rot-share{color:var(--ink2);font-size:7.5pt;}
+.footer-bar{font-family:Arial,sans-serif;font-size:7.5pt;color:var(--ink2);border-top:1pt solid var(--line);padding-top:8pt;margin-top:10pt;}
+.tag{display:inline-block;background:#eef3e8;color:var(--green);border-radius:999pt;padding:2pt 7pt;font-size:7pt;font-weight:600;margin:2pt 3pt 2pt 0;}
+@media screen{
+  body{max-width:860px;margin:0 auto;padding:20px;background:#e8e4da;}
+  .page{border-radius:4px;margin-bottom:24px;padding:44pt;box-shadow:0 4px 24px rgba(0,0,0,.15);background:var(--paper);}
+  .cover{padding:46pt 44pt;min-height:267mm;border-radius:4px;}
 }
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--cream);color:var(--ink);
-  font-family:Inter,system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased}
-.wrap{max-width:920px;margin:0 auto;padding:0 24px}
-h1,h2,h3{font-family:Fraunces,Georgia,serif;line-height:1.1;margin:0}
-p{margin:0 0 18px}
-a{color:var(--green)}
-.kicker{font-family:Inter;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
-  font-size:12px;color:var(--green2)}
-
-/* HERO */
-.hero{background:linear-gradient(160deg,#1f4a2c 0%,#2f6b40 55%,#3f8a52 100%);color:#f4f1e4;
-  padding:78px 0 64px;position:relative;overflow:hidden}
-.hero:after{content:"";position:absolute;right:-80px;top:-60px;width:380px;height:380px;
-  background:radial-gradient(circle,rgba(200,155,60,.30),transparent 65%)}
-.hero .wrap{position:relative;z-index:1}
-.hero .kicker{color:#bfe0b7}
-.hero h1{font-size:clamp(40px,7vw,72px);font-weight:900;margin:.2em 0 .25em;letter-spacing:-.02em}
-.hero .sub{font-size:clamp(17px,2.4vw,21px);max-width:640px;color:#e7eede;opacity:.95}
-.hero .meta{margin-top:26px;font-size:13px;color:#cfe3c8;letter-spacing:.04em}
-
-/* stat band */
-.band{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
-  border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:-44px 0 0;box-shadow:var(--shadow)}
-.band .cell{background:var(--paper);padding:22px 18px;text-align:center}
-.band .big{font-family:Fraunces;font-weight:700;font-size:clamp(26px,4vw,38px);color:var(--green);line-height:1}
-.band .lbl{font-size:12.5px;color:var(--ink2);margin-top:7px}
-@media(max-width:680px){.band{grid-template-columns:repeat(2,1fr)}}
-
-section{padding:62px 0 8px}
-.sec-num{font-family:Fraunces;font-weight:600;color:var(--gold);font-size:15px}
-h2{font-size:clamp(28px,4.4vw,42px);font-weight:700;margin:.15em 0 .5em;letter-spacing:-.01em}
-.lede{font-size:18.5px;color:var(--ink2);max-width:680px;margin-bottom:26px}
-
-.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;
-  padding:24px 24px 16px;box-shadow:var(--shadow);margin:24px 0}
-.chart-box{position:relative;height:380px}
-.chart-box.tall{height:460px}
-.caption{font-size:13.5px;color:var(--ink2);margin-top:12px;font-style:italic}
-
-.takeaway{background:#f0f6ea;border-left:5px solid var(--green2);border-radius:0 14px 14px 0;
-  padding:18px 22px;margin:24px 0}
-.takeaway .t{font-family:Inter;font-weight:700;color:var(--green);font-size:13px;
-  letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
-.takeaway p{margin:0;font-size:16.5px}
-.takeaway.warn{background:#fbefe9;border-color:var(--rust)}
-.takeaway.warn .t{color:var(--rust)}
-
-.pull{font-family:Fraunces;font-weight:600;font-size:clamp(22px,3.4vw,30px);
-  color:var(--green);line-height:1.25;margin:34px 0;text-align:center;max-width:760px;margin-inline:auto}
-
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-@media(max-width:680px){.grid2{grid-template-columns:1fr}}
-.minis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
-@media(max-width:680px){.minis{grid-template-columns:repeat(2,1fr)}}
-.mini{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center}
-.mini .v{font-family:Fraunces;font-weight:700;font-size:26px;color:var(--green)}
-.mini .v.bad{color:var(--rust)}
-.mini .k{font-size:12px;color:var(--ink2);margin-top:4px}
-
-.playbook{background:#1f4a2c;color:#eef3e8;border-radius:20px;padding:34px 30px;margin:30px 0}
-.playbook h3{color:#fff;font-size:26px;margin-bottom:6px}
-.playbook ol{margin:18px 0 0;padding-left:22px}
-.playbook li{margin:0 0 14px;font-size:16.5px}
-.playbook li b{color:var(--gold)}
-
-footer{padding:48px 0 70px;color:var(--ink2);font-size:13px;border-top:1px solid var(--line);margin-top:50px}
-.tag{display:inline-block;background:#eef3e8;color:var(--green);border-radius:999px;
-  padding:3px 11px;font-size:12px;font-weight:600;margin:2px 4px 2px 0}
 </style>
 </head>
 <body>
 
-<header class="hero">
-  <div class="wrap">
+<!-- PAGE 1: COVER -->
+<div class="page cover">
+  <div class="cover-orb"></div>
+  <div style="position:relative;z-index:1;flex:1;display:flex;flex-direction:column">
     <div class="kicker">CardamomPulse · A Data Almanac</div>
-    <h1>What the Cardamom Price Has Been Trying to Tell Us</h1>
+    <h1>The Cardamom<br>Almanac</h1>
     <p class="sub">Eleven years. 5,440 auctions. One small green pod whose price has swung
-      nine-fold. Here is what the numbers say about when to sell, when to plant,
-      and where the market really gets made.</p>
-    <div class="meta" id="metaLine"></div>
+    9.4× fold. Here is what the numbers say about when to sell,
+    when to plant, and where the market really gets made.</p>
+    <div class="meta">Coverage 2014-11-07 to 2026-02-06 · 3,028 trading days · 5,440 individual auctions</div>
+    <div class="cover-stats" style="margin-top:32pt">
+      <div class="cs"><div class="big">₹495</div><div class="lbl">floor (2016-03)</div></div>
+      <div class="cs"><div class="big">₹4,675</div><div class="lbl">peak (2019-08)</div></div>
+      <div class="cs"><div class="big">9.4×</div><div class="lbl">peak-to-trough swing</div></div>
+      <div class="cs"><div class="big">+256%</div><div class="lbl">biggest 6-month rally</div></div>
+    </div>
   </div>
-</header>
-
-<div class="wrap">
-  <div class="band" id="band"></div>
 </div>
 
-<div class="wrap">
-
-<!-- 1. THE JOURNEY -->
-<section>
+<!-- PAGE 2: PRICE JOURNEY -->
+<div class="page sec-page">
   <div class="sec-num">01</div>
   <h2>A price with a temper</h2>
-  <p class="lede">Few farm commodities move like cardamom. Since 2014 the auction price has
-   travelled from under ₹500 to nearly ₹4,700 a kilo and back again — a roller-coaster
-   driven by monsoons, floods and the slow churn of planting cycles.</p>
-  <div class="card">
-    <div class="chart-box tall"><canvas id="priceChart"></canvas></div>
-    <div class="caption">Monthly average auction price, Nov 2014 – Feb 2026. Shaded bands mark
-      the major bull and bear runs the data identifies.</div>
+  <p class="lede">Few farm commodities move like cardamom. Since 2014 the auction price has travelled
+  from under ₹500 to nearly ₹4,700 a kilo and back again — a roller-coaster driven by monsoons,
+  floods and the slow churn of planting cycles.</p>
+  <div class="chart-wrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 240" width="700" height="240" ><rect x="135.1" y="22" width="43.3" height="182" fill="rgba(63,138,82,.13)"/>
+<rect x="258.7" y="22" width="17.1" height="182" fill="rgba(63,138,82,.13)"/>
+<rect x="298.3" y="22" width="24.1" height="182" fill="rgba(63,138,82,.13)"/>
+<rect x="349.8" y="22" width="28.8" height="182" fill="rgba(181,72,47,.13)"/>
+<rect x="510.9" y="22" width="12.5" height="182" fill="rgba(63,138,82,.13)"/>
+<rect x="579.5" y="22" width="14.3" height="182" fill="rgba(63,138,82,.13)"/>
+<rect x="610.4" y="22" width="13.4" height="182" fill="rgba(63,138,82,.13)"/>
+<line x1="58" x2="684" y1="196.4" y2="196.4" stroke="#e6ddc8" stroke-width="0.8"/>
+<text x="53" y="199.9" text-anchor="end" font-family="Arial" font-size="9" fill="#525b46">₹500</text>
+<line x1="58" x2="684" y1="177.5" y2="177.5" stroke="#e6ddc8" stroke-width="0.8"/>
+<text x="53" y="181.0" text-anchor="end" font-family="Arial" font-size="9" fill="#525b46">₹1k</text>
+<line x1="58" x2="684" y1="158.5" y2="158.5" stroke="#e6ddc8" stroke-width="0.8"/>
+<text x="53" y="162.0" text-anchor="end" font-family="Arial" font-size="9" fill="#525b46">₹1k</text>
+<line x1="58" x2="684" y1="139.5" y2="139.5" stroke="#e6ddc8" stroke-width="0.8"/>
+<text x="53" y="143.0" text-anchor="end" font-family="Arial" font-size="9" fill="#525b46">₹2k</text>
+<line x1="58" x2="684" y1="120.6" y2="120.6" stroke="#e6ddc8" stroke-width="0.8"/>
+<text x="53" y="124.1" text-anchor="end" font-family="Arial" font-size="9" fill="#525b46">₹2k</text>
+<line x1="58" x2="684" y1="101.6" y2="101.6" stroke="#e6ddc8" stroke-width="0.8"/>
+<text x="53" y="105.1" text-anchor="end" font-family="Arial" font-size="9" fill="#525b46">₹3k</text>
+<line x1="58" x2="684" y1="82.7" y2="82.7" stroke="#e6ddc8" stroke-width="0.8"/>
+<text x="53" y="86.2" text-anchor="end" font-family="Arial" font-size="9" fill="#525b46">₹3k</text>
+<line x1="58" x2="684" y1="63.7" y2="63.7" stroke="#e6ddc8" stroke-width="0.8"/>
+<text x="53" y="67.2" text-anchor="end" font-family="Arial" font-size="9" fill="#525b46">₹4k</text>
+<line x1="58" x2="684" y1="44.8" y2="44.8" stroke="#e6ddc8" stroke-width="0.8"/>
+<text x="53" y="48.2" text-anchor="end" font-family="Arial" font-size="9" fill="#525b46">₹4k</text>
+<line x1="62.9" x2="62.9" y1="204" y2="208" stroke="#aaa" stroke-width="1"/>
+<text x="62.9" y="219" text-anchor="middle" font-family="Arial" font-size="9" fill="#525b46">2015</text>
+<line x1="118.5" x2="118.5" y1="204" y2="208" stroke="#aaa" stroke-width="1"/>
+<text x="118.5" y="219" text-anchor="middle" font-family="Arial" font-size="9" fill="#525b46">2016</text>
+<line x1="174.3" x2="174.3" y1="204" y2="208" stroke="#aaa" stroke-width="1"/>
+<text x="174.3" y="219" text-anchor="middle" font-family="Arial" font-size="9" fill="#525b46">2017</text>
+<line x1="229.9" x2="229.9" y1="204" y2="208" stroke="#aaa" stroke-width="1"/>
+<text x="229.9" y="219" text-anchor="middle" font-family="Arial" font-size="9" fill="#525b46">2018</text>
+<line x1="285.5" x2="285.5" y1="204" y2="208" stroke="#aaa" stroke-width="1"/>
+<text x="285.5" y="219" text-anchor="middle" font-family="Arial" font-size="9" fill="#525b46">2019</text>
+<line x1="341.1" x2="341.1" y1="204" y2="208" stroke="#aaa" stroke-width="1"/>
+<text x="341.1" y="219" text-anchor="middle" font-family="Arial" font-size="9" fill="#525b46">2020</text>
+<line x1="396.9" x2="396.9" y1="204" y2="208" stroke="#aaa" stroke-width="1"/>
+<text x="396.9" y="219" text-anchor="middle" font-family="Arial" font-size="9" fill="#525b46">2021</text>
+<line x1="452.5" x2="452.5" y1="204" y2="208" stroke="#aaa" stroke-width="1"/>
+<text x="452.5" y="219" text-anchor="middle" font-family="Arial" font-size="9" fill="#525b46">2022</text>
+<line x1="508.1" x2="508.1" y1="204" y2="208" stroke="#aaa" stroke-width="1"/>
+<text x="508.1" y="219" text-anchor="middle" font-family="Arial" font-size="9" fill="#525b46">2023</text>
+<line x1="563.8" x2="563.8" y1="204" y2="208" stroke="#aaa" stroke-width="1"/>
+<text x="563.8" y="219" text-anchor="middle" font-family="Arial" font-size="9" fill="#525b46">2024</text>
+<line x1="619.5" x2="619.5" y1="204" y2="208" stroke="#aaa" stroke-width="1"/>
+<text x="619.5" y="219" text-anchor="middle" font-family="Arial" font-size="9" fill="#525b46">2025</text>
+<line x1="675.2" x2="675.2" y1="204" y2="208" stroke="#aaa" stroke-width="1"/>
+<text x="675.2" y="219" text-anchor="middle" font-family="Arial" font-size="9" fill="#525b46">2026</text>
+<defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2f6b40" stop-opacity=".22"/><stop offset="100%" stop-color="#2f6b40" stop-opacity="0"/></linearGradient></defs>
+<path d="M58.0,186.3 L67.4,182.7 L85.7,190.2 L90.3,190.3 L95.0,191.1 L99.8,191.3 L109.0,192.0 L113.6,192.2 L118.3,193.0 L123.1,193.2 L127.5,194.4 L132.2,195.1 L136.8,191.0 L141.5,189.1 L146.1,187.2 L150.8,185.3 L155.5,180.6 L160.1,179.1 L164.8,176.3 L169.4,167.8 L174.1,169.7 L178.8,164.1 L183.1,165.4 L187.8,170.1 L192.4,176.1 L197.1,180.5 L201.7,179.6 L206.4,178.5 L211.1,174.5 L215.7,173.0 L220.4,180.6 L225.0,182.9 L229.7,180.9 L234.5,178.7 L238.7,178.1 L243.5,179.3 L248.0,180.6 L252.7,184.1 L257.3,180.7 L262.0,176.8 L266.8,172.9 L271.3,167.4 L276.1,170.0 L280.6,166.1 L285.4,165.5 L290.1,160.5 L294.4,161.7 L299.1,159.5 L303.6,146.7 L308.4,123.2 L312.9,107.0 L317.7,82.6 L322.4,87.4 L327.0,100.5 L331.7,116.8 L336.3,110.0 L341.0,95.1 L345.7,72.1 L350.1,90.0 L354.8,114.7 L364.1,148.3 L368.7,157.1 L373.4,153.7 L378.2,151.1 L382.7,153.6 L387.5,159.8 L392.0,159.3 L396.8,149.7 L401.5,154.2 L405.7,160.4 L410.5,163.8 L415.0,169.7 L419.8,179.1 L424.3,176.1 L429.1,174.7 L433.8,175.2 L438.4,175.2 L443.1,177.0 L447.6,176.1 L452.4,179.6 L457.1,181.9 L461.4,180.4 L466.1,181.3 L470.7,181.1 L475.4,184.3 L480.0,183.7 L484.7,181.5 L489.4,178.5 L494.0,177.6 L498.7,179.3 L503.3,181.3 L508.0,182.5 L512.7,176.9 L517.0,164.2 L521.7,162.3 L526.3,166.9 L531.0,174.9 L535.6,172.2 L540.3,162.5 L545.0,140.0 L549.6,145.7 L554.3,152.7 L558.9,157.6 L563.6,153.4 L568.3,153.1 L572.8,158.8 L577.5,160.8 L582.1,147.5 L586.8,135.9 L591.3,125.9 L596.1,130.9 L600.8,131.7 L605.4,128.9 L610.1,129.2 L614.7,111.9 L619.4,105.0 L624.1,99.4 L628.4,104.7 L633.1,112.8 L637.7,119.3 L642.4,131.3 L647.0,121.3 L651.7,116.6 L656.4,120.1 L661.0,120.5 L665.7,121.8 L670.3,122.5 L675.0,123.6 L679.7,120.9 L684.0,121.8 L684.0,204 L58.0,204 Z" fill="url(#pg)"/>
+<path d="M58.0,186.3 L67.4,182.7 L85.7,190.2 L90.3,190.3 L95.0,191.1 L99.8,191.3 L109.0,192.0 L113.6,192.2 L118.3,193.0 L123.1,193.2 L127.5,194.4 L132.2,195.1 L136.8,191.0 L141.5,189.1 L146.1,187.2 L150.8,185.3 L155.5,180.6 L160.1,179.1 L164.8,176.3 L169.4,167.8 L174.1,169.7 L178.8,164.1 L183.1,165.4 L187.8,170.1 L192.4,176.1 L197.1,180.5 L201.7,179.6 L206.4,178.5 L211.1,174.5 L215.7,173.0 L220.4,180.6 L225.0,182.9 L229.7,180.9 L234.5,178.7 L238.7,178.1 L243.5,179.3 L248.0,180.6 L252.7,184.1 L257.3,180.7 L262.0,176.8 L266.8,172.9 L271.3,167.4 L276.1,170.0 L280.6,166.1 L285.4,165.5 L290.1,160.5 L294.4,161.7 L299.1,159.5 L303.6,146.7 L308.4,123.2 L312.9,107.0 L317.7,82.6 L322.4,87.4 L327.0,100.5 L331.7,116.8 L336.3,110.0 L341.0,95.1 L345.7,72.1 L350.1,90.0 L354.8,114.7 L364.1,148.3 L368.7,157.1 L373.4,153.7 L378.2,151.1 L382.7,153.6 L387.5,159.8 L392.0,159.3 L396.8,149.7 L401.5,154.2 L405.7,160.4 L410.5,163.8 L415.0,169.7 L419.8,179.1 L424.3,176.1 L429.1,174.7 L433.8,175.2 L438.4,175.2 L443.1,177.0 L447.6,176.1 L452.4,179.6 L457.1,181.9 L461.4,180.4 L466.1,181.3 L470.7,181.1 L475.4,184.3 L480.0,183.7 L484.7,181.5 L489.4,178.5 L494.0,177.6 L498.7,179.3 L503.3,181.3 L508.0,182.5 L512.7,176.9 L517.0,164.2 L521.7,162.3 L526.3,166.9 L531.0,174.9 L535.6,172.2 L540.3,162.5 L545.0,140.0 L549.6,145.7 L554.3,152.7 L558.9,157.6 L563.6,153.4 L568.3,153.1 L572.8,158.8 L577.5,160.8 L582.1,147.5 L586.8,135.9 L591.3,125.9 L596.1,130.9 L600.8,131.7 L605.4,128.9 L610.1,129.2 L614.7,111.9 L619.4,105.0 L624.1,99.4 L628.4,104.7 L633.1,112.8 L637.7,119.3 L642.4,131.3 L647.0,121.3 L651.7,116.6 L656.4,120.1 L661.0,120.5 L665.7,121.8 L670.3,122.5 L675.0,123.6 L679.7,120.9 L684.0,121.8" fill="none" stroke="#2f6b40" stroke-width="2.2"/>
+<circle cx="318.1" cy="38.1" r="4.5" fill="#c89b3c" stroke="white" stroke-width="1.5"/>
+<rect x="244.1" y="14.1" width="148" height="18" rx="4" fill="rgba(255,253,247,.92)"/>
+<text x="318.1" y="27.1" text-anchor="middle" font-family="Arial" font-size="9" font-weight="700" fill="#b5482f">₹4,675 peak — Aug 2019</text>
+<line x1="58" x2="58" y1="22" y2="204" stroke="#bbb" stroke-width="1"/>
+<line x1="58" x2="684" y1="204" y2="204" stroke="#bbb" stroke-width="1"/></svg></div>
+  <div class="caption">Monthly average auction price, Nov 2014 – Feb 2026. Green bands = bull runs &gt;20%; red bands = bear runs &gt;20%.</div>
+  <div class="minis">
+    <div class="mini"><div class="v">₹4,675</div><div class="k">2019 flood peak</div></div>
+    <div class="mini"><div class="v bad">-67%</div><div class="k">biggest 6-month crash</div></div>
+    <div class="mini"><div class="v">+256%</div><div class="k">biggest 6-month rally</div></div>
+    <div class="mini"><div class="v">₹2,505</div><div class="k">latest print</div></div>
   </div>
-  <div class="minis" id="journeyMinis"></div>
   <div class="takeaway">
     <div class="t">What this means for you</div>
-    <p>Cardamom is a <b>boom-and-bust crop</b>. The single biggest fortunes — and ruins — were
-    made by those who read the cycle, not the week. The 2019 flood spike to ₹4,675 was followed
-    by a two-thirds collapse. Plan for the swing; never assume today's price is the new normal.</p>
+    <p>Cardamom is a <b>boom-and-bust crop.</b> The single biggest fortunes — and ruins — were made by
+    those who read the cycle, not the week. The 2019 flood spike to ₹4,675 was followed by a two-thirds
+    collapse. Plan for the swing; never assume today's price is the new normal.</p>
   </div>
-</section>
+  <div class="pull">"The market spends years quietly cheap, then re-prices violently in a single season."</div>
+</div>
 
-<div class="pull">"The market spends years quietly cheap, then re-prices violently in a single season."</div>
-
-<!-- 2. WHAT MOVES IT -->
-<section>
+<!-- PAGE 3: WHAT MOVES THE PRICE -->
+<div class="page sec-page">
   <div class="sec-num">02</div>
   <h2>What actually moves the price</h2>
-  <p class="lede">We let the forecasting models rank every signal by how much it improves a real,
-   out-of-sample price prediction. The verdict is humbling for chartists: <b>weather wins.</b></p>
-  <div class="card">
-    <div class="chart-box"><canvas id="factorChart"></canvas></div>
-    <div class="caption">Relative influence of each driver across the forecast models (higher = more predictive).</div>
-  </div>
-  <div class="takeaway">
-    <div class="t">What this means for you</div>
-    <p>Over a season, <b>monsoon rainfall in Idukki is the master variable</b> — it shapes next
-    year's supply more than any price chart. Watch the rains, the El&nbsp;Niño/La&nbsp;Niña cycle,
-    and the rupee. Day-to-day, momentum and how much the auction houses <i>disagree</i> matter most.</p>
-  </div>
-</section>
+  <p class="lede">The answer depends entirely on your time horizon. <b>Guatemala is the master variable
+  for price levels over months and years</b> — it produces ~70% of the world's cardamom supply.
+  Indian auction dynamics dominate week-to-week moves. Our forecast models confirm this split precisely.</p>
+  <div class="driver-split">
+    <div class="driver-col">
+      <div class="driver-col-head short">SHORT-TERM · days to weeks</div>
+      
+      <div class="driver-row">
+        <div style="flex:1">
+          <div class="driver-name">Price momentum &amp; moving averages</div>
+          <div class="driver-note">1–14 day moves</div>
+        </div>
+        <div class="driver-bar-wrap">
+          <div class="driver-bar" style="width:80%;background:#234fa0"></div>
+        </div>
+      </div>
 
-<!-- 3. SEASONALITY -->
-<section>
+      <div class="driver-row">
+        <div style="flex:1">
+          <div class="driver-name">Cross-auction price dispersion</div>
+          <div class="driver-note">leading signal at 7–14 days</div>
+        </div>
+        <div class="driver-bar-wrap">
+          <div class="driver-bar" style="width:72%;background:#234fa0"></div>
+        </div>
+      </div>
+
+      <div class="driver-row">
+        <div style="flex:1">
+          <div class="driver-name">Idukki rainfall (weekly signal)</div>
+          <div class="driver-note">near-term supply shock</div>
+        </div>
+        <div class="driver-bar-wrap">
+          <div class="driver-bar" style="width:65%;background:#234fa0"></div>
+        </div>
+      </div>
+
+      <div class="driver-row">
+        <div style="flex:1">
+          <div class="driver-name">Seasonality / calendar position</div>
+          <div class="driver-note">lean vs harvest window</div>
+        </div>
+        <div class="driver-bar-wrap">
+          <div class="driver-bar" style="width:55%;background:#234fa0"></div>
+        </div>
+      </div>
+
+      <div class="driver-row">
+        <div style="flex:1">
+          <div class="driver-name">USD/INR exchange rate</div>
+          <div class="driver-note">export demand response</div>
+        </div>
+        <div class="driver-bar-wrap">
+          <div class="driver-bar" style="width:38%;background:#234fa0"></div>
+        </div>
+      </div>
+    </div>
+    <div class="driver-col">
+      <div class="driver-col-head long">LONG-TERM · months to years</div>
+      
+      <div class="driver-row">
+        <div style="flex:1">
+          <div class="driver-name">Guatemala cumulative rainfall</div>
+          <div class="driver-note">#1 feature in 90-day model; ~70% global supply</div>
+        </div>
+        <div class="driver-bar-wrap">
+          <div class="driver-bar" style="width:95%;background:#2f6b40"></div>
+        </div>
+      </div>
+
+      <div class="driver-row">
+        <div style="flex:1">
+          <div class="driver-name">ENSO (El Niño / La Niña, lagged)</div>
+          <div class="driver-note">6–12 month lag on Guatemala climate</div>
+        </div>
+        <div class="driver-bar-wrap">
+          <div class="driver-bar" style="width:75%;background:#2f6b40"></div>
+        </div>
+      </div>
+
+      <div class="driver-row">
+        <div style="flex:1">
+          <div class="driver-name">Idukki cumulative monsoon (90d)</div>
+          <div class="driver-note">Indian supply for the coming season</div>
+        </div>
+        <div class="driver-bar-wrap">
+          <div class="driver-bar" style="width:70%;background:#2f6b40"></div>
+        </div>
+      </div>
+
+      <div class="driver-row">
+        <div style="flex:1">
+          <div class="driver-name">Guatemala export volumes</div>
+          <div class="driver-note">direct supply signal with 3–6m lag</div>
+        </div>
+        <div class="driver-bar-wrap">
+          <div class="driver-bar" style="width:55%;background:#2f6b40"></div>
+        </div>
+      </div>
+
+      <div class="driver-row">
+        <div style="flex:1">
+          <div class="driver-name">Cobweb cycle age &amp; cost ratio</div>
+          <div class="driver-note">structural planting cycle position</div>
+        </div>
+        <div class="driver-bar-wrap">
+          <div class="driver-bar" style="width:40%;background:#2f6b40"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chart-wrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 144" width="700" height="144" ><rect x="190" y="8" width="241" height="14" rx="3" fill="#234fa0" opacity=".12"/>
+<text x="310" y="19" text-anchor="middle" font-family="Arial" font-size="8" font-weight="700" fill="#234fa0">SHORT-TERM (1–14 day models)</text>
+<rect x="447" y="8" width="241" height="14" rx="3" fill="#2f6b40" opacity=".12"/>
+<text x="567" y="19" text-anchor="middle" font-family="Arial" font-size="8" font-weight="700" fill="#2f6b40">LONG-TERM (90-day model)</text>
+<text x="184" y="34.8" text-anchor="end" font-family="Arial" font-size="8.5" fill="#23291f">Guatemala cumulative rainfall</text>
+<rect x="190" y="26" width="24.1" height="11" rx="3" fill="#234fa0" opacity=".8"/>
+<text x="218.1" y="34.8" font-family="Arial" font-size="7.5" fill="#234fa0">10</text>
+<rect x="447" y="26" width="228.9" height="11" rx="3" fill="#2f6b40" opacity=".85"/>
+<text x="680.0" y="34.8" font-family="Arial" font-size="7.5" fill="#2f6b40">95</text>
+<text x="184" y="53.8" text-anchor="end" font-family="Arial" font-size="8.5" fill="#23291f">Idukki rainfall (Indian supply)</text>
+<rect x="190" y="45" width="156.7" height="11" rx="3" fill="#234fa0" opacity=".8"/>
+<text x="350.6" y="53.8" font-family="Arial" font-size="7.5" fill="#234fa0">65</text>
+<rect x="447" y="45" width="168.7" height="11" rx="3" fill="#2f6b40" opacity=".85"/>
+<text x="619.7" y="53.8" font-family="Arial" font-size="7.5" fill="#2f6b40">70</text>
+<text x="184" y="72.8" text-anchor="end" font-family="Arial" font-size="8.5" fill="#23291f">Price momentum & lags</text>
+<rect x="190" y="64" width="192.8" height="11" rx="3" fill="#234fa0" opacity=".8"/>
+<text x="386.8" y="72.8" font-family="Arial" font-size="7.5" fill="#234fa0">80</text>
+<rect x="447" y="64" width="48.2" height="11" rx="3" fill="#2f6b40" opacity=".85"/>
+<text x="499.2" y="72.8" font-family="Arial" font-size="7.5" fill="#2f6b40">20</text>
+<text x="184" y="91.8" text-anchor="end" font-family="Arial" font-size="8.5" fill="#23291f">Cross-auction dispersion</text>
+<rect x="190" y="83" width="173.5" height="11" rx="3" fill="#234fa0" opacity=".8"/>
+<text x="367.5" y="91.8" font-family="Arial" font-size="7.5" fill="#234fa0">72</text>
+<rect x="447" y="83" width="28.9" height="11" rx="3" fill="#2f6b40" opacity=".85"/>
+<text x="479.9" y="91.8" font-family="Arial" font-size="7.5" fill="#2f6b40">12</text>
+<text x="184" y="110.8" text-anchor="end" font-family="Arial" font-size="8.5" fill="#23291f">ENSO / La Niña (lagged)</text>
+<rect x="190" y="102" width="43.4" height="11" rx="3" fill="#234fa0" opacity=".8"/>
+<text x="237.4" y="110.8" font-family="Arial" font-size="7.5" fill="#234fa0">18</text>
+<rect x="447" y="102" width="180.8" height="11" rx="3" fill="#2f6b40" opacity=".85"/>
+<text x="631.8" y="110.8" font-family="Arial" font-size="7.5" fill="#2f6b40">75</text>
+<text x="184" y="129.8" text-anchor="end" font-family="Arial" font-size="8.5" fill="#23291f">USD/INR exchange rate</text>
+<rect x="190" y="121" width="91.6" height="11" rx="3" fill="#234fa0" opacity=".8"/>
+<text x="285.6" y="129.8" font-family="Arial" font-size="7.5" fill="#234fa0">38</text>
+<rect x="447" y="121" width="96.4" height="11" rx="3" fill="#2f6b40" opacity=".85"/>
+<text x="547.4" y="129.8" font-family="Arial" font-size="7.5" fill="#2f6b40">40</text></svg></div>
+  <div class="caption">Bar length = relative predictive power in out-of-sample walk-forward models. Blue = short-horizon (1–14 day); green = long-horizon (90-day).</div>
+  <div class="takeaway">
+    <div class="t">Reading the two columns together</div>
+    <p>The short-term column tells you <i>when</i> to sell this season. The long-term column tells you
+    <i>what price era</i> you are in. A poor Guatemalan harvest starts a bull market 6–18 months later;
+    an Idukki rain event moves next week's auction. Both matter — on very different clocks.</p>
+  </div>
+</div>
+
+<!-- PAGE 4: SEASONALITY -->
+<div class="page sec-page">
   <div class="sec-num">03</div>
   <h2>The selling calendar</h2>
   <p class="lede">Strip away the long-term trend and a clear yearly rhythm appears. Some months
-   reliably pay more than others — and one month reliably punishes those who wait.</p>
-  <div class="card">
-    <div class="chart-box"><canvas id="seasonChart"></canvas></div>
-    <div class="caption">Bars: average price in each month versus its own 12-month average (the seasonal premium).
-      Line: the typical month-on-month change.</div>
-  </div>
-  <div class="grid2">
+  reliably pay more than others — and one month reliably punishes those who wait.</p>
+  <div class="chart-wrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 205" width="700" height="205" ><rect x="42" y="4" width="118" height="13" rx="3" fill="white" opacity=".6"/>
+<text x="46" y="15" font-family="Arial" font-size="8" fill="#3f8a52" font-weight="700">▪ Seasonal premium (%)</text>
+<text x="166" y="15" font-family="Arial" font-size="8" fill="#23291f" font-weight="700">- - Avg MoM change (%)</text>
+<line x1="38" x2="686" y1="147.7" y2="147.7" stroke="#e6ddc8" stroke-width="0.8"/>
+<text x="36" y="151.2" text-anchor="end" font-family="Arial" font-size="8.5" fill="#525b46">-4%</text>
+<line x1="38" x2="686" y1="121.1" y2="121.1" stroke="#aaa" stroke-width="1.2"/>
+<text x="36" y="124.6" text-anchor="end" font-family="Arial" font-size="8.5" fill="#525b46">0%</text>
+<line x1="38" x2="686" y1="94.5" y2="94.5" stroke="#e6ddc8" stroke-width="0.8"/>
+<text x="36" y="98.0" text-anchor="end" font-family="Arial" font-size="8.5" fill="#525b46">+4%</text>
+<line x1="38" x2="686" y1="67.9" y2="67.9" stroke="#e6ddc8" stroke-width="0.8"/>
+<text x="36" y="71.4" text-anchor="end" font-family="Arial" font-size="8.5" fill="#525b46">+8%</text>
+<line x1="38" x2="686" y1="41.3" y2="41.3" stroke="#e6ddc8" stroke-width="0.8"/>
+<text x="36" y="44.8" text-anchor="end" font-family="Arial" font-size="8.5" fill="#525b46">+12%</text>
+<rect x="52.7" y="38.6" width="32.2" height="82.5" rx="2" fill="#3f8a52"/>
+<text x="68.8" y="185" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">Jan</text>
+<rect x="106.4" y="57.3" width="32.2" height="63.9" rx="2" fill="#3f8a52"/>
+<text x="122.5" y="185" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">Feb</text>
+<rect x="160.1" y="93.8" width="32.2" height="27.3" rx="2" fill="#3f8a52"/>
+<text x="176.2" y="185" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">Mar</text>
+<rect x="213.7" y="80.5" width="32.2" height="40.6" rx="2" fill="#3f8a52"/>
+<text x="229.8" y="185" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">Apr</text>
+<rect x="267.4" y="121.1" width="32.2" height="8.6" rx="2" fill="#b5482f"/>
+<text x="283.5" y="185" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">May</text>
+<rect x="321.1" y="93.8" width="32.2" height="27.3" rx="2" fill="#3f8a52"/>
+<text x="337.2" y="185" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">Jun</text>
+<rect x="374.7" y="53.3" width="32.2" height="67.9" rx="2" fill="#3f8a52"/>
+<text x="390.8" y="185" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">Jul</text>
+<rect x="428.4" y="30.0" width="32.2" height="91.1" rx="2" fill="#c89b3c"/>
+<text x="444.5" y="185" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">Aug</text>
+<rect x="482.1" y="32.0" width="32.2" height="89.1" rx="2" fill="#3f8a52"/>
+<text x="498.2" y="185" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">Sep</text>
+<rect x="535.7" y="98.5" width="32.2" height="22.6" rx="2" fill="#3f8a52"/>
+<text x="551.8" y="185" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">Oct</text>
+<rect x="589.4" y="79.2" width="32.2" height="41.9" rx="2" fill="#3f8a52"/>
+<text x="605.5" y="185" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">Nov</text>
+<rect x="643.1" y="72.6" width="32.2" height="48.6" rx="2" fill="#3f8a52"/>
+<text x="659.2" y="185" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">Dec</text>
+<path d="M68.8,85.9 L122.5,125.8 L176.2,153.0 L229.8,102.5 L283.5,136.4 L337.2,81.2 L390.8,73.9 L444.5,71.2 L498.2,118.4 L551.8,161.0 L605.5,97.8 L659.2,101.8" fill="none" stroke="#23291f" stroke-width="1.5" stroke-dasharray="5,3"/>
+<circle cx="68.8" cy="85.9" r="2.5" fill="#23291f"/>
+<circle cx="122.5" cy="125.8" r="2.5" fill="#23291f"/>
+<circle cx="176.2" cy="153.0" r="2.5" fill="#23291f"/>
+<circle cx="229.8" cy="102.5" r="2.5" fill="#23291f"/>
+<circle cx="283.5" cy="136.4" r="2.5" fill="#23291f"/>
+<circle cx="337.2" cy="81.2" r="2.5" fill="#23291f"/>
+<circle cx="390.8" cy="73.9" r="2.5" fill="#23291f"/>
+<circle cx="444.5" cy="71.2" r="2.5" fill="#23291f"/>
+<circle cx="498.2" cy="118.4" r="2.5" fill="#23291f"/>
+<circle cx="551.8" cy="161.0" r="2.5" fill="#23291f"/>
+<circle cx="605.5" cy="97.8" r="2.5" fill="#23291f"/>
+<circle cx="659.2" cy="101.8" r="2.5" fill="#23291f"/>
+<line x1="42" x2="42" y1="20" y2="171" stroke="#bbb" stroke-width="1"/>
+<line x1="42" x2="686" y1="171" y2="171" stroke="#bbb" stroke-width="1"/></svg></div>
+  <div class="caption">Bars: average price in each month vs its own 12-month average (seasonal premium). Dashed line: average month-on-month change.</div>
+  <div class="grid2" style="margin-top:10pt">
     <div class="takeaway">
       <div class="t">Best window to sell</div>
-      <p id="sellBest"></p>
+      <p>Prices sit highest from mid-summer through early autumn — <b>Jan, Jul, Aug, Sep</b> all run 10–14%
+      above their yearly average, with <b>Aug</b> the single strongest month. Holding stock
+      for this window has historically paid about <b>15% more</b> than selling in the weakest month.</p>
     </div>
     <div class="takeaway warn">
       <div class="t">The trap month</div>
-      <p id="sellWorst"></p>
+      <p><b>Oct</b> shows the steepest average drop of the year (-6.0% in one month)
+      as the harvest floods the market. Spring (around <b>May</b>) is the softest patch.
+      Don't drift into the harvest glut holding unsold stock.</p>
     </div>
   </div>
-</section>
+</div>
 
-<!-- 4. PLANTING -->
-<section>
+<!-- PAGE 5: PLANTING PARADOX -->
+<div class="page sec-page">
   <div class="sec-num">04</div>
   <h2>The planter's paradox</h2>
-  <p class="lede">A new cardamom field takes about three years to come into full bearing. So the
-   price that matters isn't today's — it's the one waiting for you at harvest. History is brutally
-   clear about when to put plants in the ground.</p>
-  <div class="card">
-    <div class="chart-box"><canvas id="plantChart"></canvas></div>
-    <div class="caption">For each planting year: how many times your money the average price had become
-      ~3 years later, when a new field reaches full yield. Above the line = reward; below = loss.</div>
-  </div>
-  <div class="grid2">
+  <p class="lede">A new cardamom field takes about three years to come into full bearing. So the price
+  that matters isn't today's — it's the one waiting for you at harvest. History is brutally clear
+  about when to put plants in the ground.</p>
+  <div class="chart-wrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 200" width="700" height="200" ><line x1="38" x2="684" y1="156.8" y2="156.8" stroke="#e6ddc8" stroke-width="0.8" stroke-dasharray=""/>
+<text x="36" y="160.3" text-anchor="end" font-family="Arial" font-size="8.5" fill="#525b46">0.5×</text>
+<line x1="38" x2="684" y1="131.5" y2="131.5" stroke="#777" stroke-width="1.5" stroke-dasharray="6,3"/>
+<text x="36" y="135.0" text-anchor="end" font-family="Arial" font-size="8.5" fill="#525b46">1.0×</text>
+<text x="682" y="128.5" text-anchor="end" font-family="Arial" font-size="7.5" fill="#777">break-even</text>
+<line x1="38" x2="684" y1="106.3" y2="106.3" stroke="#e6ddc8" stroke-width="0.8" stroke-dasharray=""/>
+<text x="36" y="109.8" text-anchor="end" font-family="Arial" font-size="8.5" fill="#525b46">1.5×</text>
+<line x1="38" x2="684" y1="81.1" y2="81.1" stroke="#e6ddc8" stroke-width="0.8" stroke-dasharray=""/>
+<text x="36" y="84.6" text-anchor="end" font-family="Arial" font-size="8.5" fill="#525b46">2.0×</text>
+<line x1="38" x2="684" y1="55.9" y2="55.9" stroke="#e6ddc8" stroke-width="0.8" stroke-dasharray=""/>
+<text x="36" y="59.4" text-anchor="end" font-family="Arial" font-size="8.5" fill="#525b46">2.5×</text>
+<line x1="38" x2="684" y1="30.7" y2="30.7" stroke="#e6ddc8" stroke-width="0.8" stroke-dasharray=""/>
+<text x="36" y="34.2" text-anchor="end" font-family="Arial" font-size="8.5" fill="#525b46">3.0×</text>
+<rect x="54.2" y="112.9" width="39.8" height="18.7" rx="3" fill="#c89b3c"/>
+<text x="74.1" y="108.9" text-anchor="middle" font-family="Arial" font-size="8" font-weight="700" fill="#c89b3c">1.37×</text>
+<text x="74.1" y="180" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">2014</text>
+<rect x="118.4" y="97.3" width="39.8" height="34.3" rx="3" fill="#2f6b40"/>
+<text x="138.3" y="93.3" text-anchor="middle" font-family="Arial" font-size="8" font-weight="700" fill="#2f6b40">1.68×</text>
+<text x="138.3" y="180" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">2015</text>
+<rect x="182.6" y="29.2" width="39.8" height="102.4" rx="3" fill="#2f6b40"/>
+<text x="202.5" y="25.2" text-anchor="middle" font-family="Arial" font-size="8" font-weight="700" fill="#2f6b40">3.03×</text>
+<text x="202.5" y="180" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">2016</text>
+<rect x="246.8" y="81.6" width="39.8" height="49.9" rx="3" fill="#2f6b40"/>
+<text x="266.7" y="77.6" text-anchor="middle" font-family="Arial" font-size="8" font-weight="700" fill="#2f6b40">1.99×</text>
+<text x="266.7" y="180" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">2017</text>
+<rect x="311.0" y="126.0" width="39.8" height="5.5" rx="3" fill="#c89b3c"/>
+<text x="330.9" y="122.0" text-anchor="middle" font-family="Arial" font-size="8" font-weight="700" fill="#c89b3c">1.11×</text>
+<text x="330.9" y="180" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">2018</text>
+<rect x="375.2" y="131.5" width="39.8" height="32.3" rx="3" fill="#b5482f"/>
+<text x="395.1" y="176.8" text-anchor="middle" font-family="Arial" font-size="8" font-weight="700" fill="#b5482f">0.36×</text>
+<text x="395.1" y="180" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">2019</text>
+<rect x="439.4" y="131.5" width="39.8" height="15.6" rx="3" fill="#b5482f"/>
+<text x="459.3" y="160.2" text-anchor="middle" font-family="Arial" font-size="8" font-weight="700" fill="#b5482f">0.69×</text>
+<text x="459.3" y="180" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">2020</text>
+<rect x="503.6" y="91.2" width="39.8" height="40.3" rx="3" fill="#2f6b40"/>
+<text x="523.5" y="87.2" text-anchor="middle" font-family="Arial" font-size="8" font-weight="700" fill="#2f6b40">1.8×</text>
+<text x="523.5" y="180" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">2021</text>
+<rect x="567.8" y="38.2" width="39.8" height="93.3" rx="3" fill="#2f6b40"/>
+<text x="587.7" y="34.2" text-anchor="middle" font-family="Arial" font-size="8" font-weight="700" fill="#2f6b40">2.85×</text>
+<text x="587.7" y="180" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">2022</text>
+<rect x="632.0" y="95.2" width="39.8" height="36.3" rx="3" fill="#2f6b40"/>
+<text x="651.9" y="91.2" text-anchor="middle" font-family="Arial" font-size="8" font-weight="700" fill="#2f6b40">1.72×</text>
+<text x="651.9" y="180" text-anchor="middle" font-family="Arial" font-size="8.5" fill="#525b46">2023</text>
+<line x1="42" x2="42" y1="20" y2="166" stroke="#bbb" stroke-width="1"/>
+<line x1="42" x2="684" y1="166" y2="166" stroke="#bbb" stroke-width="1"/></svg></div>
+  <div class="caption">For each planting year: the price multiple at harvest (~3 years later). Above 1× = real gain; below = real loss.</div>
+  <div class="grid2" style="margin-top:10pt">
     <div class="takeaway">
       <div class="t">The golden window</div>
-      <p id="plantBest"></p>
+      <p>Planting in <b>2016</b>, when prices were just <b>₹824</b>, meant
+      harvesting into <b>₹2,496</b> — a <b>3.03× return.</b>
+      Low prices today mean few new plants going in; tight supply follows at harvest time.</p>
     </div>
     <div class="takeaway warn">
       <div class="t">The widow-maker</div>
-      <p id="plantWorst"></p>
+      <p>In <b>2019</b>, with prices euphoric at <b>₹2,496</b>,
+      everyone planted at once. Three years on the price had collapsed to <b>₹903</b>
+      — just <b>0.36×</b>, a real purchasing-power loss.</p>
     </div>
   </div>
-  <div class="pull" style="color:var(--rust)">"Plant into cheap prices, not into headlines. The crowd that planted at the 2019 peak
-   harvested into a 64% loss."</div>
-</section>
+  <div class="pull" style="color:var(--rust)">"Plant into cheap prices, not into headlines. The crowd that planted at the 2019 peak harvested into a 64% loss."</div>
+</div>
 
-<!-- 5. AUCTION HOUSES -->
-<section>
+<!-- PAGE 6: AUCTION HOUSES -->
+<div class="page sec-page">
   <div class="sec-num">05</div>
   <h2>Where you sell is worth money</h2>
   <p class="lede">On any given day two or three auction houses run their own sales. They are not
-   interchangeable. Comparing each house against the same-day market reveals a stubborn pecking
-   order that has held for years.</p>
-  <div class="card">
-    <div class="chart-box tall"><canvas id="houseChart"></canvas></div>
-    <div class="caption">Average price achieved by each house relative to the same-day market average.
-      Green houses consistently clear above the market; red ones below.</div>
+  interchangeable — a stubborn pecking order has persisted for years.</p>
+  <div class="chart-wrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 290" width="700" height="290" ><line x1="424.0" x2="424.0" y1="10" y2="270" stroke="#ccc" stroke-width="1" stroke-dasharray="3,2"/>
+<text x="220" y="21.5" text-anchor="end" font-family="Arial" font-size="8" fill="#23291f">Cardamom Planters' Association</text>
+<rect x="244.0" y="13" width="180.0" height="10" rx="2" fill="#b5482f"/>
+<text x="240.0" y="21.5" text-anchor="end" font-family="Arial" font-size="8" font-weight="700" fill="#b5482f">-3.05%</text>
+<text x="220" y="40.5" text-anchor="end" font-family="Arial" font-size="8" fill="#23291f">CARDAMOM GROWERSFOREVER PRIVATE LI</text>
+<rect x="308.3" y="32" width="115.7" height="10" rx="2" fill="#b5482f"/>
+<text x="304.3" y="40.5" text-anchor="end" font-family="Arial" font-size="8" font-weight="700" fill="#b5482f">-1.96%</text>
+<text x="220" y="59.5" text-anchor="end" font-family="Arial" font-size="8" fill="#23291f">Spice More Trading Company</text>
+<rect x="344.3" y="51" width="79.7" height="10" rx="2" fill="#b5482f"/>
+<text x="340.3" y="59.5" text-anchor="end" font-family="Arial" font-size="8" font-weight="700" fill="#b5482f">-1.35%</text>
+<text x="220" y="78.5" text-anchor="end" font-family="Arial" font-size="8" fill="#23291f">Green Cardamom Trading Company</text>
+<rect x="345.5" y="70" width="78.5" height="10" rx="2" fill="#b5482f"/>
+<text x="341.5" y="78.5" text-anchor="end" font-family="Arial" font-size="8" font-weight="700" fill="#b5482f">-1.33%</text>
+<text x="220" y="97.5" text-anchor="end" font-family="Arial" font-size="8" fill="#23291f">STATE TRADING CORPORATION</text>
+<rect x="366.2" y="89" width="57.8" height="10" rx="2" fill="#b5482f"/>
+<text x="362.2" y="97.5" text-anchor="end" font-family="Arial" font-size="8" font-weight="700" fill="#b5482f">-0.98%</text>
+<text x="220" y="116.5" text-anchor="end" font-family="Arial" font-size="8" fill="#23291f">Header Systems (India)</text>
+<rect x="380.3" y="108" width="43.7" height="10" rx="2" fill="#b5482f"/>
+<text x="376.3" y="116.5" text-anchor="end" font-family="Arial" font-size="8" font-weight="700" fill="#b5482f">-0.74%</text>
+<text x="220" y="135.5" text-anchor="end" font-family="Arial" font-size="8" fill="#23291f">Green House Cardamom Mktg.India Pv</text>
+<rect x="398.6" y="127" width="25.4" height="10" rx="2" fill="#b5482f"/>
+<text x="394.6" y="135.5" text-anchor="end" font-family="Arial" font-size="8" font-weight="700" fill="#b5482f">-0.43%</text>
+<text x="220" y="154.5" text-anchor="end" font-family="Arial" font-size="8" fill="#23291f">SUGANDHAGIRI SPICES PROMOTERS&TRAD</text>
+<rect x="405.7" y="146" width="18.3" height="10" rx="2" fill="#b5482f"/>
+<text x="401.7" y="154.5" text-anchor="end" font-family="Arial" font-size="8" font-weight="700" fill="#b5482f">-0.31%</text>
+<text x="220" y="173.5" text-anchor="end" font-family="Arial" font-size="8" fill="#23291f">The Kerala Cardamom Processing and</text>
+<rect x="424.0" y="165" width="17.7" height="10" rx="2" fill="#3f8a52"/>
+<text x="445.7" y="173.5" text-anchor="start" font-family="Arial" font-size="8" font-weight="700" fill="#3f8a52">+0.3%</text>
+<text x="220" y="192.5" text-anchor="end" font-family="Arial" font-size="8" fill="#23291f">VANDANMEDU GREEN GOLD CARDAMOM PRO</text>
+<rect x="424.0" y="184" width="34.2" height="10" rx="2" fill="#3f8a52"/>
+<text x="462.2" y="192.5" text-anchor="start" font-family="Arial" font-size="8" font-weight="700" fill="#3f8a52">+0.58%</text>
+<text x="220" y="211.5" text-anchor="end" font-family="Arial" font-size="8" fill="#23291f">IDUKKI Dist.TRADITIONAL CARDAMOM P</text>
+<rect x="424.0" y="203" width="42.5" height="10" rx="2" fill="#3f8a52"/>
+<text x="470.5" y="211.5" text-anchor="start" font-family="Arial" font-size="8" font-weight="700" fill="#3f8a52">+0.72%</text>
+<text x="220" y="230.5" text-anchor="end" font-family="Arial" font-size="8" fill="#23291f">Mas Enterprises</text>
+<rect x="424.0" y="222" width="43.1" height="10" rx="2" fill="#3f8a52"/>
+<text x="471.1" y="230.5" text-anchor="start" font-family="Arial" font-size="8" font-weight="700" fill="#3f8a52">+0.73%</text>
+<text x="220" y="249.5" text-anchor="end" font-family="Arial" font-size="8" fill="#23291f">THE CARDAMOM PLANTERS MARKETING CO</text>
+<rect x="424.0" y="241" width="43.1" height="10" rx="2" fill="#3f8a52"/>
+<text x="471.1" y="249.5" text-anchor="start" font-family="Arial" font-size="8" font-weight="700" fill="#3f8a52">+0.73%</text>
+<text x="220" y="268.5" text-anchor="end" font-family="Arial" font-size="8" fill="#23291f">South Indian Green Cardamom Compan</text>
+<rect x="424.0" y="260" width="51.3" height="10" rx="2" fill="#3f8a52"/>
+<text x="479.3" y="268.5" text-anchor="start" font-family="Arial" font-size="8" font-weight="700" fill="#3f8a52">+0.87%</text>
+<text x="424.0" y="286" text-anchor="middle" font-family="Arial" font-size="7.5" fill="#888">market average</text></svg></div>
+  <div class="caption">Average price achieved by each house relative to the same-day market average. Based on days with ≥2 concurrent auctions.</div>
+  <div class="minis">
+    <div class="mini"><div class="v">+0.87%</div><div class="k">best house premium</div></div>
+    <div class="mini"><div class="v">83%</div><div class="k">days it beats market</div></div>
+    <div class="mini"><div class="v bad">-3.05%</div><div class="k">worst house discount</div></div>
+    <div class="mini"><div class="v">3.9%</div><div class="k">top-to-bottom gap</div></div>
   </div>
-  <div class="minis" id="houseMinis"></div>
   <div class="takeaway">
     <div class="t">What this means for you</div>
-    <p id="houseTake"></p>
+    <p>The gap between best and worst clearing house is <b>3.9%</b> — on a tonne of cardamom
+    that is real money, compounding at every sale. Favour the houses that consistently fetch more.
+    The top-ranked house beats the market on <b>83%</b> of days.</p>
   </div>
-
-  <h3 style="font-size:22px;margin:38px 0 4px">A market that runs on a weekly clock</h3>
-  <p class="lede" style="font-size:16.5px">Each major house owns a weekday. The "daily price" is
-   really a rotating cast — part of every day-to-day wobble is just <i>which house</i> sold, not the
-   market moving.</p>
-  <div class="card" id="rotationCard" style="padding:18px 24px"></div>
-
-  <h3 style="font-size:22px;margin:38px 0 4px">A quiet tell: when the houses disagree</h3>
-  <p class="lede" style="font-size:16.5px">When same-day auction prices scatter widely, the next
-   two weeks tend to move <i>more</i> — and lean upward. Disagreement marks demand building under
-   the surface.</p>
-  <div class="card">
-    <div class="chart-box" style="height:300px"><canvas id="dispChart"></canvas></div>
-    <div class="caption">14-day price-dispersion grouped low→high, against the size and direction of
-      the following two weeks' move.</div>
-  </div>
-</section>
-
-<!-- PLAYBOOK -->
-<section>
-  <div class="sec-num">06</div>
-  <h2>The grower's playbook</h2>
-  <div class="playbook">
-    <h3>Six rules the data backs</h3>
-    <ol id="playbook"></ol>
-  </div>
-</section>
-
-</div>
-
-<footer>
-  <div class="wrap">
-    <p><b>About this almanac.</b> Built from the Spices Board of India e-auction record
-    (<span id="cov"></span>) plus weather, climate, trade and currency data. Seasonal and
-    planting figures detrend the long-run price rise so the patterns reflect timing, not inflation.
-    Price-driver rankings come from out-of-sample forecast models. This is market analysis, not
-    financial advice — cardamom is volatile and the past does not guarantee the future.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14pt;margin-top:12pt;align-items:start">
     <div>
-      <span class="tag">11 years</span><span class="tag">5,440 auctions</span>
-      <span class="tag">14 auction houses</span><span class="tag">CardamomPulse</span>
+      <h3 style="font-size:10pt;margin-bottom:3pt;color:var(--green)">A market on a weekly clock</h3>
+      <p class="lede" style="font-size:8.5pt;margin-bottom:5pt">Each major house owns a weekday — the "daily price" is really a rotating cast.</p>
+      <div class="rot-grid"><div class="rot-row"><span>Mas Enterprises</span><span><span class="rot-day">Saturday</span> <span class="rot-share">(44%)</span></span></div>
+<div class="rot-row"><span>South Indian Green Car</span><span><span class="rot-day">Tuesday</span> <span class="rot-share">(42%)</span></span></div>
+<div class="rot-row"><span>Header Systems (India)</span><span><span class="rot-day">Tuesday</span> <span class="rot-share">(41%)</span></span></div>
+<div class="rot-row"><span>Kerala Cardamom Proces</span><span><span class="rot-day">Thursday</span> <span class="rot-share">(47%)</span></span></div>
+<div class="rot-row"><span>Green House Cardamom M</span><span><span class="rot-day">Saturday</span> <span class="rot-share">(41%)</span></span></div>
+<div class="rot-row"><span>SUGANDHAGIRI SPICES</span><span><span class="rot-day">Wednesday</span> <span class="rot-share">(44%)</span></span></div>
+<div class="rot-row"><span>IDUKKI Traditional Pro</span><span><span class="rot-day">Monday</span> <span class="rot-share">(45%)</span></span></div>
+<div class="rot-row"><span>Cardamom GrowersForeve</span><span><span class="rot-day">Friday</span> <span class="rot-share">(42%)</span></span></div></div>
+    </div>
+    <div>
+      <h3 style="font-size:10pt;margin-bottom:3pt;color:var(--green)">When the houses disagree</h3>
+      <p class="lede" style="font-size:8.5pt;margin-bottom:5pt">Wide inter-auction spread predicts bigger moves ahead — and historically upward.</p>
+      <div class="chart-wrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 135" width="310" height="135" ><text x="38" y="14" font-family="Arial" font-size="7" fill="#3f8a52" font-weight="700">▪ Avg move size (2-wk)</text>
+<text x="152" y="14" font-family="Arial" font-size="7" fill="#c89b3c" font-weight="700">— Direction</text>
+<line x1="35" x2="300" y1="83.8" y2="83.8" stroke="#aaa" stroke-width="0.8"/>
+<text x="33" y="86.8" text-anchor="end" font-family="Arial" font-size="7.5" fill="#525b46">0%</text>
+<line x1="35" x2="300" y1="58.3" y2="58.3" stroke="#e6ddc8" stroke-width="0.8"/>
+<text x="33" y="61.3" text-anchor="end" font-family="Arial" font-size="7.5" fill="#525b46">+4%</text>
+<line x1="35" x2="300" y1="32.8" y2="32.8" stroke="#e6ddc8" stroke-width="0.8"/>
+<text x="33" y="35.8" text-anchor="end" font-family="Arial" font-size="7.5" fill="#525b46">+8%</text>
+<rect x="52.7" y="34.7" width="36.0" height="49.2" rx="2" fill="#3f8a52"/>
+<text x="70.8" y="116" text-anchor="middle" font-family="Arial" font-size="7.5" fill="#525b46">Low</text>
+<rect x="118.2" y="39.8" width="36.0" height="44.1" rx="2" fill="#3f8a52"/>
+<text x="136.2" y="116" text-anchor="middle" font-family="Arial" font-size="7.5" fill="#525b46">Q2</text>
+<rect x="183.7" y="36.0" width="36.0" height="47.9" rx="2" fill="#3f8a52"/>
+<text x="201.8" y="116" text-anchor="middle" font-family="Arial" font-size="7.5" fill="#525b46">Q3</text>
+<rect x="249.2" y="30.2" width="36.0" height="53.6" rx="2" fill="#3f8a52"/>
+<text x="267.2" y="116" text-anchor="middle" font-family="Arial" font-size="7.5" fill="#525b46">High</text>
+<path d="M70.8,67.9 L136.2,94.1 L201.8,74.9 L267.2,67.9" fill="none" stroke="#c89b3c" stroke-width="2"/>
+<circle cx="70.8" cy="67.9" r="2.5" fill="#c89b3c"/>
+<circle cx="136.2" cy="94.1" r="2.5" fill="#c89b3c"/>
+<circle cx="201.8" cy="74.9" r="2.5" fill="#c89b3c"/>
+<circle cx="267.2" cy="67.9" r="2.5" fill="#c89b3c"/>
+<line x1="38" x2="38" y1="20" y2="103" stroke="#bbb" stroke-width="1"/>
+<line x1="38" x2="300" y1="103" y2="103" stroke="#bbb" stroke-width="1"/></svg></div>
+      <div class="caption">14-day dispersion quartile vs size &amp; direction of the following 2-week move.</div>
     </div>
   </div>
-</footer>
+</div>
 
-<script>
-const D = {"coverage": {"start": "2014-11-07", "end": "2026-02-06", "days": 3028, "auctions": 5440}, "price_overall": {"min": 495.0, "min_date": "2016-03-11", "max": 4675.0, "max_date": "2019-08-03", "latest": 2505.0, "ratio_max_min": 9.4}, "annual": [{"year": 2014, "avg": 766.0, "lo": 766.0, "hi": 766.0, "vol_mt": 0.1, "yoy": null}, {"year": 2015, "avg": 632.0, "lo": 570.0, "hi": 862.0, "vol_mt": 17.5, "yoy": -17.4}, {"year": 2016, "avg": 824.0, "lo": 495.0, "hi": 1359.0, "vol_mt": 26.5, "yoy": 30.3}, {"year": 2017, "avg": 1047.0, "lo": 782.0, "hi": 1393.0, "vol_mt": 23.2, "yoy": 27.1}, {"year": 2018, "avg": 1062.0, "lo": 760.0, "hi": 1389.0, "vol_mt": 26.3, "yoy": 1.4}, {"year": 2019, "avg": 2496.0, "lo": 1326.0, "hi": 4675.0, "vol_mt": 17.5, "yoy": 134.9}, {"year": 2020, "avg": 2085.0, "lo": 1070.0, "hi": 4058.0, "vol_mt": 16.9, "yoy": -16.5}, {"year": 2021, "avg": 1182.0, "lo": 861.0, "hi": 1711.0, "vol_mt": 21.8, "yoy": -43.3}, {"year": 2022, "avg": 903.0, "lo": 771.0, "hi": 1082.0, "vol_mt": 31.3, "yoy": -23.6}, {"year": 2023, "avg": 1444.0, "lo": 868.0, "hi": 2221.0, "vol_mt": 28.5, "yoy": 59.9}, {"year": 2024, "avg": 2122.0, "lo": 1316.0, "hi": 3021.0, "vol_mt": 26.6, "yoy": 46.9}, {"year": 2025, "avg": 2570.0, "lo": 2037.0, "hi": 3182.0, "vol_mt": 31.1, "yoy": 21.2}, {"year": 2026, "avg": 2488.0, "lo": 2424.0, "hi": 2564.0, "vol_mt": 4.2, "yoy": -3.2}], "regimes": [{"state": "range", "start": "2014-11-07", "end": "2016-04-18", "p0": 766.0, "p1": 677.0, "chg_pct": -12.0, "months": 17.0}, {"state": "bull", "start": "2016-04-19", "end": "2017-01-28", "p0": 661.0, "p1": 1316.0, "chg_pct": 99.0, "months": 9.0}, {"state": "bear", "start": "2017-03-27", "end": "2017-06-23", "p0": 1118.0, "p1": 949.0, "chg_pct": -15.0, "months": 3.0}, {"state": "range", "start": "2018-02-06", "end": "2018-05-03", "p0": 1005.0, "p1": 802.0, "chg_pct": -20.0, "months": 3.0}, {"state": "bull", "start": "2018-07-09", "end": "2018-10-29", "p0": 976.0, "p1": 1193.0, "chg_pct": 22.0, "months": 4.0}, {"state": "bull", "start": "2019-03-26", "end": "2019-08-31", "p0": 1531.0, "p1": 2720.0, "chg_pct": 78.0, "months": 5.0}, {"state": "bear", "start": "2020-02-27", "end": "2020-09-03", "p0": 3211.0, "p1": 1762.0, "chg_pct": -45.0, "months": 6.0}, {"state": "bear", "start": "2021-02-18", "end": "2021-08-26", "p0": 1309.0, "p1": 1129.0, "chg_pct": -14.0, "months": 6.0}, {"state": "range", "start": "2021-08-28", "end": "2022-01-03", "p0": 1119.0, "p1": 873.0, "chg_pct": -22.0, "months": 4.0}, {"state": "range", "start": "2022-01-29", "end": "2022-07-25", "p0": 888.0, "p1": 1008.0, "chg_pct": 14.0, "months": 6.0}, {"state": "range", "start": "2022-09-15", "end": "2023-01-18", "p0": 1033.0, "p1": 1040.0, "chg_pct": 1.0, "months": 4.0}, {"state": "bull", "start": "2023-01-19", "end": "2023-04-11", "p0": 1045.0, "p1": 1367.0, "chg_pct": 31.0, "months": 3.0}, {"state": "bull", "start": "2023-07-10", "end": "2023-10-03", "p0": 1695.0, "p1": 1762.0, "chg_pct": 4.0, "months": 3.0}, {"state": "range", "start": "2023-12-05", "end": "2024-04-12", "p0": 1528.0, "p1": 1660.0, "chg_pct": 9.0, "months": 4.0}, {"state": "bull", "start": "2024-04-13", "end": "2024-07-16", "p0": 1588.0, "p1": 2128.0, "chg_pct": 34.0, "months": 3.0}, {"state": "range", "start": "2024-07-18", "end": "2024-10-30", "p0": 2096.0, "p1": 2390.0, "chg_pct": 14.0, "months": 3.0}, {"state": "bull", "start": "2024-11-02", "end": "2025-01-29", "p0": 2459.0, "p1": 2988.0, "chg_pct": 21.0, "months": 3.0}, {"state": "range", "start": "2025-08-05", "end": "2026-02-06", "p0": 2548.0, "p1": 2505.0, "chg_pct": -2.0, "months": 6.0}], "biggest_rally": {"pct": 256.0, "end": "2019-08-03"}, "biggest_crash": {"pct": -67.0, "end": "2020-11-03"}, "seasonality": [{"month": "Jan", "rel_to_avg_pct": 12.4, "avg_mom_pct": 5.3}, {"month": "Feb", "rel_to_avg_pct": 9.6, "avg_mom_pct": -0.7}, {"month": "Mar", "rel_to_avg_pct": 4.1, "avg_mom_pct": -4.8}, {"month": "Apr", "rel_to_avg_pct": 6.1, "avg_mom_pct": 2.8}, {"month": "May", "rel_to_avg_pct": -1.3, "avg_mom_pct": -2.3}, {"month": "Jun", "rel_to_avg_pct": 4.1, "avg_mom_pct": 6.0}, {"month": "Jul", "rel_to_avg_pct": 10.2, "avg_mom_pct": 7.1}, {"month": "Aug", "rel_to_avg_pct": 13.7, "avg_mom_pct": 7.5}, {"month": "Sep", "rel_to_avg_pct": 13.4, "avg_mom_pct": 0.4}, {"month": "Oct", "rel_to_avg_pct": 3.4, "avg_mom_pct": -6.0}, {"month": "Nov", "rel_to_avg_pct": 6.3, "avg_mom_pct": 3.5}, {"month": "Dec", "rel_to_avg_pct": 7.3, "avg_mom_pct": 2.9}], "sell_best_month": "Aug", "sell_worst_month": "May", "sell_premium_pct": 15.0, "plant": [{"plant_year": 2014, "price_then": 766.0, "price_harvest": 1047.0, "multiple": 1.37}, {"plant_year": 2015, "price_then": 632.0, "price_harvest": 1062.0, "multiple": 1.68}, {"plant_year": 2016, "price_then": 824.0, "price_harvest": 2496.0, "multiple": 3.03}, {"plant_year": 2017, "price_then": 1047.0, "price_harvest": 2085.0, "multiple": 1.99}, {"plant_year": 2018, "price_then": 1062.0, "price_harvest": 1182.0, "multiple": 1.11}, {"plant_year": 2019, "price_then": 2496.0, "price_harvest": 903.0, "multiple": 0.36}, {"plant_year": 2020, "price_then": 2085.0, "price_harvest": 1444.0, "multiple": 0.69}, {"plant_year": 2021, "price_then": 1182.0, "price_harvest": 2122.0, "multiple": 1.8}, {"plant_year": 2022, "price_then": 903.0, "price_harvest": 2570.0, "multiple": 2.85}, {"plant_year": 2023, "price_then": 1444.0, "price_harvest": 2488.0, "multiple": 1.72}], "plant_best": {"plant_year": 2016, "price_then": 824.0, "price_harvest": 2496.0, "multiple": 3.03}, "plant_worst": {"plant_year": 2019, "price_then": 2496.0, "price_harvest": 903.0, "multiple": 0.36}, "houses": [{"name": "South Indian Green Cardamom Company Lt", "premium_pct": 0.87, "days_above_pct": 83.0, "n": 394}, {"name": "Mas Enterprises", "premium_pct": 0.73, "days_above_pct": 75.0, "n": 393}, {"name": "THE CARDAMOM PLANTERS MARKETING CO-OPE", "premium_pct": 0.73, "days_above_pct": 71.0, "n": 323}, {"name": "IDUKKI Dist.TRADITIONAL CARDAMOM PRODU", "premium_pct": 0.72, "days_above_pct": 69.0, "n": 359}, {"name": "VANDANMEDU GREEN GOLD CARDAMOM PRODUCE", "premium_pct": 0.58, "days_above_pct": 77.0, "n": 177}, {"name": "The Kerala Cardamom Processing and Mar", "premium_pct": 0.3, "days_above_pct": 58.0, "n": 377}, {"name": "SUGANDHAGIRI SPICES PROMOTERS&TRADERS ", "premium_pct": -0.31, "days_above_pct": 42.0, "n": 400}, {"name": "Green House Cardamom Mktg.India Pvt. L", "premium_pct": -0.43, "days_above_pct": 42.0, "n": 400}, {"name": "Header Systems (India) Limited", "premium_pct": -0.74, "days_above_pct": 28.0, "n": 415}, {"name": "STATE TRADING CORPORATION", "premium_pct": -0.98, "days_above_pct": 42.0, "n": 125}, {"name": "Green Cardamom Trading Company", "premium_pct": -1.33, "days_above_pct": 28.0, "n": 141}, {"name": "Spice More Trading Company", "premium_pct": -1.35, "days_above_pct": 28.0, "n": 224}, {"name": "CARDAMOM GROWERSFOREVER PRIVATE LIMITE", "premium_pct": -1.96, "days_above_pct": 27.0, "n": 373}, {"name": "Cardamom Planters' Association", "premium_pct": -3.05, "days_above_pct": 8.0, "n": 340}], "house_spread_pct": 3.9, "rotation": [{"house": "Mas Enterprises", "day": "Saturday", "share": 44.0}, {"house": "South Indian Green Cardamom Company Lt", "day": "Tuesday", "share": 42.0}, {"house": "Header Systems (India) Limited", "day": "Tuesday", "share": 41.0}, {"house": "The Kerala Cardamom Processing and Mar", "day": "Thursday", "share": 47.0}, {"house": "Green House Cardamom Mktg.India Pvt. L", "day": "Saturday", "share": 41.0}, {"house": "SUGANDHAGIRI SPICES PROMOTERS&TRADERS ", "day": "Wednesday", "share": 44.0}, {"house": "IDUKKI Dist.TRADITIONAL CARDAMOM PRODU", "day": "Monday", "share": 45.0}, {"house": "CARDAMOM GROWERSFOREVER PRIVATE LIMITE", "day": "Friday", "share": 42.0}], "dispersion": [{"bucket": "Low", "fwd_ret_pct": 2.5, "fwd_absmove_pct": 7.7}, {"bucket": "Q2", "fwd_ret_pct": -1.6, "fwd_absmove_pct": 6.9}, {"bucket": "Q3", "fwd_ret_pct": 1.4, "fwd_absmove_pct": 7.5}, {"bucket": "High", "fwd_ret_pct": 2.5, "fwd_absmove_pct": 8.4}], "price_series": [{"date": "2014-11-30", "price": 766.0}, {"date": "2015-01-31", "price": 862.0}, {"date": "2015-05-31", "price": 663.0}, {"date": "2015-06-30", "price": 661.0}, {"date": "2015-07-31", "price": 639.0}, {"date": "2015-08-31", "price": 635.0}, {"date": "2015-10-31", "price": 616.0}, {"date": "2015-11-30", "price": 611.0}, {"date": "2015-12-31", "price": 590.0}, {"date": "2016-01-31", "price": 586.0}, {"date": "2016-02-29", "price": 554.0}, {"date": "2016-03-31", "price": 536.0}, {"date": "2016-04-30", "price": 642.0}, {"date": "2016-05-31", "price": 693.0}, {"date": "2016-06-30", "price": 742.0}, {"date": "2016-07-31", "price": 794.0}, {"date": "2016-08-31", "price": 916.0}, {"date": "2016-09-30", "price": 956.0}, {"date": "2016-10-31", "price": 1031.0}, {"date": "2016-11-30", "price": 1256.0}, {"date": "2016-12-31", "price": 1205.0}, {"date": "2017-01-31", "price": 1351.0}, {"date": "2017-02-28", "price": 1319.0}, {"date": "2017-03-31", "price": 1193.0}, {"date": "2017-04-30", "price": 1035.0}, {"date": "2017-05-31", "price": 919.0}, {"date": "2017-06-30", "price": 943.0}, {"date": "2017-07-31", "price": 972.0}, {"date": "2017-08-31", "price": 1079.0}, {"date": "2017-09-30", "price": 1117.0}, {"date": "2017-10-31", "price": 917.0}, {"date": "2017-11-30", "price": 856.0}, {"date": "2017-12-31", "price": 910.0}, {"date": "2018-01-31", "price": 967.0}, {"date": "2018-02-28", "price": 984.0}, {"date": "2018-03-31", "price": 951.0}, {"date": "2018-04-30", "price": 918.0}, {"date": "2018-05-31", "price": 824.0}, {"date": "2018-06-30", "price": 915.0}, {"date": "2018-07-31", "price": 1017.0}, {"date": "2018-08-31", "price": 1120.0}, {"date": "2018-09-30", "price": 1266.0}, {"date": "2018-10-31", "price": 1196.0}, {"date": "2018-11-30", "price": 1299.0}, {"date": "2018-12-31", "price": 1316.0}, {"date": "2019-01-31", "price": 1446.0}, {"date": "2019-02-28", "price": 1415.0}, {"date": "2019-03-31", "price": 1473.0}, {"date": "2019-04-30", "price": 1811.0}, {"date": "2019-05-31", "price": 2432.0}, {"date": "2019-06-30", "price": 2859.0}, {"date": "2019-07-31", "price": 3502.0}, {"date": "2019-08-31", "price": 3374.0}, {"date": "2019-09-30", "price": 3030.0}, {"date": "2019-10-31", "price": 2600.0}, {"date": "2019-11-30", "price": 2780.0}, {"date": "2019-12-31", "price": 3173.0}, {"date": "2020-01-31", "price": 3779.0}, {"date": "2020-02-29", "price": 3307.0}, {"date": "2020-03-31", "price": 2654.0}, {"date": "2020-05-31", "price": 1770.0}, {"date": "2020-06-30", "price": 1537.0}, {"date": "2020-07-31", "price": 1627.0}, {"date": "2020-08-31", "price": 1694.0}, {"date": "2020-09-30", "price": 1628.0}, {"date": "2020-10-31", "price": 1467.0}, {"date": "2020-11-30", "price": 1478.0}, {"date": "2020-12-31", "price": 1733.0}, {"date": "2021-01-31", "price": 1613.0}, {"date": "2021-02-28", "price": 1449.0}, {"date": "2021-03-31", "price": 1359.0}, {"date": "2021-04-30", "price": 1205.0}, {"date": "2021-05-31", "price": 956.0}, {"date": "2021-06-30", "price": 1037.0}, {"date": "2021-07-31", "price": 1072.0}, {"date": "2021-08-31", "price": 1059.0}, {"date": "2021-09-30", "price": 1059.0}, {"date": "2021-10-31", "price": 1011.0}, {"date": "2021-11-30", "price": 1036.0}, {"date": "2021-12-31", "price": 944.0}, {"date": "2022-01-31", "price": 882.0}, {"date": "2022-02-28", "price": 922.0}, {"date": "2022-03-31", "price": 898.0}, {"date": "2022-04-30", "price": 905.0}, {"date": "2022-05-31", "price": 819.0}, {"date": "2022-06-30", "price": 836.0}, {"date": "2022-07-31", "price": 893.0}, {"date": "2022-08-31", "price": 973.0}, {"date": "2022-09-30", "price": 996.0}, {"date": "2022-10-31", "price": 951.0}, {"date": "2022-11-30", "price": 899.0}, {"date": "2022-12-31", "price": 867.0}, {"date": "2023-01-31", "price": 1016.0}, {"date": "2023-02-28", "price": 1349.0}, {"date": "2023-03-31", "price": 1399.0}, {"date": "2023-04-30", "price": 1279.0}, {"date": "2023-05-31", "price": 1067.0}, {"date": "2023-06-30", "price": 1140.0}, {"date": "2023-07-31", "price": 1394.0}, {"date": "2023-08-31", "price": 1988.0}, {"date": "2023-09-30", "price": 1838.0}, {"date": "2023-10-31", "price": 1654.0}, {"date": "2023-11-30", "price": 1523.0}, {"date": "2023-12-31", "price": 1634.0}, {"date": "2024-01-31", "price": 1643.0}, {"date": "2024-02-29", "price": 1492.0}, {"date": "2024-03-31", "price": 1440.0}, {"date": "2024-04-30", "price": 1789.0}, {"date": "2024-05-31", "price": 2096.0}, {"date": "2024-06-30", "price": 2360.0}, {"date": "2024-07-31", "price": 2229.0}, {"date": "2024-08-31", "price": 2207.0}, {"date": "2024-09-30", "price": 2281.0}, {"date": "2024-10-31", "price": 2273.0}, {"date": "2024-11-30", "price": 2728.0}, {"date": "2024-12-31", "price": 2911.0}, {"date": "2025-01-31", "price": 3058.0}, {"date": "2025-02-28", "price": 2918.0}, {"date": "2025-03-31", "price": 2705.0}, {"date": "2025-04-30", "price": 2533.0}, {"date": "2025-05-31", "price": 2217.0}, {"date": "2025-06-30", "price": 2480.0}, {"date": "2025-07-31", "price": 2606.0}, {"date": "2025-08-31", "price": 2513.0}, {"date": "2025-09-30", "price": 2501.0}, {"date": "2025-10-31", "price": 2468.0}, {"date": "2025-11-30", "price": 2450.0}, {"date": "2025-12-31", "price": 2420.0}, {"date": "2026-01-31", "price": 2492.0}, {"date": "2026-02-28", "price": 2468.0}], "factor_importance": [{"factor": "Monsoon rainfall (Idukki, cumulative)", "weight": 95, "note": "dominates the 90-day model; supply-side driver"}, {"factor": "Recent price momentum (lags & moving averages)", "weight": 80, "note": "strongest for 1-14 day moves"}, {"factor": "Cross-auction price dispersion", "weight": 62, "note": "leading indicator; top-3 feature at 7-14 days"}, {"factor": "Seasonality (lean vs harvest)", "weight": 58, "note": "calendar position"}, {"factor": "ENSO (El Nino / La Nina, lagged)", "weight": 50, "note": "6-12 month lag on climate"}, {"factor": "USD/INR exchange rate", "weight": 42, "note": "export competitiveness"}, {"factor": "Guatemala exports & global trade", "weight": 38, "note": "the other big producer"}, {"factor": "Price-to-cost ratio & cycle age", "weight": 35, "note": "structural / cobweb cycle"}]};
-const INK="#23291f", GREEN="#2f6b40", GREEN2="#3f8a52", GOLD="#c89b3c", RUST="#b5482f", LINE="#e6ddc8";
-Chart.defaults.font.family="Inter, system-ui, sans-serif";
-Chart.defaults.color="#525b46";
-const money = v => "₹"+Math.round(v).toLocaleString('en-IN');
+<!-- PAGE 7: PLAYBOOK -->
+<div class="page sec-page">
+  <div class="sec-num">06</div>
+  <h2>The grower's playbook</h2>
+  <p class="lede">Seven rules the data backs — one for each major finding in this almanac.</p>
+  <div class="playbook">
+    <h3>Seven rules from eleven years of data</h3>
+    <ol>
+<li><b>Guatemala is the macro signal.</b> Its cumulative 6-month rainfall is the #1 driver of annual price levels. A drought in Alta Verapaz starts a bull market 6–18 months later. Watch USDA Guatemala crop reports alongside the Idukki monsoon.</li>
+<li><b>Respect the cycle.</b> Cardamom swings 9.4× between peaks and troughs. Today's price is a moment in a multi-year pattern, not a permanent new level.</li>
+<li><b>Watch the rain, not the rumour.</b> Idukki monsoon data and El Niño/La Niña forecasts (lagged 6–12 months) shape Indian supply more reliably than any market tip.</li>
+<li><b>Sell into strength (Jan–Aug).</b> The mid-year window pays ~15% over the weakest month. Avoid the Oct harvest glut if you can store safely.</li>
+<li><b>Plant cheap, never hot.</b> Fields planted in low-price years like 2016 returned 3.03×. Those planted at the 2019 peak returned just 0.36×. The crowd is almost always wrong.</li>
+<li><b>Know your auction house.</b> A 3.9% premium gap separates the best and worst houses for comparable produce. It compounds at every sale, every season.</li>
+<li><b>Read the disagreement.</b> When same-day auction prices diverge widely, the next two weeks tend to move more — and historically lean upward. High dispersion is a quiet tell.</li>
+    </ol>
+  </div>
+  <div class="footer-bar">
+    <b>About this almanac.</b> Built from the Spices Board of India e-auction record (2014-11-07 – 2026-02-06)
+    plus Open-Meteo weather data, NOAA ENSO indices, and USD/INR rates.
+    Price-driver rankings come from out-of-sample walk-forward forecast models (CardamomPulse v2.2).
+    This is market analysis, not financial advice — cardamom is volatile and past patterns do not guarantee future prices.
+    <div style="margin-top:6pt">
+      <span class="tag">11 years</span><span class="tag">5,440 auctions</span><span class="tag">14 auction houses</span><span class="tag">CardamomPulse v2.2</span>
+    </div>
+  </div>
+</div>
 
-// meta + band
-document.getElementById('metaLine').textContent =
-  `Coverage ${D.coverage.start} to ${D.coverage.end} · ${D.coverage.days.toLocaleString()} trading days · ${D.coverage.auctions.toLocaleString()} individual auctions`;
-document.getElementById('cov').textContent = `${D.coverage.start} – ${D.coverage.end}`;
-const band = [
-  [money(D.price_overall.min), `low (${D.price_overall.min_date.slice(0,7)})`],
-  [money(D.price_overall.max), `peak (${D.price_overall.max_date.slice(0,7)})`],
-  [D.price_overall.ratio_max_min+"×", "peak-to-trough swing"],
-  ["+"+D.biggest_rally.pct+"%", "biggest 6-month rally"],
-];
-document.getElementById('band').innerHTML = band.map(b=>
-  `<div class="cell"><div class="big">${b[0]}</div><div class="lbl">${b[1]}</div></div>`).join('');
-
-// journey minis
-const jm=[
-  [money(D.price_overall.max), "2019 flood peak", false],
-  [D.biggest_crash.pct+"%", "2020 crash", true],
-  ["+"+D.biggest_rally.pct+"%", "2019 rally", false],
-  [money(D.price_overall.latest), "latest print", false],
-];
-document.getElementById('journeyMinis').innerHTML = jm.map(m=>
-  `<div class="mini"><div class="v ${m[2]?'bad':''}">${m[0]}</div><div class="k">${m[1]}</div></div>`).join('');
-
-// ---- price chart with regime bands ----
-const ps=D.price_series, labels=ps.map(p=>p.date.slice(0,7)), prices=ps.map(p=>p.price);
-const idxOf = d => { const k=d.slice(0,7); let b=0; for(let i=0;i<labels.length;i++){ if(labels[i]<=k) b=i; } return b; };
-const ann={};
-D.regimes.filter(r=>r.state!=='range' && Math.abs(r.chg_pct)>=20).forEach((r,i)=>{
-  ann['b'+i]={type:'box',xMin:idxOf(r.start),xMax:idxOf(r.end),
-    backgroundColor:r.state==='bull'?'rgba(63,138,82,.10)':'rgba(181,72,47,.10)',
-    borderWidth:0};
-});
-ann.peak={type:'point',xValue:idxOf(D.price_overall.max_date),yValue:D.price_overall.max,
-  radius:5,backgroundColor:GOLD,borderColor:'#fff',borderWidth:2};
-ann.peakLbl={type:'label',xValue:idxOf(D.price_overall.max_date),yValue:D.price_overall.max,
-  content:['2019 floods','peak '+money(D.price_overall.max)],position:'start',yAdjust:-26,
-  font:{size:11,weight:'700'},color:RUST,backgroundColor:'rgba(255,253,247,.85)',padding:4};
-new Chart(priceChart,{type:'line',data:{labels,datasets:[{data:prices,borderColor:GREEN,
-  borderWidth:2.5,pointRadius:0,tension:.3,fill:true,
-  backgroundColor:(c)=>{const a=c.chart.ctx.createLinearGradient(0,0,0,460);
-    a.addColorStop(0,'rgba(47,107,64,.20)');a.addColorStop(1,'rgba(47,107,64,0)');return a;}}]},
-  options:{maintainAspectRatio:false,plugins:{legend:{display:false},
-    annotation:{annotations:ann},
-    tooltip:{callbacks:{label:c=>money(c.parsed.y)}}},
-    scales:{x:{ticks:{maxTicksLimit:11,autoSkip:true},grid:{display:false}},
-      y:{ticks:{callback:money},grid:{color:LINE}}}}});
-
-// ---- factor chart ----
-const fi=D.factor_importance;
-new Chart(factorChart,{type:'bar',data:{labels:fi.map(f=>f.factor),
-  datasets:[{data:fi.map(f=>f.weight),backgroundColor:fi.map((f,i)=>
-    `rgba(47,107,64,${0.95-i*0.08})`),borderRadius:6}]},
-  options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},
-    tooltip:{callbacks:{label:c=>D.factor_importance[c.dataIndex].note}}},
-    scales:{x:{grid:{color:LINE},ticks:{display:false}},y:{grid:{display:false},
-      ticks:{font:{size:12.5}}}}}});
-
-// ---- seasonality ----
-const se=D.seasonality, sm=se.map(s=>s.month);
-new Chart(seasonChart,{data:{labels:sm,datasets:[
-  {type:'bar',label:'Seasonal premium (%)',data:se.map(s=>s.rel_to_avg_pct),
-   backgroundColor:se.map(s=>s.month===D.sell_best_month?GOLD:(s.rel_to_avg_pct>=0?GREEN2:RUST)),
-   borderRadius:6,yAxisID:'y'},
-  {type:'line',label:'Avg month-on-month change (%)',data:se.map(s=>s.avg_mom_pct),
-   borderColor:INK,borderDash:[5,4],borderWidth:2,pointRadius:3,pointBackgroundColor:INK,
-   tension:.3,yAxisID:'y'}]},
-  options:{maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{boxWidth:14,font:{size:12}}},
-    tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.parsed.y>0?'+':'')+c.parsed.y+'%'}}},
-    scales:{x:{grid:{display:false}},y:{grid:{color:LINE},
-      ticks:{callback:v=>(v>0?'+':'')+v+'%'}}}}});
-
-const peakMonths = se.filter(s=>s.rel_to_avg_pct>=10).map(s=>s.month).join(', ');
-document.getElementById('sellBest').innerHTML =
-  `Prices sit highest from mid-summer into early autumn — <b>${peakMonths}</b> all run roughly 10–14% above
-   their yearly average, with <b>${D.sell_best_month}</b> the single strongest month. A January bump follows the
-   new year. Holding stock for this window has historically paid about <b>${D.sell_premium_pct}% more</b>
-   than selling in the weakest month.`;
-const worstMom = se.reduce((a,b)=>b.avg_mom_pct<a.avg_mom_pct?b:a);
-document.getElementById('sellWorst').innerHTML =
-  `<b>${worstMom.month}</b> is where holders get hurt: it shows the steepest average drop of the year
-   (${worstMom.avg_mom_pct}% in a single month) as the main harvest floods the market. Spring (around
-   <b>${D.sell_worst_month}</b>) is the softest price patch. If you're sitting on stock, don't drift into
-   the autumn glut.`;
-
-// ---- planting ----
-const pl=D.plant;
-new Chart(plantChart,{type:'bar',data:{labels:pl.map(p=>p.plant_year),
-  datasets:[{data:pl.map(p=>p.multiple),
-    backgroundColor:pl.map(p=>p.multiple>=1.5?GREEN:(p.multiple>=1?GOLD:RUST)),borderRadius:6}]},
-  options:{maintainAspectRatio:false,plugins:{legend:{display:false},
-    annotation:{annotations:{be:{type:'line',yMin:1,yMax:1,borderColor:INK,borderWidth:1.5,
-      borderDash:[6,4],label:{display:true,content:'break-even',position:'end',
-      font:{size:10},color:INK,backgroundColor:'rgba(255,253,247,.8)'}}}},
-    tooltip:{callbacks:{label:c=>{const p=pl[c.dataIndex];
-      return [`Plant ${p.plant_year}: ${money(p.price_then)}`,`Harvest ~${p.plant_year+3}: ${money(p.price_harvest)}`,
-      `= ${p.multiple}× your money`];}}}},
-    scales:{x:{grid:{display:false}},y:{grid:{color:LINE},
-      ticks:{callback:v=>v+'×'},title:{display:true,text:'price multiple at harvest'}}}}});
-const pb=D.plant_best, pw=D.plant_worst;
-document.getElementById('plantBest').innerHTML =
-  `Planting in <b>${pb.plant_year}</b>, when the average price was just <b>${money(pb.price_then)}</b>,
-   meant harvesting into ~<b>${money(pb.price_harvest)}</b> — turning every rupee of crop value into
-   <b>${pb.multiple}×</b>. Cheap, unloved years are the planter's friend: low prices today mean
-   few new plants and tight supply tomorrow.`;
-document.getElementById('plantWorst').innerHTML =
-  `The opposite of <b>${pw.plant_year}</b>: with prices already euphoric at <b>${money(pw.price_then)}</b>,
-   everyone planted at once. Three years on the price had sunk to <b>${money(pw.price_harvest)}</b> —
-   just <b>${pw.multiple}×</b>, a real loss. Buying into the hype is how growers get trapped.`;
-
-// ---- houses ----
-const hs=D.houses.slice().sort((a,b)=>a.premium_pct-b.premium_pct);
-new Chart(houseChart,{type:'bar',data:{labels:hs.map(h=>h.name),
-  datasets:[{data:hs.map(h=>h.premium_pct),
-    backgroundColor:hs.map(h=>h.premium_pct>=0?GREEN2:RUST),borderRadius:5}]},
-  options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},
-    tooltip:{callbacks:{label:c=>{const h=hs[c.dataIndex];
-      return [(h.premium_pct>0?'+':'')+h.premium_pct+'% vs market',`beats the market on ${h.days_above_pct}% of days`];}}}},
-    scales:{x:{grid:{color:LINE},ticks:{callback:v=>(v>0?'+':'')+v+'%'}},
-      y:{grid:{display:false},ticks:{font:{size:11}}}}}});
-const top=D.houses[0], bot=D.houses[D.houses.length-1];
-document.getElementById('houseMinis').innerHTML=[
-  ['+'+top.premium_pct+'%', top.name.split(' ').slice(0,3).join(' '), false],
-  [top.days_above_pct+'%','days it beats market',false],
-  [bot.premium_pct+'%', bot.name.split(' ').slice(0,3).join(' '), true],
-  [D.house_spread_pct+'%','top-to-bottom gap',false],
-].map(m=>`<div class="mini"><div class="v ${m[2]?'bad':''}">${m[0]}</div><div class="k">${m[1]}</div></div>`).join('');
-document.getElementById('houseTake').innerHTML=
-  `The gap between the best- and worst-clearing house is about <b>${D.house_spread_pct}%</b> — on a tonne
-   of cardamom that is real money, repeated at every sale. The strongest houses (led by <b>${top.name}</b>)
-   beat the market on the majority of days; the weakest clear below it almost every time. Know where your lots
-   land, and favour the houses that consistently fetch more for comparable produce.`;
-
-// rotation
-document.getElementById('rotationCard').innerHTML =
-  '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px 24px">' +
-  D.rotation.map(r=>`<div style="display:flex;justify-content:space-between;border-bottom:1px dashed ${LINE};padding:7px 0">
-    <span style="font-weight:600">${r.house}</span>
-    <span style="color:var(--green)">${r.day} <span style="color:#9aa489">(${r.share}%)</span></span></div>`).join('') +
-  '</div>';
-
-// dispersion
-const dp=D.dispersion;
-new Chart(dispChart,{data:{labels:dp.map(d=>d.bucket+' dispersion'),datasets:[
-  {type:'bar',label:'Size of next 2-week move',data:dp.map(d=>d.fwd_absmove_pct),
-   backgroundColor:GREEN2,borderRadius:6,yAxisID:'y'},
-  {type:'line',label:'Direction (avg return)',data:dp.map(d=>d.fwd_ret_pct),
-   borderColor:GOLD,borderWidth:3,pointRadius:4,pointBackgroundColor:GOLD,tension:.3,yAxisID:'y'}]},
-  options:{maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{boxWidth:14,font:{size:12}}},
-    tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.parsed.y>0?'+':'')+c.parsed.y+'%'}}},
-    scales:{x:{grid:{display:false}},y:{grid:{color:LINE},ticks:{callback:v=>(v>0?'+':'')+v+'%'}}}}});
-
-// playbook
-const pbk=[
-  ['Respect the cycle.',`Cardamom swings ${D.price_overall.ratio_max_min}× between peaks and troughs. Today's price is a moment, not a trend.`],
-  ['Watch the rain, not the rumour.',`Idukki monsoon rainfall and the El Niño/La Niña cycle shape next year's supply more than any WhatsApp tip.`],
-  [`Sell into strength (${peakMonths.split(',')[0]}–${D.sell_best_month}).`,`The mid-year window pays ~${D.sell_premium_pct}% over the weakest month; avoid the ${worstMom.month} harvest glut.`],
-  ['Plant cheap, never hot.',`Fields planted in low-price years like ${pb.plant_year} returned ${pb.multiple}×; planting the ${pw.plant_year} peak meant a loss.`],
-  ['Mind the auction house.',`A ${D.house_spread_pct}% gap separates the best and worst houses for similar produce — it compounds every sale.`],
-  ['Read the disagreement.',`When same-day auction prices scatter, expect a bigger move ahead — and historically an upward one.`],
-];
-document.getElementById('playbook').innerHTML = pbk.map(p=>`<li><b>${p[0]}</b> ${p[1]}</li>`).join('');
-</script>
 </body>
 </html>
