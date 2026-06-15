@@ -1,54 +1,68 @@
 {
-  "updated_at": "2026-06-14T14:44:46.801121Z",
+  "updated_at": "2026-06-15T17:31:37.399944Z",
   "total_predictions": 200,
   "metrics_by_horizon": {
+    "90": {
+      "n": 13,
+      "mape": 0.1166,
+      "mae": 300.6,
+      "rmse": 319.0,
+      "hit_5pct": 0.0
+    },
     "28": {
       "n": 24,
-      "mape": 0.0443,
-      "mae": 112.0,
-      "rmse": 134.8,
-      "hit_5pct": 0.625
+      "mape": 0.0434,
+      "mae": 109.6,
+      "rmse": 132.0,
+      "hit_5pct": 0.667
     },
     "14": {
-      "n": 25,
-      "mape": 0.0314,
-      "mae": 80.2,
-      "rmse": 94.4,
-      "hit_5pct": 0.76
+      "n": 24,
+      "mape": 0.0341,
+      "mae": 87.2,
+      "rmse": 98.8,
+      "hit_5pct": 0.75
     },
     "7": {
-      "n": 23,
-      "mape": 0.035,
-      "mae": 89.3,
-      "rmse": 106.0,
-      "hit_5pct": 0.783
+      "n": 22,
+      "mape": 0.0365,
+      "mae": 93.3,
+      "rmse": 109.6,
+      "hit_5pct": 0.773
+    },
+    "6": {
+      "n": 17,
+      "mape": 0.0324,
+      "mae": 82.7,
+      "rmse": 95.9,
+      "hit_5pct": 0.824
     },
     "5": {
       "n": 19,
-      "mape": 0.0336,
-      "mae": 85.8,
-      "rmse": 100.7,
+      "mape": 0.0362,
+      "mae": 92.8,
+      "rmse": 115.0,
       "hit_5pct": 0.737
     },
     "4": {
       "n": 20,
-      "mape": 0.0293,
-      "mae": 75.4,
-      "rmse": 91.1,
-      "hit_5pct": 0.8
+      "mape": 0.0349,
+      "mae": 90.1,
+      "rmse": 118.6,
+      "hit_5pct": 0.75
     },
     "3": {
-      "n": 19,
-      "mape": 0.0295,
-      "mae": 75.1,
-      "rmse": 83.7,
+      "n": 20,
+      "mape": 0.0288,
+      "mae": 73.3,
+      "rmse": 82.1,
       "hit_5pct": 1.0
     },
     "2": {
       "n": 21,
-      "mape": 0.0325,
-      "mae": 83.5,
-      "rmse": 113.0,
+      "mape": 0.0328,
+      "mae": 84.4,
+      "rmse": 113.1,
       "hit_5pct": 0.905
     },
     "1": {
@@ -57,23 +71,99 @@
       "mae": 80.3,
       "rmse": 116.5,
       "hit_5pct": 0.8
-    },
-    "90": {
-      "n": 12,
-      "mape": 0.1177,
-      "mae": 302.6,
-      "rmse": 322.3,
-      "hit_5pct": 0.0
-    },
-    "6": {
-      "n": 17,
-      "mape": 0.0308,
-      "mae": 78.4,
-      "rmse": 90.8,
-      "hit_5pct": 0.882
     }
   },
   "recent_validations": [
+    {
+      "id": 632,
+      "date": "2026-06-15",
+      "horizon_days": 90,
+      "predicted_price": 2375.8,
+      "actual_price": 2652.1966553091047,
+      "abs_error": 276.3966553091045,
+      "pct_error": 0.1042142386975039,
+      "created_at": "2026-06-15 17:31:36"
+    },
+    {
+      "id": 633,
+      "date": "2026-06-15",
+      "horizon_days": 28,
+      "predicted_price": 2524.2,
+      "actual_price": 2652.1966553091047,
+      "abs_error": 127.99665530910488,
+      "pct_error": 0.048260620136476,
+      "created_at": "2026-06-15 17:31:36"
+    },
+    {
+      "id": 634,
+      "date": "2026-06-15",
+      "horizon_days": 14,
+      "predicted_price": 2542.8,
+      "actual_price": 2652.1966553091047,
+      "abs_error": 109.39665530910452,
+      "pct_error": 0.041247565518988526,
+      "created_at": "2026-06-15 17:31:36"
+    },
+    {
+      "id": 635,
+      "date": "2026-06-15",
+      "horizon_days": 7,
+      "predicted_price": 2542.2,
+      "actual_price": 2652.1966553091047,
+      "abs_error": 109.99665530910488,
+      "pct_error": 0.0414737930872947,
+      "created_at": "2026-06-15 17:31:36"
+    },
+    {
+      "id": 636,
+      "date": "2026-06-15",
+      "horizon_days": 6,
+      "predicted_price": 2506.1,
+      "actual_price": 2652.1966553091047,
+      "abs_error": 146.0966553091048,
+      "pct_error": 0.05508515178037494,
+      "created_at": "2026-06-15 17:31:36"
+    },
+    {
+      "id": 637,
+      "date": "2026-06-15",
+      "horizon_days": 5,
+      "predicted_price": 2368.4,
+      "actual_price": 2652.1966553091047,
+      "abs_error": 283.7966553091046,
+      "pct_error": 0.10700437870661181,
+      "created_at": "2026-06-15 17:31:36"
+    },
+    {
+      "id": 638,
+      "date": "2026-06-15",
+      "horizon_days": 4,
+      "predicted_price": 2309.4,
+      "actual_price": 2652.1966553091047,
+      "abs_error": 342.7966553091046,
+      "pct_error": 0.1292500895900394,
+      "created_at": "2026-06-15 17:31:36"
+    },
+    {
+      "id": 639,
+      "date": "2026-06-15",
+      "horizon_days": 3,
+      "predicted_price": 2692.0,
+      "actual_price": 2652.1966553091047,
+      "abs_error": 39.8033446908953,
+      "pct_error": 0.015007689799780836,
+      "created_at": "2026-06-15 17:31:36"
+    },
+    {
+      "id": 640,
+      "date": "2026-06-15",
+      "horizon_days": 2,
+      "predicted_price": 2672.0,
+      "actual_price": 2652.1966553091047,
+      "abs_error": 19.8033446908953,
+      "pct_error": 0.00746677085624606,
+      "created_at": "2026-06-15 17:31:36"
+    },
     {
       "id": 624,
       "date": "2026-06-13",
@@ -283,96 +373,6 @@
       "abs_error": 108.24995181170198,
       "pct_error": 0.041248291500518966,
       "created_at": "2026-06-11 16:35:49"
-    },
-    {
-      "id": 599,
-      "date": "2026-06-11",
-      "horizon_days": 1,
-      "predicted_price": 2544.3,
-      "actual_price": 2624.349951811702,
-      "abs_error": 80.0499518117017,
-      "pct_error": 0.030502773365434655,
-      "created_at": "2026-06-11 16:35:49"
-    },
-    {
-      "id": 588,
-      "date": "2026-06-10",
-      "horizon_days": 90,
-      "predicted_price": 2382.8,
-      "actual_price": 2566.29744161407,
-      "abs_error": 183.49744161406988,
-      "pct_error": 0.0715027956769732,
-      "created_at": "2026-06-10 16:22:34"
-    },
-    {
-      "id": 589,
-      "date": "2026-06-10",
-      "horizon_days": 28,
-      "predicted_price": 2579.7,
-      "actual_price": 2566.29744161407,
-      "abs_error": 13.402558385929751,
-      "pct_error": 0.005222527275521198,
-      "created_at": "2026-06-10 16:22:34"
-    },
-    {
-      "id": 590,
-      "date": "2026-06-10",
-      "horizon_days": 14,
-      "predicted_price": 2486.8,
-      "actual_price": 2566.29744161407,
-      "abs_error": 79.49744161406988,
-      "pct_error": 0.030977485432892787,
-      "created_at": "2026-06-10 16:22:34"
-    },
-    {
-      "id": 591,
-      "date": "2026-06-10",
-      "horizon_days": 4,
-      "predicted_price": 2582.5,
-      "actual_price": 2566.29744161407,
-      "abs_error": 16.202558385929933,
-      "pct_error": 0.006313593320554203,
-      "created_at": "2026-06-10 16:22:34"
-    },
-    {
-      "id": 592,
-      "date": "2026-06-10",
-      "horizon_days": 2,
-      "predicted_price": 2519.8,
-      "actual_price": 2566.29744161407,
-      "abs_error": 46.497441614069885,
-      "pct_error": 0.018118492759290353,
-      "created_at": "2026-06-10 16:22:34"
-    },
-    {
-      "id": 593,
-      "date": "2026-06-10",
-      "horizon_days": 1,
-      "predicted_price": 2488.7,
-      "actual_price": 2566.29744161407,
-      "abs_error": 77.59744161407025,
-      "pct_error": 0.030237119188049152,
-      "created_at": "2026-06-10 16:22:34"
-    },
-    {
-      "id": 583,
-      "date": "2026-06-09",
-      "horizon_days": 90,
-      "predicted_price": 2382.8,
-      "actual_price": 2573.2311885065396,
-      "abs_error": 190.43118850653946,
-      "pct_error": 0.07400469470334009,
-      "created_at": "2026-06-09 15:39:12"
-    },
-    {
-      "id": 584,
-      "date": "2026-06-09",
-      "horizon_days": 28,
-      "predicted_price": 2579.7,
-      "actual_price": 2573.2311885065396,
-      "abs_error": 6.46881149346018,
-      "pct_error": 0.002513886634964412,
-      "created_at": "2026-06-09 15:39:12"
     }
   ]
 }
