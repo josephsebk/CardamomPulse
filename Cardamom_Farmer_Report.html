@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>The Cardamom Almanac — A Grower's Guide to the Price</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+<style>
+:root{
+  --ink:#23291f; --ink2:#525b46; --cream:#faf6ec; --paper:#fffdf7;
+  --green:#2f6b40; --green2:#3f8a52; --leaf:#6fae6a; --gold:#c89b3c;
+  --rust:#b5482f; --line:#e6ddc8; --shadow:0 10px 40px rgba(40,50,30,.10);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Inter,system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:920px;margin:0 auto;padding:0 24px}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;line-height:1.1;margin:0}
+p{margin:0 0 18px}
+a{color:var(--green)}
+.kicker{font-family:Inter;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  font-size:12px;color:var(--green2)}
+
+/* HERO */
+.hero{background:linear-gradient(160deg,#1f4a2c 0%,#2f6b40 55%,#3f8a52 100%);color:#f4f1e4;
+  padding:78px 0 64px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-80px;top:-60px;width:380px;height:380px;
+  background:radial-gradient(circle,rgba(200,155,60,.30),transparent 65%)}
+.hero .wrap{position:relative;z-index:1}
+.hero .kicker{color:#bfe0b7}
+.hero h1{font-size:clamp(40px,7vw,72px);font-weight:900;margin:.2em 0 .25em;letter-spacing:-.02em}
+.hero .sub{font-size:clamp(17px,2.4vw,21px);max-width:640px;color:#e7eede;opacity:.95}
+.hero .meta{margin-top:26px;font-size:13px;color:#cfe3c8;letter-spacing:.04em}
+
+/* stat band */
+.band{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:-44px 0 0;box-shadow:var(--shadow)}
+.band .cell{background:var(--paper);padding:22px 18px;text-align:center}
+.band .big{font-family:Fraunces;font-weight:700;font-size:clamp(26px,4vw,38px);color:var(--green);line-height:1}
+.band .lbl{font-size:12.5px;color:var(--ink2);margin-top:7px}
+@media(max-width:680px){.band{grid-template-columns:repeat(2,1fr)}}
+
+section{padding:62px 0 8px}
+.sec-num{font-family:Fraunces;font-weight:600;color:var(--gold);font-size:15px}
+h2{font-size:clamp(28px,4.4vw,42px);font-weight:700;margin:.15em 0 .5em;letter-spacing:-.01em}
+.lede{font-size:18.5px;color:var(--ink2);max-width:680px;margin-bottom:26px}
+
+.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;
+  padding:24px 24px 16px;box-shadow:var(--shadow);margin:24px 0}
+.chart-box{position:relative;height:380px}
+.chart-box.tall{height:460px}
+.caption{font-size:13.5px;color:var(--ink2);margin-top:12px;font-style:italic}
+
+.takeaway{background:#f0f6ea;border-left:5px solid var(--green2);border-radius:0 14px 14px 0;
+  padding:18px 22px;margin:24px 0}
+.takeaway .t{font-family:Inter;font-weight:700;color:var(--green);font-size:13px;
+  letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.takeaway p{margin:0;font-size:16.5px}
+.takeaway.warn{background:#fbefe9;border-color:var(--rust)}
+.takeaway.warn .t{color:var(--rust)}
+
+.pull{font-family:Fraunces;font-weight:600;font-size:clamp(22px,3.4vw,30px);
+  color:var(--green);line-height:1.25;margin:34px 0;text-align:center;max-width:760px;margin-inline:auto}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:680px){.grid2{grid-template-columns:1fr}}
+.minis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+@media(max-width:680px){.minis{grid-template-columns:repeat(2,1fr)}}
+.mini{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center}
+.mini .v{font-family:Fraunces;font-weight:700;font-size:26px;color:var(--green)}
+.mini .v.bad{color:var(--rust)}
+.mini .k{font-size:12px;color:var(--ink2);margin-top:4px}
+
+.playbook{background:#1f4a2c;color:#eef3e8;border-radius:20px;padding:34px 30px;margin:30px 0}
+.playbook h3{color:#fff;font-size:26px;margin-bottom:6px}
+.playbook ol{margin:18px 0 0;padding-left:22px}
+.playbook li{margin:0 0 14px;font-size:16.5px}
+.playbook li b{color:var(--gold)}
+
+footer{padding:48px 0 70px;color:var(--ink2);font-size:13px;border-top:1px solid var(--line);margin-top:50px}
+.tag{display:inline-block;background:#eef3e8;color:var(--green);border-radius:999px;
+  padding:3px 11px;font-size:12px;font-weight:600;margin:2px 4px 2px 0}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">CardamomPulse · A Data Almanac</div>
+    <h1>What the Cardamom Price Has Been Trying to Tell Us</h1>
+    <p class="sub">Eleven years. 5,440 auctions. One small green pod whose price has swung
+      nine-fold. Here is what the numbers say about when to sell, when to plant,
+      and where the market really gets made.</p>
+    <div class="meta" id="metaLine"></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="band" id="band"></div>
+</div>
+
+<div class="wrap">
+
+<!-- 1. THE JOURNEY -->
+<section>
+  <div class="sec-num">01</div>
+  <h2>A price with a temper</h2>
+  <p class="lede">Few farm commodities move like cardamom. Since 2014 the auction price has
+   travelled from under ₹500 to nearly ₹4,700 a kilo and back again — a roller-coaster
+   driven by monsoons, floods and the slow churn of planting cycles.</p>
+  <div class="card">
+    <div class="chart-box tall"><canvas id="priceChart"></canvas></div>
+    <div class="caption">Monthly average auction price, Nov 2014 – Feb 2026. Shaded bands mark
+      the major bull and bear runs the data identifies.</div>
+  </div>
+  <div class="minis" id="journeyMinis"></div>
+  <div class="takeaway">
+    <div class="t">What this means for you</div>
+    <p>Cardamom is a <b>boom-and-bust crop</b>. The single biggest fortunes — and ruins — were
+    made by those who read the cycle, not the week. The 2019 flood spike to ₹4,675 was followed
+    by a two-thirds collapse. Plan for the swing; never assume today's price is the new normal.</p>
+  </div>
+</section>
+
+<div class="pull">"The market spends years quietly cheap, then re-prices violently in a single season."</div>
+
+<!-- 2. WHAT MOVES IT -->
+<section>
+  <div class="sec-num">02</div>
+  <h2>What actually moves the price</h2>
+  <p class="lede">We let the forecasting models rank every signal by how much it improves a real,
+   out-of-sample price prediction. The verdict is humbling for chartists: <b>weather wins.</b></p>
+  <div class="card">
+    <div class="chart-box"><canvas id="factorChart"></canvas></div>
+    <div class="caption">Relative influence of each driver across the forecast models (higher = more predictive).</div>
+  </div>
+  <div class="takeaway">
+    <div class="t">What this means for you</div>
+    <p>Over a season, <b>monsoon rainfall in Idukki is the master variable</b> — it shapes next
+    year's supply more than any price chart. Watch the rains, the El&nbsp;Niño/La&nbsp;Niña cycle,
+    and the rupee. Day-to-day, momentum and how much the auction houses <i>disagree</i> matter most.</p>
+  </div>
+</section>
+
+<!-- 3. SEASONALITY -->
+<section>
+  <div class="sec-num">03</div>
+  <h2>The selling calendar</h2>
+  <p class="lede">Strip away the long-term trend and a clear yearly rhythm appears. Some months
+   reliably pay more than others — and one month reliably punishes those who wait.</p>
+  <div class="card">
+    <div class="chart-box"><canvas id="seasonChart"></canvas></div>
+    <div class="caption">Bars: average price in each month versus its own 12-month average (the seasonal premium).
+      Line: the typical month-on-month change.</div>
+  </div>
+  <div class="grid2">
+    <div class="takeaway">
+      <div class="t">Best window to sell</div>
+      <p id="sellBest"></p>
+    </div>
+    <div class="takeaway warn">
+      <div class="t">The trap month</div>
+      <p id="sellWorst"></p>
+    </div>
+  </div>
+</section>
+
+<!-- 4. PLANTING -->
+<section>
+  <div class="sec-num">04</div>
+  <h2>The planter's paradox</h2>
+  <p class="lede">A new cardamom field takes about three years to come into full bearing. So the
+   price that matters isn't today's — it's the one waiting for you at harvest. History is brutally
+   clear about when to put plants in the ground.</p>
+  <div class="card">
+    <div class="chart-box"><canvas id="plantChart"></canvas></div>
+    <div class="caption">For each planting year: how many times your money the average price had become
+      ~3 years later, when a new field reaches full yield. Above the line = reward; below = loss.</div>
+  </div>
+  <div class="grid2">
+    <div class="takeaway">
+      <div class="t">The golden window</div>
+      <p id="plantBest"></p>
+    </div>
+    <div class="takeaway warn">
+      <div class="t">The widow-maker</div>
+      <p id="plantWorst"></p>
+    </div>
+  </div>
+  <div class="pull" style="color:var(--rust)">"Plant into cheap prices, not into headlines. The crowd that planted at the 2019 peak
+   harvested into a 64% loss."</div>
+</section>
+
+<!-- 5. AUCTION HOUSES -->
+<section>
+  <div class="sec-num">05</div>
+  <h2>Where you sell is worth money</h2>
+  <p class="lede">On any given day two or three auction houses run their own sales. They are not
+   interchangeable. Comparing each house against the same-day market reveals a stubborn pecking
+   order that has held for years.</p>
+  <div class="card">
+    <div class="chart-box tall"><canvas id="houseChart"></canvas></div>
+    <div class="caption">Average price achieved by each house relative to the same-day market average.
+      Green houses consistently clear above the market; red ones below.</div>
+  </div>
+  <div class="minis" id="houseMinis"></div>
+  <div class="takeaway">
+    <div class="t">What this means for you</div>
+    <p id="houseTake"></p>
+  </div>
+
+  <h3 style="font-size:22px;margin:38px 0 4px">A market that runs on a weekly clock</h3>
+  <p class="lede" style="font-size:16.5px">Each major house owns a weekday. The "daily price" is
+   really a rotating cast — part of every day-to-day wobble is just <i>which house</i> sold, not the
+   market moving.</p>
+  <div class="card" id="rotationCard" style="padding:18px 24px"></div>
+
+  <h3 style="font-size:22px;margin:38px 0 4px">A quiet tell: when the houses disagree</h3>
+  <p class="lede" style="font-size:16.5px">When same-day auction prices scatter widely, the next
+   two weeks tend to move <i>more</i> — and lean upward. Disagreement marks demand building under
+   the surface.</p>
+  <div class="card">
+    <div class="chart-box" style="height:300px"><canvas id="dispChart"></canvas></div>
+    <div class="caption">14-day price-dispersion grouped low→high, against the size and direction of
+      the following two weeks' move.</div>
+  </div>
+</section>
+
+<!-- PLAYBOOK -->
+<section>
+  <div class="sec-num">06</div>
+  <h2>The grower's playbook</h2>
+  <div class="playbook">
+    <h3>Six rules the data backs</h3>
+    <ol id="playbook"></ol>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <p><b>About this almanac.</b> Built from the Spices Board of India e-auction record
+    (<span id="cov"></span>) plus weather, climate, trade and currency data. Seasonal and
+    planting figures detrend the long-run price rise so the patterns reflect timing, not inflation.
+    Price-driver rankings come from out-of-sample forecast models. This is market analysis, not
+    financial advice — cardamom is volatile and the past does not guarantee the future.</p>
+    <div>
+      <span class="tag">11 years</span><span class="tag">5,440 auctions</span>
+      <span class="tag">14 auction houses</span><span class="tag">CardamomPulse</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const D = {"coverage": {"start": "2014-11-07", "end": "2026-02-06", "days": 3028, "auctions": 5440}, "price_overall": {"min": 495.0, "min_date": "2016-03-11", "max": 4675.0, "max_date": "2019-08-03", "latest": 2505.0, "ratio_max_min": 9.4}, "annual": [{"year": 2014, "avg": 766.0, "lo": 766.0, "hi": 766.0, "vol_mt": 0.1, "yoy": null}, {"year": 2015, "avg": 632.0, "lo": 570.0, "hi": 862.0, "vol_mt": 17.5, "yoy": -17.4}, {"year": 2016, "avg": 824.0, "lo": 495.0, "hi": 1359.0, "vol_mt": 26.5, "yoy": 30.3}, {"year": 2017, "avg": 1047.0, "lo": 782.0, "hi": 1393.0, "vol_mt": 23.2, "yoy": 27.1}, {"year": 2018, "avg": 1062.0, "lo": 760.0, "hi": 1389.0, "vol_mt": 26.3, "yoy": 1.4}, {"year": 2019, "avg": 2496.0, "lo": 1326.0, "hi": 4675.0, "vol_mt": 17.5, "yoy": 134.9}, {"year": 2020, "avg": 2085.0, "lo": 1070.0, "hi": 4058.0, "vol_mt": 16.9, "yoy": -16.5}, {"year": 2021, "avg": 1182.0, "lo": 861.0, "hi": 1711.0, "vol_mt": 21.8, "yoy": -43.3}, {"year": 2022, "avg": 903.0, "lo": 771.0, "hi": 1082.0, "vol_mt": 31.3, "yoy": -23.6}, {"year": 2023, "avg": 1444.0, "lo": 868.0, "hi": 2221.0, "vol_mt": 28.5, "yoy": 59.9}, {"year": 2024, "avg": 2122.0, "lo": 1316.0, "hi": 3021.0, "vol_mt": 26.6, "yoy": 46.9}, {"year": 2025, "avg": 2570.0, "lo": 2037.0, "hi": 3182.0, "vol_mt": 31.1, "yoy": 21.2}, {"year": 2026, "avg": 2488.0, "lo": 2424.0, "hi": 2564.0, "vol_mt": 4.2, "yoy": -3.2}], "regimes": [{"state": "range", "start": "2014-11-07", "end": "2016-04-18", "p0": 766.0, "p1": 677.0, "chg_pct": -12.0, "months": 17.0}, {"state": "bull", "start": "2016-04-19", "end": "2017-01-28", "p0": 661.0, "p1": 1316.0, "chg_pct": 99.0, "months": 9.0}, {"state": "bear", "start": "2017-03-27", "end": "2017-06-23", "p0": 1118.0, "p1": 949.0, "chg_pct": -15.0, "months": 3.0}, {"state": "range", "start": "2018-02-06", "end": "2018-05-03", "p0": 1005.0, "p1": 802.0, "chg_pct": -20.0, "months": 3.0}, {"state": "bull", "start": "2018-07-09", "end": "2018-10-29", "p0": 976.0, "p1": 1193.0, "chg_pct": 22.0, "months": 4.0}, {"state": "bull", "start": "2019-03-26", "end": "2019-08-31", "p0": 1531.0, "p1": 2720.0, "chg_pct": 78.0, "months": 5.0}, {"state": "bear", "start": "2020-02-27", "end": "2020-09-03", "p0": 3211.0, "p1": 1762.0, "chg_pct": -45.0, "months": 6.0}, {"state": "bear", "start": "2021-02-18", "end": "2021-08-26", "p0": 1309.0, "p1": 1129.0, "chg_pct": -14.0, "months": 6.0}, {"state": "range", "start": "2021-08-28", "end": "2022-01-03", "p0": 1119.0, "p1": 873.0, "chg_pct": -22.0, "months": 4.0}, {"state": "range", "start": "2022-01-29", "end": "2022-07-25", "p0": 888.0, "p1": 1008.0, "chg_pct": 14.0, "months": 6.0}, {"state": "range", "start": "2022-09-15", "end": "2023-01-18", "p0": 1033.0, "p1": 1040.0, "chg_pct": 1.0, "months": 4.0}, {"state": "bull", "start": "2023-01-19", "end": "2023-04-11", "p0": 1045.0, "p1": 1367.0, "chg_pct": 31.0, "months": 3.0}, {"state": "bull", "start": "2023-07-10", "end": "2023-10-03", "p0": 1695.0, "p1": 1762.0, "chg_pct": 4.0, "months": 3.0}, {"state": "range", "start": "2023-12-05", "end": "2024-04-12", "p0": 1528.0, "p1": 1660.0, "chg_pct": 9.0, "months": 4.0}, {"state": "bull", "start": "2024-04-13", "end": "2024-07-16", "p0": 1588.0, "p1": 2128.0, "chg_pct": 34.0, "months": 3.0}, {"state": "range", "start": "2024-07-18", "end": "2024-10-30", "p0": 2096.0, "p1": 2390.0, "chg_pct": 14.0, "months": 3.0}, {"state": "bull", "start": "2024-11-02", "end": "2025-01-29", "p0": 2459.0, "p1": 2988.0, "chg_pct": 21.0, "months": 3.0}, {"state": "range", "start": "2025-08-05", "end": "2026-02-06", "p0": 2548.0, "p1": 2505.0, "chg_pct": -2.0, "months": 6.0}], "biggest_rally": {"pct": 256.0, "end": "2019-08-03"}, "biggest_crash": {"pct": -67.0, "end": "2020-11-03"}, "seasonality": [{"month": "Jan", "rel_to_avg_pct": 12.4, "avg_mom_pct": 5.3}, {"month": "Feb", "rel_to_avg_pct": 9.6, "avg_mom_pct": -0.7}, {"month": "Mar", "rel_to_avg_pct": 4.1, "avg_mom_pct": -4.8}, {"month": "Apr", "rel_to_avg_pct": 6.1, "avg_mom_pct": 2.8}, {"month": "May", "rel_to_avg_pct": -1.3, "avg_mom_pct": -2.3}, {"month": "Jun", "rel_to_avg_pct": 4.1, "avg_mom_pct": 6.0}, {"month": "Jul", "rel_to_avg_pct": 10.2, "avg_mom_pct": 7.1}, {"month": "Aug", "rel_to_avg_pct": 13.7, "avg_mom_pct": 7.5}, {"month": "Sep", "rel_to_avg_pct": 13.4, "avg_mom_pct": 0.4}, {"month": "Oct", "rel_to_avg_pct": 3.4, "avg_mom_pct": -6.0}, {"month": "Nov", "rel_to_avg_pct": 6.3, "avg_mom_pct": 3.5}, {"month": "Dec", "rel_to_avg_pct": 7.3, "avg_mom_pct": 2.9}], "sell_best_month": "Aug", "sell_worst_month": "May", "sell_premium_pct": 15.0, "plant": [{"plant_year": 2014, "price_then": 766.0, "price_harvest": 1047.0, "multiple": 1.37}, {"plant_year": 2015, "price_then": 632.0, "price_harvest": 1062.0, "multiple": 1.68}, {"plant_year": 2016, "price_then": 824.0, "price_harvest": 2496.0, "multiple": 3.03}, {"plant_year": 2017, "price_then": 1047.0, "price_harvest": 2085.0, "multiple": 1.99}, {"plant_year": 2018, "price_then": 1062.0, "price_harvest": 1182.0, "multiple": 1.11}, {"plant_year": 2019, "price_then": 2496.0, "price_harvest": 903.0, "multiple": 0.36}, {"plant_year": 2020, "price_then": 2085.0, "price_harvest": 1444.0, "multiple": 0.69}, {"plant_year": 2021, "price_then": 1182.0, "price_harvest": 2122.0, "multiple": 1.8}, {"plant_year": 2022, "price_then": 903.0, "price_harvest": 2570.0, "multiple": 2.85}, {"plant_year": 2023, "price_then": 1444.0, "price_harvest": 2488.0, "multiple": 1.72}], "plant_best": {"plant_year": 2016, "price_then": 824.0, "price_harvest": 2496.0, "multiple": 3.03}, "plant_worst": {"plant_year": 2019, "price_then": 2496.0, "price_harvest": 903.0, "multiple": 0.36}, "houses": [{"name": "South Indian Green Cardamom Company Lt", "premium_pct": 0.87, "days_above_pct": 83.0, "n": 394}, {"name": "Mas Enterprises", "premium_pct": 0.73, "days_above_pct": 75.0, "n": 393}, {"name": "THE CARDAMOM PLANTERS MARKETING CO-OPE", "premium_pct": 0.73, "days_above_pct": 71.0, "n": 323}, {"name": "IDUKKI Dist.TRADITIONAL CARDAMOM PRODU", "premium_pct": 0.72, "days_above_pct": 69.0, "n": 359}, {"name": "VANDANMEDU GREEN GOLD CARDAMOM PRODUCE", "premium_pct": 0.58, "days_above_pct": 77.0, "n": 177}, {"name": "The Kerala Cardamom Processing and Mar", "premium_pct": 0.3, "days_above_pct": 58.0, "n": 377}, {"name": "SUGANDHAGIRI SPICES PROMOTERS&TRADERS ", "premium_pct": -0.31, "days_above_pct": 42.0, "n": 400}, {"name": "Green House Cardamom Mktg.India Pvt. L", "premium_pct": -0.43, "days_above_pct": 42.0, "n": 400}, {"name": "Header Systems (India) Limited", "premium_pct": -0.74, "days_above_pct": 28.0, "n": 415}, {"name": "STATE TRADING CORPORATION", "premium_pct": -0.98, "days_above_pct": 42.0, "n": 125}, {"name": "Green Cardamom Trading Company", "premium_pct": -1.33, "days_above_pct": 28.0, "n": 141}, {"name": "Spice More Trading Company", "premium_pct": -1.35, "days_above_pct": 28.0, "n": 224}, {"name": "CARDAMOM GROWERSFOREVER PRIVATE LIMITE", "premium_pct": -1.96, "days_above_pct": 27.0, "n": 373}, {"name": "Cardamom Planters' Association", "premium_pct": -3.05, "days_above_pct": 8.0, "n": 340}], "house_spread_pct": 3.9, "rotation": [{"house": "Mas Enterprises", "day": "Saturday", "share": 44.0}, {"house": "South Indian Green Cardamom Company Lt", "day": "Tuesday", "share": 42.0}, {"house": "Header Systems (India) Limited", "day": "Tuesday", "share": 41.0}, {"house": "The Kerala Cardamom Processing and Mar", "day": "Thursday", "share": 47.0}, {"house": "Green House Cardamom Mktg.India Pvt. L", "day": "Saturday", "share": 41.0}, {"house": "SUGANDHAGIRI SPICES PROMOTERS&TRADERS ", "day": "Wednesday", "share": 44.0}, {"house": "IDUKKI Dist.TRADITIONAL CARDAMOM PRODU", "day": "Monday", "share": 45.0}, {"house": "CARDAMOM GROWERSFOREVER PRIVATE LIMITE", "day": "Friday", "share": 42.0}], "dispersion": [{"bucket": "Low", "fwd_ret_pct": 2.5, "fwd_absmove_pct": 7.7}, {"bucket": "Q2", "fwd_ret_pct": -1.6, "fwd_absmove_pct": 6.9}, {"bucket": "Q3", "fwd_ret_pct": 1.4, "fwd_absmove_pct": 7.5}, {"bucket": "High", "fwd_ret_pct": 2.5, "fwd_absmove_pct": 8.4}], "price_series": [{"date": "2014-11-30", "price": 766.0}, {"date": "2015-01-31", "price": 862.0}, {"date": "2015-05-31", "price": 663.0}, {"date": "2015-06-30", "price": 661.0}, {"date": "2015-07-31", "price": 639.0}, {"date": "2015-08-31", "price": 635.0}, {"date": "2015-10-31", "price": 616.0}, {"date": "2015-11-30", "price": 611.0}, {"date": "2015-12-31", "price": 590.0}, {"date": "2016-01-31", "price": 586.0}, {"date": "2016-02-29", "price": 554.0}, {"date": "2016-03-31", "price": 536.0}, {"date": "2016-04-30", "price": 642.0}, {"date": "2016-05-31", "price": 693.0}, {"date": "2016-06-30", "price": 742.0}, {"date": "2016-07-31", "price": 794.0}, {"date": "2016-08-31", "price": 916.0}, {"date": "2016-09-30", "price": 956.0}, {"date": "2016-10-31", "price": 1031.0}, {"date": "2016-11-30", "price": 1256.0}, {"date": "2016-12-31", "price": 1205.0}, {"date": "2017-01-31", "price": 1351.0}, {"date": "2017-02-28", "price": 1319.0}, {"date": "2017-03-31", "price": 1193.0}, {"date": "2017-04-30", "price": 1035.0}, {"date": "2017-05-31", "price": 919.0}, {"date": "2017-06-30", "price": 943.0}, {"date": "2017-07-31", "price": 972.0}, {"date": "2017-08-31", "price": 1079.0}, {"date": "2017-09-30", "price": 1117.0}, {"date": "2017-10-31", "price": 917.0}, {"date": "2017-11-30", "price": 856.0}, {"date": "2017-12-31", "price": 910.0}, {"date": "2018-01-31", "price": 967.0}, {"date": "2018-02-28", "price": 984.0}, {"date": "2018-03-31", "price": 951.0}, {"date": "2018-04-30", "price": 918.0}, {"date": "2018-05-31", "price": 824.0}, {"date": "2018-06-30", "price": 915.0}, {"date": "2018-07-31", "price": 1017.0}, {"date": "2018-08-31", "price": 1120.0}, {"date": "2018-09-30", "price": 1266.0}, {"date": "2018-10-31", "price": 1196.0}, {"date": "2018-11-30", "price": 1299.0}, {"date": "2018-12-31", "price": 1316.0}, {"date": "2019-01-31", "price": 1446.0}, {"date": "2019-02-28", "price": 1415.0}, {"date": "2019-03-31", "price": 1473.0}, {"date": "2019-04-30", "price": 1811.0}, {"date": "2019-05-31", "price": 2432.0}, {"date": "2019-06-30", "price": 2859.0}, {"date": "2019-07-31", "price": 3502.0}, {"date": "2019-08-31", "price": 3374.0}, {"date": "2019-09-30", "price": 3030.0}, {"date": "2019-10-31", "price": 2600.0}, {"date": "2019-11-30", "price": 2780.0}, {"date": "2019-12-31", "price": 3173.0}, {"date": "2020-01-31", "price": 3779.0}, {"date": "2020-02-29", "price": 3307.0}, {"date": "2020-03-31", "price": 2654.0}, {"date": "2020-05-31", "price": 1770.0}, {"date": "2020-06-30", "price": 1537.0}, {"date": "2020-07-31", "price": 1627.0}, {"date": "2020-08-31", "price": 1694.0}, {"date": "2020-09-30", "price": 1628.0}, {"date": "2020-10-31", "price": 1467.0}, {"date": "2020-11-30", "price": 1478.0}, {"date": "2020-12-31", "price": 1733.0}, {"date": "2021-01-31", "price": 1613.0}, {"date": "2021-02-28", "price": 1449.0}, {"date": "2021-03-31", "price": 1359.0}, {"date": "2021-04-30", "price": 1205.0}, {"date": "2021-05-31", "price": 956.0}, {"date": "2021-06-30", "price": 1037.0}, {"date": "2021-07-31", "price": 1072.0}, {"date": "2021-08-31", "price": 1059.0}, {"date": "2021-09-30", "price": 1059.0}, {"date": "2021-10-31", "price": 1011.0}, {"date": "2021-11-30", "price": 1036.0}, {"date": "2021-12-31", "price": 944.0}, {"date": "2022-01-31", "price": 882.0}, {"date": "2022-02-28", "price": 922.0}, {"date": "2022-03-31", "price": 898.0}, {"date": "2022-04-30", "price": 905.0}, {"date": "2022-05-31", "price": 819.0}, {"date": "2022-06-30", "price": 836.0}, {"date": "2022-07-31", "price": 893.0}, {"date": "2022-08-31", "price": 973.0}, {"date": "2022-09-30", "price": 996.0}, {"date": "2022-10-31", "price": 951.0}, {"date": "2022-11-30", "price": 899.0}, {"date": "2022-12-31", "price": 867.0}, {"date": "2023-01-31", "price": 1016.0}, {"date": "2023-02-28", "price": 1349.0}, {"date": "2023-03-31", "price": 1399.0}, {"date": "2023-04-30", "price": 1279.0}, {"date": "2023-05-31", "price": 1067.0}, {"date": "2023-06-30", "price": 1140.0}, {"date": "2023-07-31", "price": 1394.0}, {"date": "2023-08-31", "price": 1988.0}, {"date": "2023-09-30", "price": 1838.0}, {"date": "2023-10-31", "price": 1654.0}, {"date": "2023-11-30", "price": 1523.0}, {"date": "2023-12-31", "price": 1634.0}, {"date": "2024-01-31", "price": 1643.0}, {"date": "2024-02-29", "price": 1492.0}, {"date": "2024-03-31", "price": 1440.0}, {"date": "2024-04-30", "price": 1789.0}, {"date": "2024-05-31", "price": 2096.0}, {"date": "2024-06-30", "price": 2360.0}, {"date": "2024-07-31", "price": 2229.0}, {"date": "2024-08-31", "price": 2207.0}, {"date": "2024-09-30", "price": 2281.0}, {"date": "2024-10-31", "price": 2273.0}, {"date": "2024-11-30", "price": 2728.0}, {"date": "2024-12-31", "price": 2911.0}, {"date": "2025-01-31", "price": 3058.0}, {"date": "2025-02-28", "price": 2918.0}, {"date": "2025-03-31", "price": 2705.0}, {"date": "2025-04-30", "price": 2533.0}, {"date": "2025-05-31", "price": 2217.0}, {"date": "2025-06-30", "price": 2480.0}, {"date": "2025-07-31", "price": 2606.0}, {"date": "2025-08-31", "price": 2513.0}, {"date": "2025-09-30", "price": 2501.0}, {"date": "2025-10-31", "price": 2468.0}, {"date": "2025-11-30", "price": 2450.0}, {"date": "2025-12-31", "price": 2420.0}, {"date": "2026-01-31", "price": 2492.0}, {"date": "2026-02-28", "price": 2468.0}], "factor_importance": [{"factor": "Monsoon rainfall (Idukki, cumulative)", "weight": 95, "note": "dominates the 90-day model; supply-side driver"}, {"factor": "Recent price momentum (lags & moving averages)", "weight": 80, "note": "strongest for 1-14 day moves"}, {"factor": "Cross-auction price dispersion", "weight": 62, "note": "leading indicator; top-3 feature at 7-14 days"}, {"factor": "Seasonality (lean vs harvest)", "weight": 58, "note": "calendar position"}, {"factor": "ENSO (El Nino / La Nina, lagged)", "weight": 50, "note": "6-12 month lag on climate"}, {"factor": "USD/INR exchange rate", "weight": 42, "note": "export competitiveness"}, {"factor": "Guatemala exports & global trade", "weight": 38, "note": "the other big producer"}, {"factor": "Price-to-cost ratio & cycle age", "weight": 35, "note": "structural / cobweb cycle"}]};
+const INK="#23291f", GREEN="#2f6b40", GREEN2="#3f8a52", GOLD="#c89b3c", RUST="#b5482f", LINE="#e6ddc8";
+Chart.defaults.font.family="Inter, system-ui, sans-serif";
+Chart.defaults.color="#525b46";
+const money = v => "₹"+Math.round(v).toLocaleString('en-IN');
+
+// meta + band
+document.getElementById('metaLine').textContent =
+  `Coverage ${D.coverage.start} to ${D.coverage.end} · ${D.coverage.days.toLocaleString()} trading days · ${D.coverage.auctions.toLocaleString()} individual auctions`;
+document.getElementById('cov').textContent = `${D.coverage.start} – ${D.coverage.end}`;
+const band = [
+  [money(D.price_overall.min), `low (${D.price_overall.min_date.slice(0,7)})`],
+  [money(D.price_overall.max), `peak (${D.price_overall.max_date.slice(0,7)})`],
+  [D.price_overall.ratio_max_min+"×", "peak-to-trough swing"],
+  ["+"+D.biggest_rally.pct+"%", "biggest 6-month rally"],
+];
+document.getElementById('band').innerHTML = band.map(b=>
+  `<div class="cell"><div class="big">${b[0]}</div><div class="lbl">${b[1]}</div></div>`).join('');
+
+// journey minis
+const jm=[
+  [money(D.price_overall.max), "2019 flood peak", false],
+  [D.biggest_crash.pct+"%", "2020 crash", true],
+  ["+"+D.biggest_rally.pct+"%", "2019 rally", false],
+  [money(D.price_overall.latest), "latest print", false],
+];
+document.getElementById('journeyMinis').innerHTML = jm.map(m=>
+  `<div class="mini"><div class="v ${m[2]?'bad':''}">${m[0]}</div><div class="k">${m[1]}</div></div>`).join('');
+
+// ---- price chart with regime bands ----
+const ps=D.price_series, labels=ps.map(p=>p.date.slice(0,7)), prices=ps.map(p=>p.price);
+const idxOf = d => { const k=d.slice(0,7); let b=0; for(let i=0;i<labels.length;i++){ if(labels[i]<=k) b=i; } return b; };
+const ann={};
+D.regimes.filter(r=>r.state!=='range' && Math.abs(r.chg_pct)>=20).forEach((r,i)=>{
+  ann['b'+i]={type:'box',xMin:idxOf(r.start),xMax:idxOf(r.end),
+    backgroundColor:r.state==='bull'?'rgba(63,138,82,.10)':'rgba(181,72,47,.10)',
+    borderWidth:0};
+});
+ann.peak={type:'point',xValue:idxOf(D.price_overall.max_date),yValue:D.price_overall.max,
+  radius:5,backgroundColor:GOLD,borderColor:'#fff',borderWidth:2};
+ann.peakLbl={type:'label',xValue:idxOf(D.price_overall.max_date),yValue:D.price_overall.max,
+  content:['2019 floods','peak '+money(D.price_overall.max)],position:'start',yAdjust:-26,
+  font:{size:11,weight:'700'},color:RUST,backgroundColor:'rgba(255,253,247,.85)',padding:4};
+new Chart(priceChart,{type:'line',data:{labels,datasets:[{data:prices,borderColor:GREEN,
+  borderWidth:2.5,pointRadius:0,tension:.3,fill:true,
+  backgroundColor:(c)=>{const a=c.chart.ctx.createLinearGradient(0,0,0,460);
+    a.addColorStop(0,'rgba(47,107,64,.20)');a.addColorStop(1,'rgba(47,107,64,0)');return a;}}]},
+  options:{maintainAspectRatio:false,plugins:{legend:{display:false},
+    annotation:{annotations:ann},
+    tooltip:{callbacks:{label:c=>money(c.parsed.y)}}},
+    scales:{x:{ticks:{maxTicksLimit:11,autoSkip:true},grid:{display:false}},
+      y:{ticks:{callback:money},grid:{color:LINE}}}}});
+
+// ---- factor chart ----
+const fi=D.factor_importance;
+new Chart(factorChart,{type:'bar',data:{labels:fi.map(f=>f.factor),
+  datasets:[{data:fi.map(f=>f.weight),backgroundColor:fi.map((f,i)=>
+    `rgba(47,107,64,${0.95-i*0.08})`),borderRadius:6}]},
+  options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>D.factor_importance[c.dataIndex].note}}},
+    scales:{x:{grid:{color:LINE},ticks:{display:false}},y:{grid:{display:false},
+      ticks:{font:{size:12.5}}}}}});
+
+// ---- seasonality ----
+const se=D.seasonality, sm=se.map(s=>s.month);
+new Chart(seasonChart,{data:{labels:sm,datasets:[
+  {type:'bar',label:'Seasonal premium (%)',data:se.map(s=>s.rel_to_avg_pct),
+   backgroundColor:se.map(s=>s.month===D.sell_best_month?GOLD:(s.rel_to_avg_pct>=0?GREEN2:RUST)),
+   borderRadius:6,yAxisID:'y'},
+  {type:'line',label:'Avg month-on-month change (%)',data:se.map(s=>s.avg_mom_pct),
+   borderColor:INK,borderDash:[5,4],borderWidth:2,pointRadius:3,pointBackgroundColor:INK,
+   tension:.3,yAxisID:'y'}]},
+  options:{maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{boxWidth:14,font:{size:12}}},
+    tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.parsed.y>0?'+':'')+c.parsed.y+'%'}}},
+    scales:{x:{grid:{display:false}},y:{grid:{color:LINE},
+      ticks:{callback:v=>(v>0?'+':'')+v+'%'}}}}});
+
+const peakMonths = se.filter(s=>s.rel_to_avg_pct>=10).map(s=>s.month).join(', ');
+document.getElementById('sellBest').innerHTML =
+  `Prices sit highest from mid-summer into early autumn — <b>${peakMonths}</b> all run roughly 10–14% above
+   their yearly average, with <b>${D.sell_best_month}</b> the single strongest month. A January bump follows the
+   new year. Holding stock for this window has historically paid about <b>${D.sell_premium_pct}% more</b>
+   than selling in the weakest month.`;
+const worstMom = se.reduce((a,b)=>b.avg_mom_pct<a.avg_mom_pct?b:a);
+document.getElementById('sellWorst').innerHTML =
+  `<b>${worstMom.month}</b> is where holders get hurt: it shows the steepest average drop of the year
+   (${worstMom.avg_mom_pct}% in a single month) as the main harvest floods the market. Spring (around
+   <b>${D.sell_worst_month}</b>) is the softest price patch. If you're sitting on stock, don't drift into
+   the autumn glut.`;
+
+// ---- planting ----
+const pl=D.plant;
+new Chart(plantChart,{type:'bar',data:{labels:pl.map(p=>p.plant_year),
+  datasets:[{data:pl.map(p=>p.multiple),
+    backgroundColor:pl.map(p=>p.multiple>=1.5?GREEN:(p.multiple>=1?GOLD:RUST)),borderRadius:6}]},
+  options:{maintainAspectRatio:false,plugins:{legend:{display:false},
+    annotation:{annotations:{be:{type:'line',yMin:1,yMax:1,borderColor:INK,borderWidth:1.5,
+      borderDash:[6,4],label:{display:true,content:'break-even',position:'end',
+      font:{size:10},color:INK,backgroundColor:'rgba(255,253,247,.8)'}}}},
+    tooltip:{callbacks:{label:c=>{const p=pl[c.dataIndex];
+      return [`Plant ${p.plant_year}: ${money(p.price_then)}`,`Harvest ~${p.plant_year+3}: ${money(p.price_harvest)}`,
+      `= ${p.multiple}× your money`];}}}},
+    scales:{x:{grid:{display:false}},y:{grid:{color:LINE},
+      ticks:{callback:v=>v+'×'},title:{display:true,text:'price multiple at harvest'}}}}});
+const pb=D.plant_best, pw=D.plant_worst;
+document.getElementById('plantBest').innerHTML =
+  `Planting in <b>${pb.plant_year}</b>, when the average price was just <b>${money(pb.price_then)}</b>,
+   meant harvesting into ~<b>${money(pb.price_harvest)}</b> — turning every rupee of crop value into
+   <b>${pb.multiple}×</b>. Cheap, unloved years are the planter's friend: low prices today mean
+   few new plants and tight supply tomorrow.`;
+document.getElementById('plantWorst').innerHTML =
+  `The opposite of <b>${pw.plant_year}</b>: with prices already euphoric at <b>${money(pw.price_then)}</b>,
+   everyone planted at once. Three years on the price had sunk to <b>${money(pw.price_harvest)}</b> —
+   just <b>${pw.multiple}×</b>, a real loss. Buying into the hype is how growers get trapped.`;
+
+// ---- houses ----
+const hs=D.houses.slice().sort((a,b)=>a.premium_pct-b.premium_pct);
+new Chart(houseChart,{type:'bar',data:{labels:hs.map(h=>h.name),
+  datasets:[{data:hs.map(h=>h.premium_pct),
+    backgroundColor:hs.map(h=>h.premium_pct>=0?GREEN2:RUST),borderRadius:5}]},
+  options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>{const h=hs[c.dataIndex];
+      return [(h.premium_pct>0?'+':'')+h.premium_pct+'% vs market',`beats the market on ${h.days_above_pct}% of days`];}}}},
+    scales:{x:{grid:{color:LINE},ticks:{callback:v=>(v>0?'+':'')+v+'%'}},
+      y:{grid:{display:false},ticks:{font:{size:11}}}}}});
+const top=D.houses[0], bot=D.houses[D.houses.length-1];
+document.getElementById('houseMinis').innerHTML=[
+  ['+'+top.premium_pct+'%', top.name.split(' ').slice(0,3).join(' '), false],
+  [top.days_above_pct+'%','days it beats market',false],
+  [bot.premium_pct+'%', bot.name.split(' ').slice(0,3).join(' '), true],
+  [D.house_spread_pct+'%','top-to-bottom gap',false],
+].map(m=>`<div class="mini"><div class="v ${m[2]?'bad':''}">${m[0]}</div><div class="k">${m[1]}</div></div>`).join('');
+document.getElementById('houseTake').innerHTML=
+  `The gap between the best- and worst-clearing house is about <b>${D.house_spread_pct}%</b> — on a tonne
+   of cardamom that is real money, repeated at every sale. The strongest houses (led by <b>${top.name}</b>)
+   beat the market on the majority of days; the weakest clear below it almost every time. Know where your lots
+   land, and favour the houses that consistently fetch more for comparable produce.`;
+
+// rotation
+document.getElementById('rotationCard').innerHTML =
+  '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px 24px">' +
+  D.rotation.map(r=>`<div style="display:flex;justify-content:space-between;border-bottom:1px dashed ${LINE};padding:7px 0">
+    <span style="font-weight:600">${r.house}</span>
+    <span style="color:var(--green)">${r.day} <span style="color:#9aa489">(${r.share}%)</span></span></div>`).join('') +
+  '</div>';
+
+// dispersion
+const dp=D.dispersion;
+new Chart(dispChart,{data:{labels:dp.map(d=>d.bucket+' dispersion'),datasets:[
+  {type:'bar',label:'Size of next 2-week move',data:dp.map(d=>d.fwd_absmove_pct),
+   backgroundColor:GREEN2,borderRadius:6,yAxisID:'y'},
+  {type:'line',label:'Direction (avg return)',data:dp.map(d=>d.fwd_ret_pct),
+   borderColor:GOLD,borderWidth:3,pointRadius:4,pointBackgroundColor:GOLD,tension:.3,yAxisID:'y'}]},
+  options:{maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{boxWidth:14,font:{size:12}}},
+    tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.parsed.y>0?'+':'')+c.parsed.y+'%'}}},
+    scales:{x:{grid:{display:false}},y:{grid:{color:LINE},ticks:{callback:v=>(v>0?'+':'')+v+'%'}}}}});
+
+// playbook
+const pbk=[
+  ['Respect the cycle.',`Cardamom swings ${D.price_overall.ratio_max_min}× between peaks and troughs. Today's price is a moment, not a trend.`],
+  ['Watch the rain, not the rumour.',`Idukki monsoon rainfall and the El Niño/La Niña cycle shape next year's supply more than any WhatsApp tip.`],
+  [`Sell into strength (${peakMonths.split(',')[0]}–${D.sell_best_month}).`,`The mid-year window pays ~${D.sell_premium_pct}% over the weakest month; avoid the ${worstMom.month} harvest glut.`],
+  ['Plant cheap, never hot.',`Fields planted in low-price years like ${pb.plant_year} returned ${pb.multiple}×; planting the ${pw.plant_year} peak meant a loss.`],
+  ['Mind the auction house.',`A ${D.house_spread_pct}% gap separates the best and worst houses for similar produce — it compounds every sale.`],
+  ['Read the disagreement.',`When same-day auction prices scatter, expect a bigger move ahead — and historically an upward one.`],
+];
+document.getElementById('playbook').innerHTML = pbk.map(p=>`<li><b>${p[0]}</b> ${p[1]}</li>`).join('');
+</script>
+</body>
+</html>
