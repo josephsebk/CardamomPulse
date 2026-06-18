@@ -13,7 +13,7 @@ from sklearn.preprocessing import StandardScaler
 
 from pipeline.config import (
     MODELS_DIR, MODEL_VERSION, WF_CONFIG, FEATURE_SELECTION_K,
-    MAX_SHORT_HORIZON_DEVIATION, ensure_dirs,
+    MAX_SHORT_HORIZON_DEVIATION, MAX_ANCHOR_AGE_DAYS, ensure_dirs,
 )
 from pipeline.features import (
     T1_FEATURES, MICRO_FEATURES, T2_FEATURES_DAILY, T2_FEATURES_MONTHLY,
@@ -563,6 +563,29 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     today = daily["date"].max()
     forecasts = {"forecast_date": today, "predictions": []}
 
+    # ── Data freshness gate ────────────────────────────────────────────────
+    # If the latest priced row is older than MAX_ANCHOR_AGE_DAYS relative to
+    # the system date, the scraper has been failing and every prediction will
+    # be silently anchored to a stale price level. Short-horizon models
+    # (≤7d) are useless in this state; we skip them and add a staleness flag
+    # so the webapp can warn users rather than show misleading numbers.
+    import datetime as _dt
+    _anchor_date = pd.Timestamp(today).date()
+    _sys_date = _dt.date.today()
+    _anchor_age = (_sys_date - _anchor_date).days
+    _data_stale = _anchor_age > MAX_ANCHOR_AGE_DAYS
+    if _data_stale:
+        log.warning(
+            f"Anchor date {_anchor_date} is {_anchor_age} days old "
+            f"(limit {MAX_ANCHOR_AGE_DAYS}). Short-horizon forecasts "
+            f"(≤7d) suppressed; longer horizons flagged as stale."
+        )
+        forecasts["data_stale"] = True
+        forecasts["anchor_date"] = str(_anchor_date)
+        forecasts["anchor_age_days"] = _anchor_age
+    else:
+        forecasts["data_stale"] = False
+
     # Helper: features and anchor price for the latest priced row.
     # The anchor MUST be the most recent actual price — a log-return forecast
     # is reconstructed as anchor * exp(return), so anchoring on an older row
@@ -598,24 +621,27 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
                 row[col] = medians[col]
         return row.values
 
-    # 1d–6d daily forecasts
-    for h in range(1, 7):
-        key = f"{h}d"
-        if key in models:
-            feats = models[key].get("features") or _available_feats(daily, FEATS_7D)
-            X, used, anchor = _last_row(daily, feats)
-            if X is not None:
-                ret = float(models[key]["model"].predict(X)[0])
-                pred = anchor * float(np.exp(ret))
-                target_date = (pd.Timestamp(today) + timedelta(days=h)).strftime("%Y-%m-%d")
-                forecasts["predictions"].append({
-                    "horizon_days": h, "target_date": target_date,
-                    "predicted_price": round(pred, 1),
-                })
+    # 1d–6d daily forecasts — suppressed when data is stale
+    if _data_stale:
+        log.warning("Skipping 1d–6d forecasts: anchor data too old.")
+    else:
+        for h in range(1, 7):
+            key = f"{h}d"
+            if key in models:
+                feats = models[key].get("features") or _available_feats(daily, FEATS_7D)
+                X, used, anchor = _last_row(daily, feats)
+                if X is not None:
+                    ret = float(models[key]["model"].predict(X)[0])
+                    pred = anchor * float(np.exp(ret))
+                    target_date = (pd.Timestamp(today) + timedelta(days=h)).strftime("%Y-%m-%d")
+                    forecasts["predictions"].append({
+                        "horizon_days": h, "target_date": target_date,
+                        "predicted_price": round(pred, 1),
+                    })
                 log.info(f"{h}-day forecast: ₹{pred:.0f} for {target_date}")
 
-    # 7-day
-    if "7d" in models:
+    # 7-day — also suppressed when data is stale
+    if not _data_stale and "7d" in models:
         feats = models["7d"].get("features") or _available_feats(daily, FEATS_7D)
         X, used, anchor = _last_row(daily, feats)
         if X is not None:
@@ -636,10 +662,11 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
             ret = float(models["14d"]["model"].predict(X)[0])
             pred = anchor * float(np.exp(ret))
             target_date = (pd.Timestamp(today) + timedelta(days=14)).strftime("%Y-%m-%d")
-            forecasts["predictions"].append({
-                "horizon_days": 14, "target_date": target_date,
-                "predicted_price": round(pred, 1),
-            })
+            entry = {"horizon_days": 14, "target_date": target_date,
+                     "predicted_price": round(pred, 1)}
+            if _data_stale:
+                entry["stale_data"] = True
+            forecasts["predictions"].append(entry)
             log.info(f"14-day forecast: ₹{pred:.0f} for {target_date}")
 
     # 28-day (stacked)
@@ -653,10 +680,11 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
             ret = 0.5 * p_lgb + 0.5 * p_ridge
             pred = anchor * float(np.exp(ret))
             target_date = (pd.Timestamp(today) + timedelta(days=28)).strftime("%Y-%m-%d")
-            forecasts["predictions"].append({
-                "horizon_days": 28, "target_date": target_date,
-                "predicted_price": round(pred, 1),
-            })
+            entry = {"horizon_days": 28, "target_date": target_date,
+                     "predicted_price": round(pred, 1)}
+            if _data_stale:
+                entry["stale_data"] = True
+            forecasts["predictions"].append(entry)
             log.info(f"28-day forecast: ₹{pred:.0f} for {target_date}")
 
     # 90-day (with prediction intervals)
@@ -673,12 +701,15 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
             lo = anchor * float(np.exp(ret - 1.28 * p_std[0]))  # 80% lower
             hi = anchor * float(np.exp(ret + 1.28 * p_std[0]))  # 80% upper
             target_date = (pd.Timestamp(today) + timedelta(days=90)).strftime("%Y-%m-%d")
-            forecasts["predictions"].append({
+            entry = {
                 "horizon_days": 90, "target_date": target_date,
                 "predicted_price": round(pred, 1),
                 "lower_bound": round(lo, 1),
                 "upper_bound": round(hi, 1),
-            })
+            }
+            if _data_stale:
+                entry["stale_data"] = True
+            forecasts["predictions"].append(entry)
             log.info(f"90-day forecast: ₹{pred:.0f} [{lo:.0f}–{hi:.0f}] for {target_date}")
 
     # Regime
@@ -701,13 +732,24 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
 def _sanity_check_forecasts(forecasts: dict, daily: pd.DataFrame) -> None:
     """Abort the run if the shortest-horizon forecast deviates implausibly
     from spot. Catches anchor/feature bugs that would otherwise publish a
-    phantom move (the stale-anchor bug produced a ~15% 1-day 'crash')."""
+    phantom move (the stale-anchor bug produced a ~15% 1-day 'crash').
+
+    Note: when data is stale the freshness gate in predict_all() has already
+    suppressed ≤7d forecasts, so this check only sees 14d+ entries. It still
+    validates them against the (stale) anchor; that's intentional — a 14d
+    forecast that deviates >10% from even a stale anchor is still a sign of
+    a model bug."""
     priced = daily["avg_price"].dropna()
-    preds = forecasts.get("predictions", [])
+    preds = [p for p in forecasts.get("predictions", []) if not p.get("stale_data")]
     if len(priced) == 0 or not preds:
         return
     spot = float(priced.iloc[-1])
-    nearest = min(preds, key=lambda p: p["horizon_days"])
+    # Only check short-horizon forecasts (≤14d) against the deviation limit;
+    # longer horizons legitimately move more.
+    short_preds = [p for p in preds if p["horizon_days"] <= 14]
+    if not short_preds:
+        return
+    nearest = min(short_preds, key=lambda p: p["horizon_days"])
     dev = abs(nearest["predicted_price"] / spot - 1)
     if dev > MAX_SHORT_HORIZON_DEVIATION:
         raise ValueError(

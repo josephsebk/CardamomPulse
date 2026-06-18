@@ -55,6 +55,16 @@ FEATURE_SELECTION_K = {
 # price row — not a real prediction.
 MAX_SHORT_HORIZON_DEVIATION = 0.10
 
+# Maximum age (calendar days) of the anchor row before predictions are
+# considered unreliable. When the daily scraper fails and falls back to the
+# XLS baseline (which can be months old) every prediction is silently
+# anchored to a stale price level — producing large systematic errors
+# without triggering MAX_SHORT_HORIZON_DEVIATION (which compares the
+# forecast against the stale anchor, not the real current price).
+# Short-horizon models (≤7d) are disabled outright; longer horizons get a
+# staleness warning flag that the webapp can surface to users.
+MAX_ANCHOR_AGE_DAYS = 5
+
 # ── Model versions ────────────────────────────────────────────────────────
 # v2.0: regression targets switched to log-returns
 # v2.1: walk-forward permutation feature selection; causal cycle features
