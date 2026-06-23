@@ -65,12 +65,24 @@ MAX_SHORT_HORIZON_DEVIATION = 0.10
 # staleness warning flag that the webapp can surface to users.
 MAX_ANCHOR_AGE_DAYS = 5
 
+# ── Conformal prediction intervals ─────────────────────────────────────────
+# Forecast bands are produced by wrapping the point forecasters in
+# split-conformal prediction, calibrated on walk-forward out-of-sample
+# residuals (return scale) and validated by prequential coverage. ALPHA is the
+# miscoverage rate, so 0.2 targets an 80% interval (matching the prior 90d
+# band). WINDOW limits daily-horizon calibration to the most recent residuals
+# so the band adapts to the current volatility regime; weekly/monthly horizons
+# have too few residuals to window and use all of them.
+CONFORMAL_ALPHA = 0.2
+CONFORMAL_WINDOW_DAILY = 500
+
 # ── Model versions ────────────────────────────────────────────────────────
 # v2.0: regression targets switched to log-returns
 # v2.1: walk-forward permutation feature selection; causal cycle features
 # v2.2: auction microstructure features (cross-auction dispersion, unsold
 #       share, auction count, lot size) in daily/weekly candidate pools
-MODEL_VERSION = "v2.2"
+# v2.3: conformal prediction intervals on all regression horizons
+MODEL_VERSION = "v2.3"
 
 # ── Pipeline schedule (IST offsets in comments) ──────────────────────────
 DAILY_RUN_HOUR_UTC = 12  # 6 PM IST = 12:30 UTC; run at 12 UTC
