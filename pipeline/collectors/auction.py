@@ -1,16 +1,23 @@
 """Collect daily cardamom auction prices from Spices Board / XLS fallback."""
 
+import datetime as dt
 import logging
 import re
+import time
 import numpy as np
 import pandas as pd
 import requests
-from pipeline.config import CSV_DIR
+from pipeline.config import CSV_DIR, MAX_ANCHOR_AGE_DAYS
 from pipeline.db import get_conn, get_latest_date
 
 log = logging.getLogger(__name__)
 
 SPICES_BOARD_URL = "https://www.indianspices.com/marketing/auction/small-cardamom.html"
+
+# Transient network failures scraping the Spices Board are common; retry a
+# few times with exponential backoff before falling back to the stale XLS.
+SCRAPE_RETRIES = 3
+SCRAPE_BACKOFF_S = 2
 
 # Regex to parse the ticker text format on the Spices Board page.
 # Each Small Cardamom entry looks like:
@@ -32,39 +39,56 @@ _TICKER_RE = re.compile(
 
 
 def scrape_auction_page() -> pd.DataFrame | None:
-    """Scrape today's auction data from indianspices.com ticker text."""
-    try:
-        resp = requests.get(SPICES_BOARD_URL, timeout=30, headers={
-            "User-Agent": "CardamomPulse/1.0 (price-research)"
-        })
-        resp.raise_for_status()
+    """Scrape today's auction data from indianspices.com ticker text.
 
-        # Strip HTML tags to get clean text for regex matching
-        clean = re.sub(r"<[^>]+>", "", resp.text)
-        clean = re.sub(r"\s+", " ", clean)
-
-        matches = _TICKER_RE.findall(clean)
-        if not matches:
-            log.warning("No Small Cardamom entries found in page ticker")
-            return None
-
-        rows = []
-        for m in matches:
-            rows.append({
-                "Date": pd.to_datetime(m[0].strip(), format="%d-%b-%Y", dayfirst=True),
-                "Auctioneer": m[1].strip(),
-                "Lots": float(m[2]),
-                "Qty_Arrived_Kg": float(m[3]),
-                "Qty_Sold_Kg": float(m[4]),
-                "MaxPrice": float(m[5]),
-                "AvgPrice": float(m[6]),
+    Retries transient network/HTTP failures with exponential backoff. Returns
+    None only when every attempt fails or the page contains no parseable
+    Small Cardamom entries (a parse miss is not retried — the page loaded but
+    held no data, so retrying would not help).
+    """
+    last_err = None
+    for attempt in range(1, SCRAPE_RETRIES + 1):
+        try:
+            resp = requests.get(SPICES_BOARD_URL, timeout=30, headers={
+                "User-Agent": "CardamomPulse/1.0 (price-research)"
             })
-        df = pd.DataFrame(rows)
-        log.info(f"Scraped {len(df)} Small Cardamom entries from Spices Board ticker")
-        return df
-    except Exception as e:
-        log.warning(f"Spices Board scrape failed: {e}")
-        return None
+            resp.raise_for_status()
+
+            # Strip HTML tags to get clean text for regex matching
+            clean = re.sub(r"<[^>]+>", "", resp.text)
+            clean = re.sub(r"\s+", " ", clean)
+
+            matches = _TICKER_RE.findall(clean)
+            if not matches:
+                log.warning("No Small Cardamom entries found in page ticker")
+                return None
+
+            rows = []
+            for m in matches:
+                rows.append({
+                    "Date": pd.to_datetime(m[0].strip(), format="%d-%b-%Y", dayfirst=True),
+                    "Auctioneer": m[1].strip(),
+                    "Lots": float(m[2]),
+                    "Qty_Arrived_Kg": float(m[3]),
+                    "Qty_Sold_Kg": float(m[4]),
+                    "MaxPrice": float(m[5]),
+                    "AvgPrice": float(m[6]),
+                })
+            df = pd.DataFrame(rows)
+            log.info(f"Scraped {len(df)} Small Cardamom entries from Spices "
+                     f"Board ticker (attempt {attempt})")
+            return df
+        except Exception as e:
+            last_err = e
+            if attempt < SCRAPE_RETRIES:
+                wait = SCRAPE_BACKOFF_S * (2 ** (attempt - 1))
+                log.warning(f"Spices Board scrape attempt {attempt}/"
+                            f"{SCRAPE_RETRIES} failed: {e}; retrying in {wait}s")
+                time.sleep(wait)
+
+    log.warning(f"Spices Board scrape failed after {SCRAPE_RETRIES} attempts: "
+                f"{last_err}")
+    return None
 
 
 def load_xls_fallback() -> pd.DataFrame:
@@ -144,12 +168,32 @@ def collect_auction() -> pd.DataFrame:
 
     # Try to scrape today's data and merge it in
     scraped = scrape_auction_page()
-    if scraped is not None and len(scraped) > 0:
+    scrape_ok = scraped is not None and len(scraped) > 0
+    if scrape_ok:
         raw = pd.concat([raw, scraped], ignore_index=True)
         raw = raw.drop_duplicates(subset=["Date", "Auctioneer"], keep="last")
         log.info(f"Merged {len(scraped)} scraped rows with XLS history")
 
     daily = aggregate_daily(raw)
+
+    # Escalate when the freshest auction row we hold is too old. Without a
+    # working scrape every forecast anchors on the frozen XLS baseline (which
+    # can be months stale); the downstream freshness gate then suppresses the
+    # short-horizon forecasts. That silent degradation only gets fixed if the
+    # failure is loud, so emit an ERROR (not a quiet WARNING) here — this is
+    # the signal that the scraper, not the model, needs attention.
+    latest = pd.to_datetime(daily["date"]).max()
+    age_days = (dt.date.today() - latest.date()).days
+    if age_days > MAX_ANCHOR_AGE_DAYS:
+        log.error(
+            f"Freshest auction data is {age_days} days old "
+            f"(latest={latest.date()}, limit={MAX_ANCHOR_AGE_DAYS}). "
+            f"Live scrape {'returned no usable rows' if not scrape_ok else 'succeeded but data is still stale'}; "
+            f"short-horizon forecasts will be suppressed until the scrape recovers."
+        )
+    elif not scrape_ok:
+        log.warning("Live scrape unavailable but stored auction data is still "
+                    "within the freshness window; proceeding on cached data.")
 
     # Upsert into DB
     conn = get_conn()
