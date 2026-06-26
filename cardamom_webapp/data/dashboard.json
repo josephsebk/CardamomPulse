@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-25T15:23:41.162181Z",
+  "updated_at": "2026-06-26T15:10:43.858858Z",
   "spot_price": {
     "date": "2026-06-25",
     "avg_price": 2789.6110559225144,
@@ -12,43 +12,43 @@
     {
       "horizon_days": 1,
       "target_date": "2026-06-26",
-      "predicted_price": 2795.7,
+      "predicted_price": 2790.7,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 2,
       "target_date": "2026-06-27",
-      "predicted_price": 2793.5,
+      "predicted_price": 2761.9,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 3,
       "target_date": "2026-06-28",
-      "predicted_price": 2793.0,
+      "predicted_price": 2775.5,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 4,
       "target_date": "2026-06-29",
-      "predicted_price": 2779.4,
+      "predicted_price": 2745.5,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 5,
       "target_date": "2026-06-30",
-      "predicted_price": 2829.8,
+      "predicted_price": 2789.6,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 6,
       "target_date": "2026-07-01",
-      "predicted_price": 2796.5,
+      "predicted_price": 2727.3,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 7,
       "target_date": "2026-07-02",
-      "predicted_price": 2764.7,
+      "predicted_price": 2721.5,
       "model_version": "v2.2"
     },
     {
