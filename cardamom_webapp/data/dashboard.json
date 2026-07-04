@@ -1,81 +1,81 @@
 {
-  "updated_at": "2026-07-03T14:42:06.769682Z",
+  "updated_at": "2026-07-04T14:09:43.967449Z",
   "spot_price": {
-    "date": "2026-07-03",
-    "avg_price": 2871.3773620989173,
-    "max_price": 3804.0,
-    "daily_change": 22.3,
-    "daily_change_pct": 0.78,
-    "volume_kg": 74083.90000000001
+    "date": "2026-07-04",
+    "avg_price": 2764.7307105187856,
+    "max_price": 3814.0,
+    "daily_change": -106.6,
+    "daily_change_pct": -3.71,
+    "volume_kg": 140830.9
   },
   "forecasts": [
     {
       "horizon_days": 1,
-      "target_date": "2026-07-04",
-      "predicted_price": 2890.5,
+      "target_date": "2026-07-05",
+      "predicted_price": 2762.4,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 2,
-      "target_date": "2026-07-05",
-      "predicted_price": 2870.4,
+      "target_date": "2026-07-06",
+      "predicted_price": 2785.7,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 3,
-      "target_date": "2026-07-06",
-      "predicted_price": 2899.1,
+      "target_date": "2026-07-07",
+      "predicted_price": 2814.1,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 4,
-      "target_date": "2026-07-07",
-      "predicted_price": 2852.1,
+      "target_date": "2026-07-08",
+      "predicted_price": 2814.7,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 5,
-      "target_date": "2026-07-08",
-      "predicted_price": 2933.7,
+      "target_date": "2026-07-09",
+      "predicted_price": 2885.5,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 6,
-      "target_date": "2026-07-09",
-      "predicted_price": 2887.5,
+      "target_date": "2026-07-10",
+      "predicted_price": 2830.7,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 7,
-      "target_date": "2026-07-10",
-      "predicted_price": 2843.6,
+      "target_date": "2026-07-11",
+      "predicted_price": 2808.2,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 14,
-      "target_date": "2026-07-17",
-      "predicted_price": 3087.7,
+      "target_date": "2026-07-18",
+      "predicted_price": 2979.6,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 28,
-      "target_date": "2026-07-31",
-      "predicted_price": 2910.5,
+      "target_date": "2026-08-01",
+      "predicted_price": 2815.6,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 90,
-      "target_date": "2026-10-01",
-      "predicted_price": 2948.4,
+      "target_date": "2026-10-02",
+      "predicted_price": 2838.9,
       "model_version": "v2.2",
-      "lower_bound": 2194.4,
-      "upper_bound": 3961.3
+      "lower_bound": 2112.9,
+      "upper_bound": 3814.2
     }
   ],
   "regime": {
     "bear_probability": 0.011,
     "label": "LOW",
-    "forecast_date": "2026-07-03"
+    "forecast_date": "2026-07-04"
   },
   "model_version": "v2.2"
 }
