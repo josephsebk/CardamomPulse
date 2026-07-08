@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-07T15:25:26.469795Z",
+  "updated_at": "2026-07-08T14:56:00.608503Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -81,16 +81,16 @@
       },
       {
         "year": 2026,
-        "avg_price": 2523.0,
+        "avg_price": 2525.0,
         "max_price": 6103.0,
         "min_price": 1999.0,
-        "total_volume_mt": 14597.0
+        "total_volume_mt": 14713.0
       }
     ],
     "date_range": {
       "start": "2014-11-07",
-      "end": "2026-07-07",
-      "total_trading_days": 3127
+      "end": "2026-07-08",
+      "total_trading_days": 3128
     },
     "all_time_high": 4675.0,
     "all_time_low": 495.0
@@ -101,7 +101,7 @@
         "month": 1,
         "month_name": "Jan",
         "avg_price": 1734.0,
-        "deviation_pct": 11.3
+        "deviation_pct": 11.2
       },
       {
         "month": 2,
@@ -113,7 +113,7 @@
         "month": 3,
         "month_name": "Mar",
         "avg_price": 1477.0,
-        "deviation_pct": -5.2
+        "deviation_pct": -5.3
       },
       {
         "month": 4,
@@ -131,19 +131,19 @@
         "month": 6,
         "month_name": "Jun",
         "avg_price": 1503.0,
-        "deviation_pct": -3.5
+        "deviation_pct": -3.6
       },
       {
         "month": 7,
         "month_name": "Jul",
-        "avg_price": 1538.0,
-        "deviation_pct": -1.3
+        "avg_price": 1543.0,
+        "deviation_pct": -1.0
       },
       {
         "month": 8,
         "month_name": "Aug",
         "avg_price": 1615.0,
-        "deviation_pct": 3.7
+        "deviation_pct": 3.6
       },
       {
         "month": 9,
@@ -167,13 +167,13 @@
         "month": 12,
         "month_name": "Dec",
         "avg_price": 1601.0,
-        "deviation_pct": 2.8
+        "deviation_pct": 2.7
       }
     ],
     "best_months": [
       "Jan",
       "Sep",
-      "Aug"
+      "Feb"
     ],
     "worst_months": [
       "Mar",
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 2831.0,
+      "end_price": 2818.0,
       "peak_price": 3182.0,
       "trough_price": 1205.0,
-      "change_pct": 110.3
+      "change_pct": 109.3
     }
   ],
   "drivers": {
@@ -240,12 +240,12 @@
       "impact_note": "Guatemala supplies 60-70% of global cardamom exports. The 2024-25 thrips crisis collapsed exports, driving Indian prices up."
     },
     "rainfall": {
-      "last_90d_rain_mm": 707.0,
+      "last_90d_rain_mm": 721.0,
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
-      "current_rate": 94.96,
-      "monthly_change_pct": -1.26,
+      "current_rate": 95.54,
+      "monthly_change_pct": -0.26,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -254,20 +254,20 @@
       {
         "planting_year": 2022,
         "harvest_window": "2025-2029",
-        "avg_harvest_price": 2547.0,
+        "avg_harvest_price": 2548.0,
         "estimated_roi_pct": 420.0
       },
       {
         "planting_year": 2021,
         "harvest_window": "2024-2028",
-        "avg_harvest_price": 2405.0,
+        "avg_harvest_price": 2406.0,
         "estimated_roi_pct": 423.0
       },
       {
         "planting_year": 2020,
         "harvest_window": "2023-2027",
-        "avg_harvest_price": 2165.0,
-        "estimated_roi_pct": 403.0
+        "avg_harvest_price": 2166.0,
+        "estimated_roi_pct": 404.0
       }
     ],
     "worst_years": [
@@ -367,7 +367,7 @@
   "farmer_qa": [
     {
       "question": "When is the best time to sell my harvest?",
-      "answer": "Historically, Jan-Sep and Aug fetch the highest prices (+11.3% above annual average). Avoid selling in Mar-Apr when prices typically dip -8.9% below average.",
+      "answer": "Historically, Jan-Sep and Feb fetch the highest prices (+11.2% above annual average). Avoid selling in Mar-Apr when prices typically dip -8.9% below average.",
       "category": "selling"
     },
     {
@@ -392,7 +392,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92831/kg are 4.4x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b92818/kg are 4.4x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
