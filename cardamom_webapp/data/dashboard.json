@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-11T14:01:31.296237Z",
+  "updated_at": "2026-07-12T14:06:58.725068Z",
   "spot_price": {
     "date": "2026-07-11",
     "avg_price": 2785.8286206743765,
@@ -12,64 +12,64 @@
     {
       "horizon_days": 1,
       "target_date": "2026-07-12",
-      "predicted_price": 2792.3,
+      "predicted_price": 2789.0,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 2,
       "target_date": "2026-07-13",
-      "predicted_price": 2813.8,
+      "predicted_price": 2815.1,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 3,
       "target_date": "2026-07-14",
-      "predicted_price": 2775.8,
+      "predicted_price": 2814.5,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 4,
       "target_date": "2026-07-15",
-      "predicted_price": 2828.4,
+      "predicted_price": 2810.7,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 5,
       "target_date": "2026-07-16",
-      "predicted_price": 2888.8,
+      "predicted_price": 2864.7,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 6,
       "target_date": "2026-07-17",
-      "predicted_price": 2898.2,
+      "predicted_price": 2909.1,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 7,
       "target_date": "2026-07-18",
-      "predicted_price": 2809.0,
+      "predicted_price": 2756.2,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 14,
       "target_date": "2026-07-25",
-      "predicted_price": 2945.1,
+      "predicted_price": 3083.7,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 28,
       "target_date": "2026-08-08",
-      "predicted_price": 2805.0,
+      "predicted_price": 2828.1,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 90,
       "target_date": "2026-10-09",
-      "predicted_price": 2845.9,
+      "predicted_price": 2846.9,
       "model_version": "v2.2",
-      "lower_bound": 2120.8,
-      "upper_bound": 3819.1
+      "lower_bound": 2121.6,
+      "upper_bound": 3820.2
     }
   ],
   "regime": {
