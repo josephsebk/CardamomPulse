@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-01T14:07:07.538436Z",
+  "updated_at": "2026-08-02T14:11:39.299404Z",
   "spot_price": {
     "date": "2026-08-01",
     "avg_price": 3100.6835551216705,
@@ -12,68 +12,68 @@
     {
       "horizon_days": 1,
       "target_date": "2026-08-02",
-      "predicted_price": 3104.4,
+      "predicted_price": 3098.7,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 2,
       "target_date": "2026-08-03",
-      "predicted_price": 3118.8,
+      "predicted_price": 3090.2,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 3,
       "target_date": "2026-08-04",
-      "predicted_price": 3113.6,
+      "predicted_price": 3069.9,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 4,
       "target_date": "2026-08-05",
-      "predicted_price": 3167.9,
+      "predicted_price": 3211.6,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 5,
       "target_date": "2026-08-06",
-      "predicted_price": 3226.8,
+      "predicted_price": 3159.4,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 6,
       "target_date": "2026-08-07",
-      "predicted_price": 3138.3,
+      "predicted_price": 3228.5,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 7,
       "target_date": "2026-08-08",
-      "predicted_price": 3364.5,
+      "predicted_price": 3229.7,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 14,
       "target_date": "2026-08-15",
-      "predicted_price": 3424.6,
+      "predicted_price": 3361.6,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 28,
       "target_date": "2026-08-29",
-      "predicted_price": 3064.4,
+      "predicted_price": 3100.1,
       "model_version": "v2.2"
     },
     {
       "horizon_days": 90,
       "target_date": "2026-10-30",
-      "predicted_price": 3107.8,
+      "predicted_price": 3109.4,
       "model_version": "v2.2",
-      "lower_bound": 2316.7,
-      "upper_bound": 4169.0
+      "lower_bound": 2321.1,
+      "upper_bound": 4165.3
     }
   ],
   "regime": {
-    "bear_probability": 0.009,
+    "bear_probability": 0.023,
     "label": "LOW",
     "forecast_date": "2026-08-01"
   },
