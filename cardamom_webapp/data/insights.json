@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-02T14:11:39.360422Z",
+  "updated_at": "2026-08-03T15:25:26.037425Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -81,16 +81,16 @@
       },
       {
         "year": 2026,
-        "avg_price": 2595.0,
+        "avg_price": 2598.0,
         "max_price": 7070.0,
         "min_price": 1999.0,
-        "total_volume_mt": 16575.0
+        "total_volume_mt": 16646.0
       }
     ],
     "date_range": {
       "start": "2014-11-07",
-      "end": "2026-08-01",
-      "total_trading_days": 3148
+      "end": "2026-08-03",
+      "total_trading_days": 3149
     },
     "all_time_high": 4675.0,
     "all_time_low": 495.0
@@ -101,19 +101,19 @@
         "month": 1,
         "month_name": "Jan",
         "avg_price": 1734.0,
-        "deviation_pct": 10.6
+        "deviation_pct": 10.5
       },
       {
         "month": 2,
         "month_name": "Feb",
         "avg_price": 1614.0,
-        "deviation_pct": 3.0
+        "deviation_pct": 2.9
       },
       {
         "month": 3,
         "month_name": "Mar",
         "avg_price": 1477.0,
-        "deviation_pct": -5.8
+        "deviation_pct": -5.9
       },
       {
         "month": 4,
@@ -125,7 +125,7 @@
         "month": 5,
         "month_name": "May",
         "avg_price": 1420.0,
-        "deviation_pct": -9.4
+        "deviation_pct": -9.5
       },
       {
         "month": 6,
@@ -142,14 +142,14 @@
       {
         "month": 8,
         "month_name": "Aug",
-        "avg_price": 1621.0,
-        "deviation_pct": 3.4
+        "avg_price": 1626.0,
+        "deviation_pct": 3.7
       },
       {
         "month": 9,
         "month_name": "Sep",
         "avg_price": 1691.0,
-        "deviation_pct": 7.9
+        "deviation_pct": 7.8
       },
       {
         "month": 10,
@@ -161,7 +161,7 @@
         "month": 11,
         "month_name": "Nov",
         "avg_price": 1544.0,
-        "deviation_pct": -1.5
+        "deviation_pct": -1.6
       },
       {
         "month": 12,
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 3101.0,
+      "end_price": 3073.0,
       "peak_price": 3320.0,
       "trough_price": 1205.0,
-      "change_pct": 130.3
+      "change_pct": 128.2
     }
   ],
   "drivers": {
@@ -240,12 +240,12 @@
       "impact_note": "Guatemala supplies 60-70% of global cardamom exports. The 2024-25 thrips crisis collapsed exports, driving Indian prices up."
     },
     "rainfall": {
-      "last_90d_rain_mm": 1032.0,
+      "last_90d_rain_mm": 1056.0,
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
-      "current_rate": 95.39,
-      "monthly_change_pct": -0.14,
+      "current_rate": 95.33,
+      "monthly_change_pct": -0.21,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -254,19 +254,19 @@
       {
         "planting_year": 2022,
         "harvest_window": "2025-2029",
-        "avg_harvest_price": 2583.0,
+        "avg_harvest_price": 2584.0,
         "estimated_roi_pct": 427.0
       },
       {
         "planting_year": 2021,
         "harvest_window": "2024-2028",
-        "avg_harvest_price": 2429.0,
+        "avg_harvest_price": 2430.0,
         "estimated_roi_pct": 428.0
       },
       {
         "planting_year": 2020,
         "harvest_window": "2023-2027",
-        "avg_harvest_price": 2183.0,
+        "avg_harvest_price": 2184.0,
         "estimated_roi_pct": 408.0
       }
     ],
@@ -367,7 +367,7 @@
   "farmer_qa": [
     {
       "question": "When is the best time to sell my harvest?",
-      "answer": "Historically, Jan-Sep and Jul fetch the highest prices (+10.6% above annual average). Avoid selling in Mar-Apr when prices typically dip -9.4% below average.",
+      "answer": "Historically, Jan-Sep and Jul fetch the highest prices (+10.5% above annual average). Avoid selling in Mar-Apr when prices typically dip -9.5% below average.",
       "category": "selling"
     },
     {
@@ -392,7 +392,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b93100/kg are 4.8x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b93073/kg are 4.8x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
