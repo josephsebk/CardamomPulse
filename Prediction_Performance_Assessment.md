@@ -144,27 +144,54 @@ exact `target_date` match against an auction day, so forecasts targeting non-auc
 are silently dropped — 55% of 1-day forecasts, ~50% at 2–6 days. The published track
 record is therefore a non-random subsample, not the full record.
 
-**3. The price series is mean-reverting, and nothing exploits it.** Lag-1 return
-autocorrelation is **-0.129** (~7 SE, n=3150) and variance ratios run **0.69–0.87** across
-q=2…60 — persistent multi-scale mean reversion. A single-feature linear rule (regress the
-h-ahead log return on `log price - MA20`, coefficients fit only on pre-2026 data, applied
-strictly out-of-sample) beats:
+**3. The series is mean-reverting, but that does not convert into forecast skill.**
+Lag-1 return autocorrelation is **-0.129** (~7 SE, n=3150) and variance ratios run
+**0.69–0.87** across q=2…60 — persistent multi-scale mean reversion.
 
-| | vs naive | vs current model |
-|---|---:|---:|
-| 1–7 day | +0.7% to +2.3% | +1.1% to +13.2% |
-| 28 day | **+17.5%** | **+23.1%** |
-| 90 day | **+15.0%** | **+34.0%** |
+An initial single-window test (coefficients fit pre-2026, scored on the Feb–Aug 2026
+forecasts) suggested a one-feature rule beat the naive baseline at all 10 horizons.
+**It does not survive proper validation.** Under walk-forward CV across the full
+2014–2026 history and all regimes (`backtest_mean_reversion.py`), no configuration beats
+the random walk at any horizon — the earlier window was a single regime with n=25–35 at
+the long horizons.
 
-It beats the naive baseline at **all 10 horizons** and the full GBM/BayesianRidge stack at
-**9 of 10** — one feature and one coefficient against a 15–20 feature selected ensemble.
+Skill (`1 - MAE/MAE_naive`; >0 beats the random walk):
 
-**Caveat worth taking seriously:** some short-horizon reversion is likely a microstructure
-artifact. `avg_price` is a volume-weighted mean over whichever lots cleared that session,
-so daily lot-quality composition shifts induce negative autocorrelation that is not
-economically real. The 1–7 day gains (<2.5%) are small enough to be entirely this. The 28d
-and 90d gains are large enough, and at the wrong timescale, to be more credible — but rest
-on n=33 and n=25 within a single rally regime.
+| horizon | T1 only (current) | T1 + reversion | reversion only, ridge |
+|---:|---:|---:|---:|
+| 1d  | −0.169 | −0.142 | **−0.002** |
+| 7d  | −0.248 | −0.275 | **−0.000** |
+| 14d | −0.483 | −0.441 | **−0.010** |
+| 28d | −0.252 | −0.329 | **−0.021** |
+| 90d | −0.589 | −0.588 | −0.132 (−0.096 Bayesian) |
+
+The ordering is monotone and consistent: **fewer features and less model capacity move
+you closer to the naive baseline**. Adding reversion terms to the existing feature set
+barely helps and at 7d and 28d actively hurts. The problem is not a missing feature — it
+is capacity far exceeding the available signal.
+
+The actionable finding is therefore simplification rather than augmentation. A plain
+ridge on reversion terms matches the naive baseline while the current stack is 17–59%
+worse; at 14d that is MAPE 0.069 vs 0.093, and at 90d 0.208 vs 0.272.
+
+**A contributing design flaw:** every T1 feature is computed on `price.shift(1)`
+(`features.py:43-86`), including the mean-reversion ones. The anchor and the target are
+both measured from *today's* price, so the models are asked to predict a move starting
+from a level they cannot observe — today's deviation from its own moving average is
+never available to them. Today's auction has closed by the 6 PM IST run and `predict_all`
+already anchors on it, so exposing it is causal. Doing so helps at 1d and 14d but not at
+7d; it is a real flaw, not the dominant one.
+
+**On the composition-artifact question.** A natural worry is that reversion in a
+volume-weighted average of heterogeneous lots is an artifact of daily composition drift
+rather than economics. Rebuilding the index with auctioneer fixed effects (21
+auctioneers, effects spanning 6.1%) makes reversion *stronger*, not weaker — lag-1
+−0.149 vs −0.110, VR(10) 0.70 vs 0.72 — which is the opposite of what an artifact story
+predicts. That rules out the **auctioneer** channel. It does **not** rule out grade-mix
+drift *within* auctions (8mm AGEB vs 7mm AGB vs 6mm AGS), which is the more likely
+channel and which the available data cannot test: the Spices Board XLS carries no
+grade-level detail. Settling it needs a matched-grade or hedonic index built from
+per-lot data we do not currently collect.
 
 **Realistic expectations by horizon.** Mean absolute moves since Feb 2026 are 1.84%
 (1 session), 4.92% (7), 9.22% (28), 23.71% (90). A perfect random walk scores about these
