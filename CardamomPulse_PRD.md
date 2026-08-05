@@ -227,10 +227,16 @@ Not: "AI predicting prices."
 ### Page 3 — Track Record
 
 **Summary Metrics**
-- MAPE by horizon
-- Directional accuracy
-- Total predictions made
-- Rolling 30-day accuracy
+- MAPE by horizon, shown next to the naive (no-change) baseline for the same horizon
+- Skill score (`1 − MAE/MAE_naive`) and Theil's U — the model's actual contribution
+- Directional accuracy, against a 50% coin flip
+- Total predictions made (true count of the validation log)
+- Rolling 30-prediction window per horizon
+
+> These cards must be bound to `track_record.json`. As of August 2026 the
+> figures rendered on the page are hardcoded HTML and overstate measured
+> directional accuracy by roughly 38 points — see
+> `Prediction_Performance_Assessment.md`.
 
 **Charts**
 - Predicted vs actual (toggleable by horizon)
@@ -303,6 +309,10 @@ Features are organized in tiers, with different horizons consuming different tie
 
 **Target definition (model v2.0, June 2026):** All regression models predict the log-return `log(price[t+h] / price[t])` rather than the raw price level; the published forecast is reconstructed as `price[t] × exp(predicted return)`. Tree ensembles cannot predict outside the range of target values seen in training, so level-target models cap out at historical price extremes — exactly when forecasts matter most (e.g. the 2019–20 record highs). Returns are roughly stationary across price regimes, which removes that ceiling and cut walk-forward MAPE by 30–50% on the 1–28 day horizons (see Appendix). The regime classifier was already return-based.
 
+**Calendar-aligned daily targets (model v2.3, August 2026):** The daily frame holds one row per auction session (~5.14 per week), so the previous positional `shift(-h)` target stepped *h auction sessions* while forecasts are published and scored at `run_date + h` *calendar days*. Measured over this dataset, `shift(-7)` spanned 8.82 calendar days on average and `shift(-14)` spanned 17.65 — the daily models were trained on a horizon roughly 26% longer than the one they were evaluated against. Daily targets now settle on the first auction at or after `date + h days` (`make_return_target_calendar`), the same rule validation applies, so training, publishing and scoring pose an identical question. Weekly and monthly frames are produced by calendar resampling and were already aligned. `meta.pkl` records the target as `log_return_calendar`; models trained on either older definition are rejected and retrained rather than silently reused.
+
+**Naive baseline reporting (model v2.3, August 2026):** Because forecasts are reconstructed as `anchor × exp(return)`, predicting a zero return *is* the random walk, and a price-level MAPE is largely carried by the anchor rather than the model. Walk-forward CV and `track_record.json` therefore report the naive baseline alongside every model metric, plus skill (`1 − MAE/MAE_naive`), Theil's U, directional accuracy and beat-naive rate. Headline error can no longer be read in isolation.
+
 **Causal cycle features (model v2.1, June 2026):** The cobweb-cycle features (`months_since_trough`, `cycle_age_norm`) were rebuilt causally — trailing-only smoothing, with a price trough only counted once confirmed by subsequent periods. The original centered-window construction let trough locations leak future prices into the regime and 90-day models; all benchmarks below use the causal version.
 
 **Walk-forward cross-validation** throughout — no random splits. Expanding window with purge gaps to prevent lookahead bias. CV metrics are computed on reconstructed price levels, so MAPE/MAE remain comparable across model versions. The regime classifier is additionally tracked with walk-forward AUC/Brier on pooled out-of-sample probabilities.
@@ -314,14 +324,16 @@ Features are organized in tiers, with different horizons consuming different tie
 
 1. COLLECT — Scrape today's auction results + fetch weather/financial data
 2. STORE — Upsert into SQLite database
-3. VALIDATE — Compare yesterday's predictions against today's actual price
+3. VALIDATE — Settle every matured, unscored forecast in the ledger
 4. PREDICT — Run all models on latest features → 8 weekly + 90-day + regime
 5. ARCHIVE — Store predictions with timestamp in forecast ledger (immutable)
 6. EXPORT — Generate JSON files for website consumption
 7. DEPLOY — Push JSON to static hosting (Vercel/Cloudflare)
 ```
 
-**Weekly (Sunday 2 AM IST):** Full model retrain on latest data. Walk-forward CV metrics logged.
+**Forecast settlement (v2.3, August 2026):** Step 3 previously compared only forecasts whose `target_date` matched today's auction date exactly. Auctions run ~5.14 days a week, so ~41% of calendar target dates host no auction (55% at the 1-day horizon) and those forecasts were never scored — making the published track record a non-random subsample of the ledger rather than the whole of it. Forecasts now settle against the first auction at or after their target date, within `TARGET_MATCH_TOLERANCE_DAYS`, and the full ledger is rescanned each run so anything an earlier run skipped is backfilled. Settlement is idempotent. Applied to the existing ledger this raised scored forecasts from 378 to 645.
+
+**Weekly (Sunday 2 AM IST):** Full model retrain on latest data. Walk-forward CV metrics logged, each horizon reported against the naive baseline it must beat.
 
 **Monthly (1st of month):** Fetch ENSO, trade data, Google Trends. Regenerate festival calendar if needed.
 

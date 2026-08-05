@@ -1,7 +1,38 @@
 # Prediction Performance Assessment
 
 **Date:** 2026-08-05
-**Scope:** 378 matured forecasts across 10 horizons, forecast run dates 2026-02-06 → 2026-08-05.
+**Scope:** 378 matured forecasts across 10 horizons, forecast run dates 2026-02-06 →
+2026-08-05. (The settlement fix described below later raised this to 645 by scoring
+forecasts the old exact-date rule had silently dropped.)
+
+## Summary
+
+The pipeline is well-engineered and the forecast ledger is honestly kept — forecasts are
+written before outcomes exist, so a real out-of-sample assessment was possible. On that
+evidence the forecasts carry **no measurable predictive value over "tomorrow's price is
+today's price"**. Pooled directional accuracy is 50.0% and pooled predicted-vs-realized
+return correlation is −0.064. The 90-day model is significantly *worse* than naive
+(DM p < 0.001). Headline accuracy shown in the app is hardcoded and overstates measured
+directional accuracy by roughly 38 points.
+
+**Fixed in v2.3** (code merged, effective for the daily models after the next retrain):
+
+| | Was | Now |
+|---|---|---|
+| Daily training horizon | `shift(-h)` stepped auction *sessions*: 8.82 days at h=7, 17.65 at h=14 | Settles on the first auction at or after `date + h days` — 7.10 and 14.10 |
+| Forecast settlement | Exact `target_date` auction match only; 41.5% never scored | First auction at or after target date; scored forecasts 378 → 645 |
+| Reported skill | Price-level MAPE alone, carried by the anchor | Naive baseline, skill, Theil's U, directional accuracy, beat-naive rate |
+| `total_predictions` | Pinned at 200 by a `LIMIT 200` query | True count of the validation log |
+| Per-horizon window | Advertised 30, actually ~16–23 | Genuine 30 per horizon |
+
+**Investigated and rejected:** mean-reversion terms. The series is genuinely
+mean-reverting, but that does not convert into forecast skill under walk-forward
+validation — see below.
+
+**Still open:** the app's hardcoded metric cards are not bound to `track_record.json`;
+the 1–7 day product publishes point forecasts for what is close to a martingale;
+`finance.py:92` raises `KeyError: 'date'` when the Yahoo fetch fails and it falls back
+to CSV, which would take down a production run during a Yahoo outage.
 
 ## How this was measured
 
@@ -204,14 +235,78 @@ baseline to walk-forward CV and to `track_record.json` and report skill scores r
 raw MAPE; bind the UI metrics to real data; then test mean-reversion terms at 28d/90d
 against the naive baseline before adding any further model complexity.
 
+## Reconciliation with the forecasting literature
+
+A deep-research review of the field (prompt in `Deep_Research_Prompt_Forecasting_SOTA.md`)
+was run against these diagnostics. Recording where it agrees, where measurement overrides
+it, and where it identifies something we cannot yet test.
+
+**Confirmed by measurement.** Price-level MAPE is an anchor-flattered illusion and should
+be replaced by loss differentials against a baseline (implemented in v2.3). High-capacity
+ML in a low signal-to-noise series is a bias-variance failure — our skill table shows a
+monotone improvement as capacity falls. Walk-forward permutation top-k selection is itself
+a source of selection bias. Slow-moving macro predictors (USD/INR, gold, Nifty) do not
+belong in short-horizon models. The 1–7 day horizon is plausibly a near-martingale where
+no method should be expected to add value — our walk-forward results agree.
+
+**Where measurement overrides the review.** The review ranks a 20-day moving-average
+linear rule first and expects it to "reliably beat the random walk" under Clark-West. It
+does not. Measured over the full history it *matches* the naive baseline (skill −0.000 to
+−0.021) and never beats it. The Schwartz-Smith short-term/long-term decomposition is a
+useful explanation for why such a rule dominates the GBM stack, but it does not deliver
+skill over persistence in this series.
+
+**Where we disagree on method.** The review recommends forward-filling non-auction days
+onto a continuous calendar index so that targets align. Doing so would make a Sunday
+target equal to Friday's already-known price — a partially-known target that inflates
+apparent accuracy, severely at the 1-day horizon. v2.3 instead settles against the first
+*actual* auction at or after the target date, which always scores against a genuinely new
+observation. We consider this the more honest construction and have kept it.
+
+**Where the review identifies something we cannot currently test.** It attributes the
+−0.129 lag-1 autocorrelation to lot-quality composition drift. Our two-way fixed-effects
+test rules out the *auctioneer* channel — controlling for it makes reversion stronger, not
+weaker. But the review points at grade-mix drift *within* auctions (8mm AGEB / 7mm AGB /
+6mm AGS), which our test does not touch and which is the more plausible channel. The
+Spices Board XLS carries no grade-level detail (only date, auctioneer, lots, quantities,
+max and average price), so the recommended matched-grade and hedonic index tests are not
+runnable on data we collect today. **Settling this requires a collection change, not an
+analysis change** — and it determines whether short-horizon forecasting should exist at
+all.
+
+**Most valuable unimplemented recommendation.** Adaptive Conformal Inference for
+prediction intervals. It is the honest way to ship a 1–7 day product that has no
+point-forecast skill: distribution-free coverage that widens automatically when a regime
+breaks, rather than a point number implying precision the model does not have.
+
+**Worth noting on bias correction.** Mincer-Zarnowitz recalibration is well-motivated for
+the 90-day model given its +0.565 correlation alongside a large one-sided bias. But it
+needs matured outcomes, and at 90 days only ~4 arrive per year — a causal rolling
+correction tested here never accumulated enough history to activate. Expect it to
+calibrate slowly.
+
 ## Bottom line
 
-The pipeline is well-engineered and the track record is honestly kept, but on this
-evidence the forecasts carry no measurable predictive value over "tomorrow's price is
-today's price". The 90-day model is actively worse than that, and is the one publishing
-the widest numbers to farmers. The headline accuracy figures shown in the app are
-hardcoded and overstate measured directional accuracy by roughly 38 points.
+The measurement scaffolding here is better than the models it measures, and that is what
+made this assessment possible. The models themselves add nothing over persistence, and
+adding features has not been the answer — every configuration tested moved *closer* to
+the naive baseline as capacity fell, never past it.
 
-Before this is relied on for selling decisions, the naive baseline should become a
-permanent part of the reported track record, and the displayed metrics should be bound
-to `track_record.json`.
+The remaining work is therefore not a better model. In priority order:
+
+1. **Bind the displayed metrics to `track_record.json`.** The app currently advertises 88%
+   directional accuracy against a measured 50.0%. This is farmer-facing and is the one
+   item with a real-world cost attached.
+2. **Stop publishing long-horizon point forecasts that lose to persistence.** At 90 days
+   the model is significantly worse than naive and carries a 100% one-sided error. Either
+   default to the naive baseline or withhold the horizon until something beats it.
+3. **Replace point forecasts with calibrated intervals at 1–7 days**, via Adaptive
+   Conformal Inference. The series is close to a martingale there; an interval is an
+   honest product, a point forecast is not.
+4. **Collect grade-level auction data.** Whether short-horizon reversion is real or a
+   grade-mix artifact cannot be settled with what is stored today, and the answer decides
+   whether the short-horizon product has any basis at all.
+
+Every claim in this document is reproducible from the repository:
+`backtest_mean_reversion.py` for the skill tables, and the forecast ledger reconstructed
+from the git history of `cardamom_webapp/data/archive.csv` for the live track record.
