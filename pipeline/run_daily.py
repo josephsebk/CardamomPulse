@@ -91,12 +91,22 @@ def step_validate(today: str):
     from pipeline.validate import validate_predictions
     log.info("═══ STEP 3: VALIDATE ═══")
     results = validate_predictions(today)
-    if results:
-        for r in results:
-            log.info(f"  {r['horizon_days']}d: pred=₹{r['predicted']:.0f} "
-                     f"actual=₹{r['actual']:.0f} err={r['pct_error']:.1%}")
-    else:
+    if not results:
         log.info("  No predictions to validate today")
+        return
+    # The first run after the v2.3 settlement fix backfills every forecast a
+    # prior exact-date-match run skipped, so cap the per-row detail.
+    for r in results[-20:]:
+        settled = ("" if r["actual_date"] == r["date"]
+                   else f" (settled {r['actual_date']})")
+        naive = ("" if r["naive_abs_error"] is None else
+                 f" naive_err=₹{r['naive_abs_error']:.0f}"
+                 f" {'WIN' if r['beat_naive'] else 'loss'}")
+        log.info(f"  {r['horizon_days']}d: pred=₹{r['predicted']:.0f} "
+                 f"actual=₹{r['actual']:.0f} err={r['pct_error']:.1%}"
+                 f"{naive}{settled}")
+    if len(results) > 20:
+        log.info(f"  ... and {len(results) - 20} earlier forecasts backfilled")
 
 
 def step_train(daily, weekly, monthly):

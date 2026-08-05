@@ -149,9 +149,23 @@ def init_db():
         actual_price    REAL,
         abs_error       REAL,
         pct_error       REAL,
+        actual_date     TEXT,
+        anchor_price    REAL,
+        naive_abs_error REAL,
+        naive_pct_error REAL,
         created_at      TEXT DEFAULT (datetime('now')),
         UNIQUE(date, horizon_days)
     )""")
+
+    # Migration for databases created before v2.3. actual_date records which
+    # auction actually settled the forecast (target dates without an auction
+    # are settled by the next one), and the anchor/naive columns store the
+    # random-walk benchmark so skill scores can be reported.
+    existing_val = {r[1] for r in cur.execute("PRAGMA table_info(validation_log)")}
+    for col, coltype in [("actual_date", "TEXT"), ("anchor_price", "REAL"),
+                         ("naive_abs_error", "REAL"), ("naive_pct_error", "REAL")]:
+        if col not in existing_val:
+            cur.execute(f"ALTER TABLE validation_log ADD COLUMN {col} {coltype}")
 
     conn.commit()
     conn.close()
