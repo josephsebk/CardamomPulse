@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-01T16:50:14.817634Z",
+  "updated_at": "2026-09-02T16:47:09.179598Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -81,16 +81,16 @@
       },
       {
         "year": 2026,
-        "avg_price": 2654.0,
+        "avg_price": 2656.0,
         "max_price": 7070.0,
         "min_price": 1999.0,
-        "total_volume_mt": 18333.0
+        "total_volume_mt": 18409.0
       }
     ],
     "date_range": {
       "start": "2014-11-07",
-      "end": "2026-09-01",
-      "total_trading_days": 3169
+      "end": "2026-09-02",
+      "total_trading_days": 3170
     },
     "all_time_high": 4675.0,
     "all_time_low": 495.0
@@ -101,7 +101,7 @@
         "month": 1,
         "month_name": "Jan",
         "avg_price": 1734.0,
-        "deviation_pct": 9.9
+        "deviation_pct": 9.8
       },
       {
         "month": 2,
@@ -113,7 +113,7 @@
         "month": 3,
         "month_name": "Mar",
         "avg_price": 1477.0,
-        "deviation_pct": -6.4
+        "deviation_pct": -6.5
       },
       {
         "month": 4,
@@ -143,13 +143,13 @@
         "month": 8,
         "month_name": "Aug",
         "avg_price": 1722.0,
-        "deviation_pct": 9.2
+        "deviation_pct": 9.1
       },
       {
         "month": 9,
         "month_name": "Sep",
-        "avg_price": 1697.0,
-        "deviation_pct": 7.5
+        "avg_price": 1702.0,
+        "deviation_pct": 7.9
       },
       {
         "month": 10,
@@ -167,7 +167,7 @@
         "month": 12,
         "month_name": "Dec",
         "avg_price": 1601.0,
-        "deviation_pct": 1.5
+        "deviation_pct": 1.4
       }
     ],
     "best_months": [
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 3024.0,
+      "end_price": 3036.0,
       "peak_price": 3320.0,
       "trough_price": 1205.0,
-      "change_pct": 124.6
+      "change_pct": 125.5
     }
   ],
   "drivers": {
@@ -240,12 +240,12 @@
       "impact_note": "Guatemala supplies 60-70% of global cardamom exports. The 2024-25 thrips crisis collapsed exports, driving Indian prices up."
     },
     "rainfall": {
-      "last_90d_rain_mm": 1315.0,
+      "last_90d_rain_mm": 1300.0,
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
-      "current_rate": 94.94,
-      "monthly_change_pct": -0.41,
+      "current_rate": 94.96,
+      "monthly_change_pct": -0.14,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -254,7 +254,7 @@
       {
         "planting_year": 2022,
         "harvest_window": "2025-2029",
-        "avg_harvest_price": 2612.0,
+        "avg_harvest_price": 2613.0,
         "estimated_roi_pct": 433.0
       },
       {
@@ -367,7 +367,7 @@
   "farmer_qa": [
     {
       "question": "When is the best time to sell my harvest?",
-      "answer": "Historically, Jan-Aug and Sep fetch the highest prices (+9.9% above annual average). Avoid selling in Mar-Apr when prices typically dip -10.0% below average.",
+      "answer": "Historically, Jan-Aug and Sep fetch the highest prices (+9.8% above annual average). Avoid selling in Mar-Apr when prices typically dip -10.0% below average.",
       "category": "selling"
     },
     {
@@ -392,7 +392,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b93023/kg are 4.7x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b93036/kg are 4.7x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
