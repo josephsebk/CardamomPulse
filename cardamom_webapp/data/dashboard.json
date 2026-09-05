@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-04T16:32:56.807900Z",
+  "updated_at": "2026-09-05T15:27:34.499086Z",
   "spot_price": {
     "date": "2026-09-04",
     "avg_price": 3078.650320075325,
@@ -36,7 +36,7 @@
     {
       "horizon_days": 5,
       "target_date": "2026-09-09",
-      "predicted_price": 2980.2,
+      "predicted_price": 2972.0,
       "model_version": "v2.2"
     },
     {
@@ -48,7 +48,7 @@
     {
       "horizon_days": 7,
       "target_date": "2026-09-11",
-      "predicted_price": 3033.8,
+      "predicted_price": 3036.5,
       "model_version": "v2.2"
     },
     {
