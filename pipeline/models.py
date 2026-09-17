@@ -13,7 +13,7 @@ from sklearn.preprocessing import StandardScaler
 
 from pipeline.config import (
     MODELS_DIR, MODEL_VERSION, WF_CONFIG, FEATURE_SELECTION_K,
-    MAX_SHORT_HORIZON_DEVIATION, ensure_dirs,
+    MAX_SHORT_HORIZON_DEVIATION, TARGET_MATCH_TOLERANCE_DAYS, ensure_dirs,
 )
 from pipeline.features import (
     T1_FEATURES, MICRO_FEATURES, T2_FEATURES_DAILY, T2_FEATURES_MONTHLY,
@@ -70,13 +70,57 @@ def _available_feats(df: pd.DataFrame, feat_list: list[str]) -> list[str]:
 
 def make_return_target(df: pd.DataFrame, horizon: int,
                        price_col: str = "avg_price") -> pd.Series:
-    """Log-return target: log(price[t+h] / price[t]).
+    """Log-return target: log(price[t+h] / price[t]), h in ROW steps.
 
     Returns are roughly stationary across price regimes, so tree models can
     forecast levels outside the training range (predicted price is
     reconstructed as price[t] * exp(predicted return)).
+
+    Only valid where one row is one calendar period — i.e. the weekly and
+    monthly frames, which are produced by calendar resampling. The daily frame
+    is indexed by auction sessions, not days; use make_return_target_calendar
+    for it.
     """
     return np.log(df[price_col].shift(-horizon) / df[price_col])
+
+
+def make_return_target_calendar(df: pd.DataFrame, horizon_days: int,
+                                price_col: str = "avg_price",
+                                date_col: str = "date",
+                                tolerance_days: int = TARGET_MATCH_TOLERANCE_DAYS
+                                ) -> pd.Series:
+    """Log-return target aligned to CALENDAR days on the auction-indexed frame.
+
+    The daily frame holds one row per auction session (~5.14 per week), so a
+    positional shift(-h) spans ~1.36*h calendar days: shift(-7) averaged 8.82
+    days and shift(-14) averaged 17.65 over this dataset. Forecasts are
+    published and validated at run_date + h calendar days, so a positional
+    target trains the model on a materially longer horizon than the one it is
+    scored on.
+
+    The target here is the first auction at or after date + horizon_days,
+    within tolerance_days — the same settlement rule validate.py applies, so
+    training, publishing and scoring stay consistent. Rows with no qualifying
+    auction (end of series, long holiday) yield NaN and drop out of training.
+    """
+    dates = pd.to_datetime(df[date_col])
+    current = pd.to_numeric(df[price_col], errors="coerce")
+
+    priced = pd.DataFrame({"_key": dates, "_future": current}).dropna(
+        subset=["_future"]).sort_values("_key")
+    want = pd.DataFrame({
+        "_key": dates + pd.Timedelta(days=horizon_days),
+        "_pos": np.arange(len(df)),
+    }).sort_values("_key")
+
+    matched = pd.merge_asof(
+        want, priced, on="_key", direction="forward",
+        tolerance=pd.Timedelta(days=tolerance_days),
+    )
+
+    future = pd.Series(np.nan, index=df.index, dtype=float)
+    future.iloc[matched["_pos"].to_numpy()] = matched["_future"].to_numpy()
+    return np.log(future / current)
 
 
 # ── Walk-Forward Cross-Validation ────────────────────────────────────────
@@ -97,7 +141,7 @@ def walk_forward_cv(df: pd.DataFrame, features: list[str], target_col: str,
     anchors = df_clean[anchor_col].values if anchor_col else None
     n = len(df_clean)
 
-    all_preds, all_actuals = [], []
+    all_preds, all_actuals, all_naive = [], [], []
     fold = 0
 
     i = min_train
@@ -118,6 +162,11 @@ def walk_forward_cv(df: pd.DataFrame, features: list[str], target_col: str,
             a = anchors[i: i + eval_win]
             preds = a * np.exp(preds)
             y_test = a * np.exp(y_test)
+            # The naive "no change" forecast is the anchor itself: the model
+            # reconstructs price as anchor*exp(return), so predicting a zero
+            # return IS the random walk. Scoring against it isolates the only
+            # thing the model contributes.
+            all_naive.extend(a)
 
         all_preds.extend(preds)
         all_actuals.extend(y_test)
@@ -125,7 +174,9 @@ def walk_forward_cv(df: pd.DataFrame, features: list[str], target_col: str,
         i += step
 
     if not all_preds:
-        return {"mape": np.nan, "mae": np.nan, "rmse": np.nan, "r2": np.nan, "folds": 0}
+        return {"mape": np.nan, "mae": np.nan, "rmse": np.nan, "r2": np.nan,
+                "folds": 0, "naive_mape": np.nan, "naive_mae": np.nan,
+                "skill": np.nan, "theil_u": np.nan}
 
     preds = np.array(all_preds)
     actuals = np.array(all_actuals)
@@ -139,7 +190,25 @@ def walk_forward_cv(df: pd.DataFrame, features: list[str], target_col: str,
     ss_tot = np.sum((actuals - np.mean(actuals)) ** 2)
     r2 = float(1 - ss_res / max(ss_tot, 1e-10))
 
-    return {"mape": mape, "mae": mae, "rmse": rmse, "r2": r2, "folds": fold}
+    out = {"mape": mape, "mae": mae, "rmse": rmse, "r2": r2, "folds": fold,
+           "naive_mape": np.nan, "naive_mae": np.nan,
+           "skill": np.nan, "theil_u": np.nan}
+
+    if all_naive:
+        naive = np.array(all_naive)
+        n_err = np.abs(naive - actuals)
+        naive_mae = float(np.mean(n_err))
+        naive_rmse = float(np.sqrt(np.mean(n_err ** 2)))
+        out["naive_mape"] = float(np.mean(n_err / np.abs(actuals).clip(min=1)))
+        out["naive_mae"] = naive_mae
+        # skill > 0 means the model beats the random walk; theil_u < 1 likewise
+        out["skill"] = float(1 - mae / naive_mae) if naive_mae > 0 else np.nan
+        out["theil_u"] = float(rmse / naive_rmse) if naive_rmse > 0 else np.nan
+        # direction relative to the anchor, vs a 50% coin flip
+        out["dir_acc"] = float(np.mean(
+            np.sign(preds - naive) == np.sign(actuals - naive)))
+
+    return out
 
 
 def walk_forward_auc(df: pd.DataFrame, features: list[str], target_col: str,
@@ -276,6 +345,20 @@ def _gbc_regime():
 
 # ── Train all models ─────────────────────────────────────────────────────
 
+def _log_cv(name: str, cv: dict) -> None:
+    """Log a CV result alongside the naive baseline it must beat."""
+    skill, theil = cv.get("skill"), cv.get("theil_u")
+    base = (f"{name} WF-CV: MAPE={cv['mape']:.3f}, MAE={cv['mae']:.1f}")
+    if skill is None or np.isnan(skill):
+        log.info(base)
+        return
+    verdict = "BEATS naive" if skill > 0 else "WORSE than naive"
+    log.info(f"{base}, naive MAPE={cv['naive_mape']:.3f} "
+             f"MAE={cv['naive_mae']:.1f} | skill={skill:+.3f} "
+             f"TheilU={theil:.3f} dir={cv.get('dir_acc', float('nan')):.1%} "
+             f"-> {verdict}")
+
+
 def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
               monthly: pd.DataFrame) -> dict:
     """Train all models on full data and save to disk. Returns metrics + models."""
@@ -284,7 +367,10 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     selected = {}  # horizon-group -> feature list, persisted in meta.pkl
 
     # ── Short-horizon feature set (shared by 1d–7d, ranked on 7d) ────
-    daily["target_7d"] = make_return_target(daily, 7)
+    # Daily targets are calendar-aligned: the frame is indexed by auction
+    # sessions, so a positional shift would train on a longer horizon than
+    # the one these forecasts are published and scored against.
+    daily["target_7d"] = make_return_target_calendar(daily, 7)
     k_short = FEATURE_SELECTION_K.get("short")
     if k_short:
         cand = _available_feats(daily, FEATS_DAILY_CANDIDATES)
@@ -300,12 +386,12 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     for h in range(1, 7):
         key = f"{h}d"
         target_col = f"target_{key}"
-        daily[target_col] = make_return_target(daily, h)
+        daily[target_col] = make_return_target_calendar(daily, h)
         cv = walk_forward_cv(daily, feats_short, target_col,
                              lambda _h=h: _gbr_short(_h),
                              **WF_CONFIG["daily"], purge=h,
                              anchor_col="avg_price")
-        log.info(f"{h}-day WF-CV: MAPE={cv['mape']:.3f}, MAE={cv['mae']:.1f}")
+        _log_cv(f"{h}-day", cv)
 
         df_train = daily.dropna(subset=[target_col] + feats_short)
         m = _gbr_short(h)
@@ -318,7 +404,7 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     cv_7d = walk_forward_cv(daily, feats_7d, "target_7d", _gbr_7d,
                             **WF_CONFIG["daily"], purge=7,
                             anchor_col="avg_price")
-    log.info(f"7-day WF-CV: MAPE={cv_7d['mape']:.3f}, MAE={cv_7d['mae']:.1f}")
+    _log_cv("7-day", cv_7d)
 
     df_train = daily.dropna(subset=["target_7d"] + feats_7d)
     m7 = _gbr_7d()
@@ -327,7 +413,7 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     results["7d"] = {"model": m7, "features": feats_7d, "cv": cv_7d}
 
     # ── 14-day model ─────────────────────────────────────────────────
-    daily["target_14d"] = make_return_target(daily, 14)
+    daily["target_14d"] = make_return_target_calendar(daily, 14)
     k_14d = FEATURE_SELECTION_K.get("14d")
     if k_14d:
         cand = _available_feats(daily, FEATS_DAILY_CANDIDATES)
@@ -341,7 +427,7 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     cv_14d = walk_forward_cv(daily, feats_14d, "target_14d", _gbr_14d,
                              **WF_CONFIG["daily"], purge=14,
                              anchor_col="avg_price")
-    log.info(f"14-day WF-CV: MAPE={cv_14d['mape']:.3f}, MAE={cv_14d['mae']:.1f}")
+    _log_cv("14-day", cv_14d)
 
     df_train = daily.dropna(subset=["target_14d"] + feats_14d)
     m14 = _gbr_14d()
@@ -353,11 +439,12 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     # No selection here: the manual T1-T5 set beat every selected subset
     feats_28d = _available_feats(weekly, FEATS_28D_CANDIDATES)
     selected["28d"] = feats_28d
+    # weekly frame is calendar-resampled (W-FRI), so 4 rows == 28 calendar days
     weekly["target_28d"] = make_return_target(weekly, 4)  # 4 weeks forward
     cv_28d = walk_forward_cv(weekly, feats_28d, "target_28d", _gbr_28d,
                              **WF_CONFIG["weekly"], purge=4,
                              anchor_col="avg_price")
-    log.info(f"28-day WF-CV: MAPE={cv_28d['mape']:.3f}, MAE={cv_28d['mae']:.1f}")
+    _log_cv("28-day", cv_28d)
 
     df_train = weekly.dropna(subset=["target_28d"] + feats_28d)
     if len(df_train) > 20:
@@ -403,7 +490,7 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     cv_90d = walk_forward_cv(monthly_90, feats_90d, "target_90d",
                              _bayesian_90d, **WF_CONFIG["monthly"], purge=3,
                              anchor_col="avg_price")
-    log.info(f"90-day WF-CV: MAPE={cv_90d['mape']:.3f}, MAE={cv_90d['mae']:.1f}")
+    _log_cv("90-day", cv_90d)
 
     df_train = monthly_90.dropna(subset=["target_90d"])
     if len(df_train) > 20:
@@ -459,7 +546,8 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     # Marker so load_models() can reject pickles trained on a different
     # target definition (pre-v2.0 models predicted price levels), plus the
     # per-horizon feature lists the saved models were trained with
-    joblib.dump({"model_version": MODEL_VERSION, "target": "log_return",
+    joblib.dump({"model_version": MODEL_VERSION,
+                 "target": "log_return_calendar",
                  "features": selected},
                 str(MODELS_DIR / "meta.pkl"))
 
@@ -472,20 +560,23 @@ def load_models() -> dict:
     """Load all saved models from disk."""
     ensure_dirs()
 
-    # Regression models predict log-returns since v2.0; refuse to load
-    # older pickles whose outputs are price levels — exp() of a level
-    # would produce garbage forecasts. Returning {} triggers a retrain.
+    # Regression models predict log-returns since v2.0, and since v2.3 the
+    # daily targets are calendar-aligned rather than stepped by auction
+    # session. Refuse to load pickles built on either older target definition:
+    # pre-v2.0 outputs are price levels (exp() of a level is garbage), and
+    # pre-v2.3 daily models answer a horizon ~26% longer than the one they are
+    # scored on. Returning {} triggers a retrain.
     meta_path = MODELS_DIR / "meta.pkl"
     if not meta_path.exists():
         log.warning("No model metadata found — saved models predate the "
-                    "log-return target; retraining required")
+                    "calendar-aligned log-return target; retraining required")
         return {}
     try:
         meta = joblib.load(str(meta_path))
     except Exception as e:
         log.warning(f"Could not read model metadata ({e}) — retraining required")
         return {}
-    if meta.get("target") != "log_return":
+    if meta.get("target") != "log_return_calendar":
         log.warning(f"Saved models use target {meta.get('target')!r} — "
                     "retraining required")
         return {}

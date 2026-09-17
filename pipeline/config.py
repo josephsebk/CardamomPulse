@@ -55,12 +55,29 @@ FEATURE_SELECTION_K = {
 # price row — not a real prediction.
 MAX_SHORT_HORIZON_DEVIATION = 0.10
 
+# ── Forecast settlement ───────────────────────────────────────────────────
+# Auctions run ~5.14 days a week, so ~41% of calendar target dates never host
+# an auction. A forecast for such a date is settled against the first auction
+# on or after it, within this many days. Matching only on an exact date left
+# those forecasts permanently unvalidated (55% of 1-day forecasts) and made
+# the published track record a non-random subsample of the ledger.
+# The same rule defines the daily training target, so training, publishing and
+# validation all answer the identical question.
+TARGET_MATCH_TOLERANCE_DAYS = 7
+
 # ── Model versions ────────────────────────────────────────────────────────
 # v2.0: regression targets switched to log-returns
 # v2.1: walk-forward permutation feature selection; causal cycle features
 # v2.2: auction microstructure features (cross-auction dispersion, unsold
 #       share, auction count, lot size) in daily/weekly candidate pools
-MODEL_VERSION = "v2.2"
+# v2.3: daily targets aligned to calendar days. shift(-h) on the daily frame
+#       steps h auction SESSIONS, but forecasts are published and scored at
+#       run_date + h CALENDAR days; at 5.14 sessions/week shift(-7) averaged
+#       8.82 calendar days and shift(-14) averaged 17.65, so the daily models
+#       were trained on a horizon ~26% longer than the one they were scored
+#       against. Weekly/monthly frames resample on calendar boundaries and
+#       were already aligned.
+MODEL_VERSION = "v2.3"
 
 # ── Pipeline schedule (IST offsets in comments) ──────────────────────────
 DAILY_RUN_HOUR_UTC = 12  # 6 PM IST = 12:30 UTC; run at 12 UTC

@@ -4,11 +4,68 @@ import json
 import logging
 from datetime import datetime
 
+import numpy as np
 import pandas as pd
 from pipeline.config import EXPORT_DIR, MODEL_VERSION, ensure_dirs
 from pipeline.db import get_conn
 
 log = logging.getLogger(__name__)
+
+# Most-recent validated forecasts summarised per horizon in track_record.json
+TRACK_RECORD_WINDOW = 30
+
+
+def _horizon_metrics(subset: pd.DataFrame) -> dict:
+    """Summarise validated forecasts against the naive baseline.
+
+    A price-level MAPE on its own flatters the models: forecasts are built as
+    anchor*exp(return), so the last known auction price supplies most of the
+    apparent accuracy and the number looks good even when the model adds
+    nothing. `skill` (1 - MAE/MAE_naive) and `theil_u` (RMSE ratio) measure
+    the part the model actually contributes; both are reported so the headline
+    error can never be read in isolation.
+    """
+    n = len(subset)
+    metrics = {
+        "n": n,
+        "mape": round(float(subset["pct_error"].mean()), 4),
+        "mae": round(float(subset["abs_error"].mean()), 1),
+        "rmse": round(float((subset["abs_error"] ** 2).mean() ** 0.5), 1),
+        "hit_5pct": round(float((subset["pct_error"] <= 0.05).mean()), 3),
+        "naive_mape": None, "naive_mae": None, "naive_rmse": None,
+        "skill": None, "theil_u": None, "beat_naive_rate": None,
+        "directional_accuracy": None,
+    }
+
+    # naive columns are absent on rows validated before the v2.3 migration
+    if "naive_abs_error" not in subset.columns:
+        return metrics
+    paired = subset.dropna(subset=["naive_abs_error", "naive_pct_error"])
+    if paired.empty:
+        return metrics
+
+    naive_mae = float(paired["naive_abs_error"].mean())
+    naive_rmse = float((paired["naive_abs_error"] ** 2).mean() ** 0.5)
+    model_mae = float(paired["abs_error"].mean())
+    model_rmse = float((paired["abs_error"] ** 2).mean() ** 0.5)
+
+    metrics["naive_mape"] = round(float(paired["naive_pct_error"].mean()), 4)
+    metrics["naive_mae"] = round(naive_mae, 1)
+    metrics["naive_rmse"] = round(naive_rmse, 1)
+    if naive_mae > 0:
+        metrics["skill"] = round(1 - model_mae / naive_mae, 3)
+    if naive_rmse > 0:
+        metrics["theil_u"] = round(model_rmse / naive_rmse, 3)
+    metrics["beat_naive_rate"] = round(
+        float((paired["abs_error"] < paired["naive_abs_error"]).mean()), 3)
+
+    directional = paired.dropna(subset=["anchor_price"])
+    if not directional.empty:
+        pred_dir = np.sign(directional["predicted_price"] - directional["anchor_price"])
+        act_dir = np.sign(directional["actual_price"] - directional["anchor_price"])
+        metrics["directional_accuracy"] = round(float((pred_dir == act_dir).mean()), 3)
+
+    return metrics
 
 
 def export_json():
@@ -95,36 +152,39 @@ def export_json():
     })
 
     # ── 3. track_record.json — validation metrics ────────────────────
+    # Read the whole log, not a global LIMIT: the per-horizon window below
+    # needs its own most-recent rows. A shared LIMIT 200 split across ~10
+    # horizons capped each one at ~20, so the advertised 30-observation
+    # window was never actually reached.
     validations = pd.read_sql(
-        "SELECT * FROM validation_log ORDER BY date DESC LIMIT 200", conn
+        "SELECT * FROM validation_log ORDER BY date DESC", conn
     )
+    total_predictions = int(pd.read_sql(
+        "SELECT COUNT(*) AS n FROM validation_log", conn
+    )["n"].iloc[0])
+
     if not validations.empty:
-        # Compute metrics by horizon
         metrics_by_horizon = {}
         for horizon in validations["horizon_days"].unique():
             subset = validations[validations["horizon_days"] == horizon]
-            recent_30 = subset.head(30)
-            metrics_by_horizon[str(int(horizon))] = {
-                "n": len(recent_30),
-                "mape": round(float(recent_30["pct_error"].mean()), 4),
-                "mae": round(float(recent_30["abs_error"].mean()), 1),
-                "rmse": round(float((recent_30["abs_error"] ** 2).mean() ** 0.5), 1),
-                "hit_5pct": round(
-                    float((recent_30["pct_error"] <= 0.05).mean()), 3
-                ),
-            }
+            metrics_by_horizon[str(int(horizon))] = _horizon_metrics(
+                subset.head(TRACK_RECORD_WINDOW))
 
         track_record = {
             "updated_at": datetime.utcnow().isoformat() + "Z",
-            "total_predictions": len(validations),
+            "total_predictions": total_predictions,
+            "window": TRACK_RECORD_WINDOW,
             "metrics_by_horizon": metrics_by_horizon,
+            "overall": _horizon_metrics(validations),
             "recent_validations": validations.head(30).to_dict(orient="records"),
         }
     else:
         track_record = {
             "updated_at": datetime.utcnow().isoformat() + "Z",
             "total_predictions": 0,
+            "window": TRACK_RECORD_WINDOW,
             "metrics_by_horizon": {},
+            "overall": None,
             "recent_validations": [],
         }
     _write_json(EXPORT_DIR / "track_record.json", track_record)
