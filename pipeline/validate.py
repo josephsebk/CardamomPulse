@@ -10,6 +10,56 @@ from pipeline.db import get_conn
 log = logging.getLogger(__name__)
 
 
+def backfill_naive_baseline(conn, prices) -> int:
+    """Fill the naive benchmark on rows validated before v2.3 recorded it.
+
+    Rows already in validation_log are skipped by the settlement query below,
+    so without this their anchor and naive-error columns stay NULL and skill
+    reads as null across the whole existing track record until enough fresh
+    forecasts mature — weeks of the fix appearing to do nothing. Only the
+    benchmark columns are written; predicted_price and actual_price are never
+    touched, so no historical outcome is rewritten.
+
+    Rows validated under the old exact-date rule settled on their target date
+    by definition, so actual_date is set to match.
+    """
+    stale = pd.read_sql(
+        """SELECT v.id, v.date, v.actual_price, f.forecast_date
+           FROM validation_log v
+           JOIN forecast_ledger f
+             ON f.target_date = v.date AND f.horizon_days = v.horizon_days
+           WHERE v.anchor_price IS NULL AND v.actual_price IS NOT NULL""",
+        conn,
+    )
+    if stale.empty:
+        return 0
+
+    stale["_run"] = pd.to_datetime(stale["forecast_date"])
+    anchored = pd.merge_asof(
+        stale.sort_values("_run"),
+        prices.rename(columns={"date": "_run", "avg_price": "anchor_price"}),
+        on="_run", direction="backward",
+    ).dropna(subset=["anchor_price"])
+    if anchored.empty:
+        return 0
+
+    updates = []
+    for _, r in anchored.iterrows():
+        actual, anchor = float(r["actual_price"]), float(r["anchor_price"])
+        naive_abs = abs(anchor - actual)
+        updates.append((anchor, naive_abs, naive_abs / actual if actual else 0.0,
+                        r["date"], int(r["id"])))
+    conn.executemany(
+        """UPDATE validation_log
+           SET anchor_price = ?, naive_abs_error = ?, naive_pct_error = ?,
+               actual_date = COALESCE(actual_date, ?)
+           WHERE id = ?""",
+        updates,
+    )
+    conn.commit()
+    return len(updates)
+
+
 def validate_predictions(today: str,
                          tolerance_days: int = TARGET_MATCH_TOLERANCE_DAYS
                          ) -> list[dict]:
@@ -42,6 +92,11 @@ def validate_predictions(today: str,
         conn.close()
         return []
     prices["date"] = pd.to_datetime(prices["date"])
+
+    filled = backfill_naive_baseline(conn, prices)
+    if filled:
+        log.info(f"Backfilled the naive benchmark on {filled} rows validated "
+                 f"before v2.3 recorded it")
 
     pending = pd.read_sql(
         """SELECT f.forecast_date, f.target_date, f.horizon_days,
