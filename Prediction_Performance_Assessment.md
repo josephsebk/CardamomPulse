@@ -1,6 +1,94 @@
 # Prediction Performance Assessment
 
-**Date:** 2026-08-05
+**Original assessment:** 2026-08-05 · **Re-assessed:** 2026-09-17
+
+---
+
+# Update — 2026-09-17 re-assessment
+
+**Scope:** 1,063 matured forecasts across 10 horizons, run dates 2026-02-06 → 2026-09-15,
+reconstructed from 204 production snapshots of `cardamom_webapp/data/archive.csv` on
+`main`. Roughly 2.8x the evidence the August assessment had.
+
+## The v2.3 fixes are not running
+
+`origin/main` carries `MODEL_VERSION = "v2.2"`, `validate.py` has no settlement
+tolerance, and `track_record.json` still reports `total_predictions: 200` with no skill
+fields. The branch `claude/prediction-performance-assessment-v17b47` was never merged.
+**Every defect the August assessment identified is still live in production**, and the
+numbers below therefore measure the old code, not the fixed code.
+
+## Verdict: worse than August, and now statistically significant
+
+The model loses to a naive random walk at **all 10 horizons**.
+
+| H | n | MAPE | naive | skill | Theil U | dir% | DM p |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 106 | 2.36% | 1.78% | −0.312 | 1.398 | 55.7% | **0.003** |
+| 2 | 109 | 2.92% | 2.16% | −0.330 | 1.322 | 43.1% | **0.001** |
+| 3 | 107 | 3.25% | 2.71% | −0.194 | 1.144 | 42.1% | **0.007** |
+| 4 | 109 | 3.45% | 2.93% | −0.188 | 1.211 | 53.2% | **0.019** |
+| 5 | 106 | 3.87% | 3.32% | −0.175 | 1.183 | 57.5% | 0.076 |
+| 6 | 101 | 4.36% | 3.69% | −0.194 | 1.151 | 57.4% | 0.138 |
+| 7 | 126 | 4.91% | 4.18% | −0.182 | 1.197 | 47.6% | **0.037** |
+| 14 | 122 | 6.11% | 5.36% | −0.142 | 1.120 | 50.0% | 0.414 |
+| 28 | 115 | 7.31% | 7.02% | −0.040 | 1.016 | 51.3% | 0.488 |
+| 90 | 62 | 16.94% | 14.43% | −0.172 | 1.170 | 38.7% | 0.422 |
+
+Pooled: skill **−0.164**, directional accuracy **50.0%**, predicted-vs-realized return
+correlation **+0.064**.
+
+In August only the 90-day model was significantly worse than naive. With 2.8x the data,
+**five horizons now clear p < 0.05**, and 1-day and 2-day survive Holm–Bonferroni
+correction across all ten. The earlier "statistically indistinguishable from doing
+nothing" verdict has hardened into "measurably worse than doing nothing" at short
+horizons.
+
+## The dashboard's improving MAPE is the market, not the model
+
+`track_record.json` now shows 1-day MAPE of 1.32% against 1.98% in August, and 28-day
+4.61% against 8.35%. None of that is model improvement — the market simply calmed:
+
+| | Feb 1 – Aug 5 | Aug 6 – Sep 15 |
+|---|---:|---:|
+| price move | +24.8% | +5.4% |
+| daily return sd | 2.35% | 1.89% |
+| mean abs 7-session move | 4.92% | 2.45% |
+| mean abs 28-session move | 9.22% | 3.80% |
+
+The naive baseline's error fell further than the model's. At 28 days naive MAPE went
+7.35% → 2.50% while the model went 7.61% → 3.36%, so the *gap widened*. Measured by
+skill, 9 of 10 horizons got **worse** after 5 August. A falling MAPE on a calmer tape is
+exactly the failure mode that reporting error without a baseline is designed to hide —
+and it is happening now, on the live dashboard.
+
+## The long-horizon bias is unchanged
+
+At 90 days, **100% of 62 matured forecasts still landed below the actual**, mean signed
+error −₹501/kg. At 28 days it is 66.1%. The model has now under-predicted every single
+90-day outcome across seven months.
+
+The currently published forecasts continue the pattern — every horizon from 1 to 90 days
+points down (−0.1% to −4.3%) from a spot of ₹3,161, with a regime label of LOW.
+
+## What the app still tells users
+
+`index.html` on `main` is unchanged: hardcoded "88%" directional accuracy against a
+measured 50.0%, hardcoded "9.2%" MAPE, and a claimed model version of v2.4 against a
+pipeline emitting v2.2.
+
+## Conclusion
+
+Six more weeks of evidence did not rehabilitate the models; it removed the statistical
+ambiguity that let the August result be read charitably. Nothing was deployed in the
+interim, so no fix has been given a chance to work. The priority is unchanged and now
+better evidenced: merge v2.3, bind the displayed metrics to measured ones, and stop
+publishing long-horizon point forecasts that lose to persistence.
+
+---
+
+# Original assessment — 2026-08-05
+
 **Scope:** 378 matured forecasts across 10 horizons, forecast run dates 2026-02-06 →
 2026-08-05. (The settlement fix described below later raised this to 645 by scoring
 forecasts the old exact-date rule had silently dropped.)
@@ -15,7 +103,8 @@ return correlation is −0.064. The 90-day model is significantly *worse* than n
 (DM p < 0.001). Headline accuracy shown in the app is hardcoded and overstates measured
 directional accuracy by roughly 38 points.
 
-**Fixed in v2.3** (code merged, effective for the daily models after the next retrain):
+**Fixed in v2.3** (code committed on the assessment branch; **not merged to `main` as of
+2026-09-17**, so none of it is in production):
 
 | | Was | Now |
 |---|---|---|
@@ -33,6 +122,7 @@ validation — see below.
 the 1–7 day product publishes point forecasts for what is close to a martingale;
 `finance.py:92` raises `KeyError: 'date'` when the Yahoo fetch fails and it falls back
 to CSV, which would take down a production run during a Yahoo outage.
+
 
 ## How this was measured
 
