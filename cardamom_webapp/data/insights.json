@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-04T16:59:47.956362Z",
+  "updated_at": "2026-10-05T20:45:12.353901Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -81,16 +81,16 @@
       },
       {
         "year": 2026,
-        "avg_price": 2715.0,
+        "avg_price": 2717.0,
         "max_price": 7070.0,
         "min_price": 1999.0,
-        "total_volume_mt": 22048.0
+        "total_volume_mt": 22285.0
       }
     ],
     "date_range": {
       "start": "2014-11-07",
-      "end": "2026-10-03",
-      "total_trading_days": 3194
+      "end": "2026-10-05",
+      "total_trading_days": 3195
     },
     "all_time_high": 4675.0,
     "all_time_low": 495.0
@@ -113,7 +113,7 @@
         "month": 3,
         "month_name": "Mar",
         "avg_price": 1477.0,
-        "deviation_pct": -7.1
+        "deviation_pct": -7.2
       },
       {
         "month": 4,
@@ -149,19 +149,19 @@
         "month": 9,
         "month_name": "Sep",
         "avg_price": 1822.0,
-        "deviation_pct": 14.6
+        "deviation_pct": 14.5
       },
       {
         "month": 10,
         "month_name": "Oct",
-        "avg_price": 1501.0,
-        "deviation_pct": -5.6
+        "avg_price": 1508.0,
+        "deviation_pct": -5.2
       },
       {
         "month": 11,
         "month_name": "Nov",
         "avg_price": 1544.0,
-        "deviation_pct": -2.9
+        "deviation_pct": -3.0
       },
       {
         "month": 12,
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 3188.0,
+      "end_price": 3226.0,
       "peak_price": 3320.0,
       "trough_price": 1205.0,
-      "change_pct": 136.8
+      "change_pct": 139.6
     }
   ],
   "drivers": {
@@ -240,12 +240,12 @@
       "impact_note": "Guatemala supplies 60-70% of global cardamom exports. The 2024-25 thrips crisis collapsed exports, driving Indian prices up."
     },
     "rainfall": {
-      "last_90d_rain_mm": 1000.0,
+      "last_90d_rain_mm": 999.0,
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
       "current_rate": 96.3,
-      "monthly_change_pct": 1.92,
+      "monthly_change_pct": 1.98,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -254,19 +254,19 @@
       {
         "planting_year": 2022,
         "harvest_window": "2025-2029",
-        "avg_harvest_price": 2643.0,
-        "estimated_roi_pct": 439.0
+        "avg_harvest_price": 2644.0,
+        "estimated_roi_pct": 440.0
       },
       {
         "planting_year": 2021,
         "harvest_window": "2024-2028",
-        "avg_harvest_price": 2469.0,
+        "avg_harvest_price": 2470.0,
         "estimated_roi_pct": 437.0
       },
       {
         "planting_year": 2020,
         "harvest_window": "2023-2027",
-        "avg_harvest_price": 2213.0,
+        "avg_harvest_price": 2214.0,
         "estimated_roi_pct": 415.0
       }
     ],
@@ -367,7 +367,7 @@
   "farmer_qa": [
     {
       "question": "When is the best time to sell my harvest?",
-      "answer": "Historically, Sep-Jan and Aug fetch the highest prices (+14.6% above annual average). Avoid selling in Mar-Apr when prices typically dip -10.7% below average.",
+      "answer": "Historically, Sep-Jan and Aug fetch the highest prices (+14.5% above annual average). Avoid selling in Mar-Apr when prices typically dip -10.7% below average.",
       "category": "selling"
     },
     {
@@ -392,7 +392,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b93188/kg are 5.0x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b93226/kg are 5.0x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
