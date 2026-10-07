@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-06T18:32:41.394644Z",
+  "updated_at": "2026-10-07T19:02:26.133953Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -81,16 +81,16 @@
       },
       {
         "year": 2026,
-        "avg_price": 2720.0,
+        "avg_price": 2722.0,
         "max_price": 7070.0,
         "min_price": 1999.0,
-        "total_volume_mt": 22419.0
+        "total_volume_mt": 22613.0
       }
     ],
     "date_range": {
       "start": "2014-11-07",
-      "end": "2026-10-06",
-      "total_trading_days": 3196
+      "end": "2026-10-07",
+      "total_trading_days": 3197
     },
     "all_time_high": 4675.0,
     "all_time_low": 495.0
@@ -101,13 +101,13 @@
         "month": 1,
         "month_name": "Jan",
         "avg_price": 1734.0,
-        "deviation_pct": 9.0
+        "deviation_pct": 8.9
       },
       {
         "month": 2,
         "month_name": "Feb",
         "avg_price": 1614.0,
-        "deviation_pct": 1.5
+        "deviation_pct": 1.4
       },
       {
         "month": 3,
@@ -119,7 +119,7 @@
         "month": 4,
         "month_name": "Apr",
         "avg_price": 1465.0,
-        "deviation_pct": -7.9
+        "deviation_pct": -8.0
       },
       {
         "month": 5,
@@ -131,13 +131,13 @@
         "month": 6,
         "month_name": "Jun",
         "avg_price": 1503.0,
-        "deviation_pct": -5.5
+        "deviation_pct": -5.6
       },
       {
         "month": 7,
         "month_name": "Jul",
         "avg_price": 1638.0,
-        "deviation_pct": 3.0
+        "deviation_pct": 2.9
       },
       {
         "month": 8,
@@ -154,8 +154,8 @@
       {
         "month": 10,
         "month_name": "Oct",
-        "avg_price": 1514.0,
-        "deviation_pct": -4.8
+        "avg_price": 1520.0,
+        "deviation_pct": -4.5
       },
       {
         "month": 11,
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 3175.0,
+      "end_price": 3179.0,
       "peak_price": 3320.0,
       "trough_price": 1205.0,
-      "change_pct": 135.8
+      "change_pct": 136.1
     }
   ],
   "drivers": {
@@ -240,12 +240,12 @@
       "impact_note": "Guatemala supplies 60-70% of global cardamom exports. The 2024-25 thrips crisis collapsed exports, driving Indian prices up."
     },
     "rainfall": {
-      "last_90d_rain_mm": 991.0,
+      "last_90d_rain_mm": 976.0,
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
-      "current_rate": 96.41,
-      "monthly_change_pct": 2.03,
+      "current_rate": 96.76,
+      "monthly_change_pct": 2.05,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -254,7 +254,7 @@
       {
         "planting_year": 2022,
         "harvest_window": "2025-2029",
-        "avg_harvest_price": 2645.0,
+        "avg_harvest_price": 2646.0,
         "estimated_roi_pct": 440.0
       },
       {
@@ -266,7 +266,7 @@
       {
         "planting_year": 2020,
         "harvest_window": "2023-2027",
-        "avg_harvest_price": 2214.0,
+        "avg_harvest_price": 2215.0,
         "estimated_roi_pct": 415.0
       }
     ],
@@ -392,7 +392,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b93174/kg are 4.9x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg (2025), rising ~5% per year with labour inflation. Current prices at \u20b93178/kg are 4.9x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
