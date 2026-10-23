@@ -13,8 +13,10 @@ from sklearn.preprocessing import StandardScaler
 
 from pipeline.config import (
     MODELS_DIR, MODEL_VERSION, WF_CONFIG, FEATURE_SELECTION_K,
-    MAX_SHORT_HORIZON_DEVIATION, TARGET_MATCH_TOLERANCE_DAYS, ensure_dirs,
+    MAX_SHORT_HORIZON_DEVIATION, TARGET_MATCH_TOLERANCE_DAYS,
+    CONFORMAL_ALPHA, CONFORMAL_WINDOW_DAILY, ensure_dirs,
 )
+from pipeline.conformal import walk_forward_residuals, calibrate
 from pipeline.features import (
     T1_FEATURES, MICRO_FEATURES, T2_FEATURES_DAILY, T2_FEATURES_MONTHLY,
     T3_FEATURES, T4_FEATURES, T5_FEATURES, T6_FEATURES,
@@ -343,6 +345,39 @@ def _gbc_regime():
     )
 
 
+# ── Fit-predict closures for conformal residual collection ─────────────────
+# Each returns predicted log-returns for the test fold, replicating exactly
+# what the deployed model does, so conformal residuals match the predictor
+# the band will wrap.
+
+def _fp_single(model_fn):
+    """Single-regressor fit-predict (1d–14d GBR models)."""
+    def fp(X_train, y_train, X_test):
+        m = model_fn()
+        m.fit(X_train, y_train)
+        return m.predict(X_test)
+    return fp
+
+
+def _fp_stack_28d(X_train, y_train, X_test):
+    """28d GBR+Ridge stack, mirroring predict_all's 0.5/0.5 blend."""
+    lgb = _gbr_28d()
+    lgb.fit(X_train, y_train)
+    sc = StandardScaler()
+    X_train_sc = sc.fit_transform(X_train)
+    ridge = _ridge_28d()
+    ridge.fit(X_train_sc, y_train)
+    return 0.5 * lgb.predict(X_test) + 0.5 * ridge.predict(sc.transform(X_test))
+
+
+def _fp_bayes_90d(X_train, y_train, X_test):
+    """90d Bayesian ridge on standardized features (mean prediction)."""
+    sc = StandardScaler()
+    m = _bayesian_90d()
+    m.fit(sc.fit_transform(X_train), y_train)
+    return m.predict(sc.transform(X_test))
+
+
 # ── Train all models ─────────────────────────────────────────────────────
 
 def _log_cv(name: str, cv: dict) -> None:
@@ -365,6 +400,25 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     ensure_dirs()
     results = {}
     selected = {}  # horizon-group -> feature list, persisted in meta.pkl
+    conformal = {}  # horizon -> conformal band record, persisted in conformal.pkl
+
+    def _calibrate_horizon(key, df, features, target_col, fit_predict,
+                           wf_key, purge, window):
+        """Collect walk-forward residuals for a horizon and store its band."""
+        feats = _available_feats(df, features)
+        resid = walk_forward_residuals(df, feats, target_col, fit_predict,
+                                       **WF_CONFIG[wf_key], purge=purge)
+        rec = calibrate(resid, alpha=CONFORMAL_ALPHA, window=window,
+                        min_cal=100 if wf_key == "daily" else 40)
+        if rec is None:
+            log.warning(f"{key}: too few residuals to calibrate conformal band")
+            return
+        conformal[key] = rec
+        log.info(f"{key} conformal: band [{rec['q_lo']:+.3f},{rec['q_hi']:+.3f}] "
+                 f"on returns, coverage={rec['coverage']:.2f} "
+                 f"(target {1 - CONFORMAL_ALPHA:.2f}), "
+                 f"width≈{rec['mean_width_pct']:.1f}% of price, n={rec['n_resid']}")
+
 
     # ── Short-horizon feature set (shared by 1d–7d, ranked on 7d) ────
     # Daily targets are calendar-aligned: the frame is indexed by auction
@@ -399,6 +453,10 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
         joblib.dump(m, str(MODELS_DIR / f"model_{key}.pkl"))
         results[key] = {"model": m, "features": feats_short, "cv": cv}
 
+        _calibrate_horizon(key, daily, feats_short, target_col,
+                           _fp_single(lambda _h=h: _gbr_short(_h)),
+                           "daily", purge=h, window=CONFORMAL_WINDOW_DAILY)
+
     # ── 7-day model ──────────────────────────────────────────────────
     feats_7d = feats_short
     cv_7d = walk_forward_cv(daily, feats_7d, "target_7d", _gbr_7d,
@@ -411,6 +469,9 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     m7.fit(df_train[feats_7d].values, df_train["target_7d"].values)
     joblib.dump(m7, str(MODELS_DIR / "model_7d.pkl"))
     results["7d"] = {"model": m7, "features": feats_7d, "cv": cv_7d}
+
+    _calibrate_horizon("7d", daily, feats_7d, "target_7d", _fp_single(_gbr_7d),
+                       "daily", purge=7, window=CONFORMAL_WINDOW_DAILY)
 
     # ── 14-day model ─────────────────────────────────────────────────
     daily["target_14d"] = make_return_target_calendar(daily, 14)
@@ -434,6 +495,9 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     m14.fit(df_train[feats_14d].values, df_train["target_14d"].values)
     joblib.dump(m14, str(MODELS_DIR / "model_14d.pkl"))
     results["14d"] = {"model": m14, "features": feats_14d, "cv": cv_14d}
+
+    _calibrate_horizon("14d", daily, feats_14d, "target_14d", _fp_single(_gbr_14d),
+                       "daily", purge=14, window=CONFORMAL_WINDOW_DAILY)
 
     # ── 28-day model (stacked GBM + Ridge) ───────────────────────────
     # No selection here: the manual T1-T5 set beat every selected subset
@@ -466,6 +530,9 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
             "model_lgb": m28_lgb, "model_ridge": m28_ridge,
             "scaler": sc28, "features": feats_28d, "cv": cv_28d,
         }
+
+        _calibrate_horizon("28d", weekly, feats_28d, "target_28d",
+                           _fp_stack_28d, "weekly", purge=4, window=None)
 
     # ── 90-day model (Bayesian Ridge) ────────────────────────────────
     monthly["target_90d"] = make_return_target(monthly, 3)
@@ -503,6 +570,10 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
         joblib.dump(medians_90.to_dict(), str(MODELS_DIR / "medians_90d.pkl"))
         results["90d"] = {"model": m90, "scaler": sc90, "features": feats_90d,
                           "medians": medians_90.to_dict(), "cv": cv_90d}
+
+        # Calibrate on the imputed monthly frame the deployed model uses.
+        _calibrate_horizon("90d", monthly_90, feats_90d, "target_90d",
+                           _fp_bayes_90d, "monthly", purge=3, window=None)
 
     # ── Regime classifier ────────────────────────────────────────────
     monthly["fwd_6m_ret"] = (monthly["avg_price"].shift(-6) / monthly["avg_price"] - 1) * 100
@@ -543,14 +614,19 @@ def train_all(daily: pd.DataFrame, weekly: pd.DataFrame,
                              "medians": medians_reg.to_dict(), "cv": cv_reg}
         log.info(f"Regime model trained on {len(df_train)} rows")
 
+    # Persist conformal bands separately so load_models() can attach them.
+    joblib.dump(conformal, str(MODELS_DIR / "conformal.pkl"))
+
     # Marker so load_models() can reject pickles trained on a different
     # target definition (pre-v2.0 models predicted price levels), plus the
     # per-horizon feature lists the saved models were trained with
     joblib.dump({"model_version": MODEL_VERSION,
                  "target": "log_return_calendar",
-                 "features": selected},
+                 "features": selected,
+                 "has_conformal": bool(conformal)},
                 str(MODELS_DIR / "meta.pkl"))
 
+    results["conformal"] = conformal
     return results
 
 
@@ -643,6 +719,17 @@ def load_models() -> dict:
         if group in feats_map:
             models[key]["features"] = feats_map[group]
 
+    # Attach conformal bands (if present) under a reserved key. Missing or
+    # unreadable bands are non-fatal — predictions simply ship without
+    # intervals rather than crashing the pipeline.
+    conf_path = MODELS_DIR / "conformal.pkl"
+    if conf_path.exists():
+        try:
+            models["conformal"] = joblib.load(str(conf_path))
+        except Exception as e:
+            log.warning(f"Could not load conformal bands ({e}); "
+                        "forecasts will ship without intervals")
+
     return models
 
 
@@ -653,6 +740,20 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
     """Generate predictions from the latest data row for each model."""
     today = daily["date"].max()
     forecasts = {"forecast_date": today, "predictions": []}
+
+    # Conformal bands, keyed by horizon (e.g. "1d", "28d"). Reconstructed on
+    # the price scale through the same exp() as the point forecast, so the
+    # interval is multiplicative in the current price level.
+    conf_bands = models.get("conformal", {}) or {}
+
+    def _attach_band(entry, key, ret, anchor):
+        band = conf_bands.get(key)
+        if not band:
+            return
+        entry["lower_bound"] = round(anchor * float(np.exp(ret + band["q_lo"])), 1)
+        entry["upper_bound"] = round(anchor * float(np.exp(ret + band["q_hi"])), 1)
+        entry["interval_confidence"] = round(1 - band["alpha"], 2)
+        entry["interval_method"] = "conformal"
 
     # Helper: features and anchor price for the latest priced row.
     # The anchor MUST be the most recent actual price — a log-return forecast
@@ -699,10 +800,10 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
                 ret = float(models[key]["model"].predict(X)[0])
                 pred = anchor * float(np.exp(ret))
                 target_date = (pd.Timestamp(today) + timedelta(days=h)).strftime("%Y-%m-%d")
-                forecasts["predictions"].append({
-                    "horizon_days": h, "target_date": target_date,
-                    "predicted_price": round(pred, 1),
-                })
+                entry = {"horizon_days": h, "target_date": target_date,
+                         "predicted_price": round(pred, 1)}
+                _attach_band(entry, key, ret, anchor)
+                forecasts["predictions"].append(entry)
                 log.info(f"{h}-day forecast: ₹{pred:.0f} for {target_date}")
 
     # 7-day
@@ -713,10 +814,10 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
             ret = float(models["7d"]["model"].predict(X)[0])
             pred = anchor * float(np.exp(ret))
             target_date = (pd.Timestamp(today) + timedelta(days=7)).strftime("%Y-%m-%d")
-            forecasts["predictions"].append({
-                "horizon_days": 7, "target_date": target_date,
-                "predicted_price": round(pred, 1),
-            })
+            entry = {"horizon_days": 7, "target_date": target_date,
+                     "predicted_price": round(pred, 1)}
+            _attach_band(entry, "7d", ret, anchor)
+            forecasts["predictions"].append(entry)
             log.info(f"7-day forecast: ₹{pred:.0f} for {target_date}")
 
     # 14-day
@@ -727,10 +828,10 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
             ret = float(models["14d"]["model"].predict(X)[0])
             pred = anchor * float(np.exp(ret))
             target_date = (pd.Timestamp(today) + timedelta(days=14)).strftime("%Y-%m-%d")
-            forecasts["predictions"].append({
-                "horizon_days": 14, "target_date": target_date,
-                "predicted_price": round(pred, 1),
-            })
+            entry = {"horizon_days": 14, "target_date": target_date,
+                     "predicted_price": round(pred, 1)}
+            _attach_band(entry, "14d", ret, anchor)
+            forecasts["predictions"].append(entry)
             log.info(f"14-day forecast: ₹{pred:.0f} for {target_date}")
 
     # 28-day (stacked)
@@ -744,10 +845,10 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
             ret = 0.5 * p_lgb + 0.5 * p_ridge
             pred = anchor * float(np.exp(ret))
             target_date = (pd.Timestamp(today) + timedelta(days=28)).strftime("%Y-%m-%d")
-            forecasts["predictions"].append({
-                "horizon_days": 28, "target_date": target_date,
-                "predicted_price": round(pred, 1),
-            })
+            entry = {"horizon_days": 28, "target_date": target_date,
+                     "predicted_price": round(pred, 1)}
+            _attach_band(entry, "28d", ret, anchor)
+            forecasts["predictions"].append(entry)
             log.info(f"28-day forecast: ₹{pred:.0f} for {target_date}")
 
     # 90-day (with prediction intervals)
@@ -761,16 +862,21 @@ def predict_all(daily: pd.DataFrame, weekly: pd.DataFrame,
             p_mean, p_std = models["90d"]["model"].predict(X_sc, return_std=True)
             ret = float(p_mean[0])
             pred = anchor * float(np.exp(ret))
-            lo = anchor * float(np.exp(ret - 1.28 * p_std[0]))  # 80% lower
-            hi = anchor * float(np.exp(ret + 1.28 * p_std[0]))  # 80% upper
             target_date = (pd.Timestamp(today) + timedelta(days=90)).strftime("%Y-%m-%d")
-            forecasts["predictions"].append({
-                "horizon_days": 90, "target_date": target_date,
-                "predicted_price": round(pred, 1),
-                "lower_bound": round(lo, 1),
-                "upper_bound": round(hi, 1),
-            })
-            log.info(f"90-day forecast: ₹{pred:.0f} [{lo:.0f}–{hi:.0f}] for {target_date}")
+            entry = {"horizon_days": 90, "target_date": target_date,
+                     "predicted_price": round(pred, 1)}
+            # Prefer the conformal band; fall back to the BayesianRidge
+            # Gaussian ±1.28σ interval only if no calibrated band exists.
+            _attach_band(entry, "90d", ret, anchor)
+            if "lower_bound" not in entry:
+                entry["lower_bound"] = round(anchor * float(np.exp(ret - 1.28 * p_std[0])), 1)
+                entry["upper_bound"] = round(anchor * float(np.exp(ret + 1.28 * p_std[0])), 1)
+                entry["interval_method"] = "gaussian"
+                entry["interval_confidence"] = 0.8
+            forecasts["predictions"].append(entry)
+            log.info(f"90-day forecast: ₹{pred:.0f} "
+                     f"[{entry['lower_bound']:.0f}–{entry['upper_bound']:.0f}] "
+                     f"for {target_date}")
 
     # Regime
     if "regime" in models:
