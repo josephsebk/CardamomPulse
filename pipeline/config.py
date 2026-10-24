@@ -65,6 +65,17 @@ MAX_SHORT_HORIZON_DEVIATION = 0.10
 # validation all answer the identical question.
 TARGET_MATCH_TOLERANCE_DAYS = 7
 
+# ── Conformal prediction intervals ─────────────────────────────────────────
+# Forecast bands are produced by wrapping the point forecasters in
+# split-conformal prediction, calibrated on walk-forward out-of-sample
+# residuals (return scale) and validated by prequential coverage. ALPHA is the
+# miscoverage rate, so 0.2 targets an 80% interval (matching the 90d band).
+# WINDOW limits daily-horizon calibration to the most recent residuals so the
+# band adapts to the current volatility regime; weekly/monthly horizons have
+# too few residuals to window and use all of them.
+CONFORMAL_ALPHA = 0.2
+CONFORMAL_WINDOW_DAILY = 500
+
 # ── Model versions ────────────────────────────────────────────────────────
 # v2.0: regression targets switched to log-returns
 # v2.1: walk-forward permutation feature selection; causal cycle features
@@ -77,7 +88,9 @@ TARGET_MATCH_TOLERANCE_DAYS = 7
 #       were trained on a horizon ~26% longer than the one they were scored
 #       against. Weekly/monthly frames resample on calendar boundaries and
 #       were already aligned.
-MODEL_VERSION = "v2.3"
+# v2.4: conformal prediction intervals on all regression horizons (calibrated
+#       bands replace the 90d Gaussian heuristic; 1d-28d gain calibrated bands)
+MODEL_VERSION = "v2.4"
 
 # ── Pipeline schedule (IST offsets in comments) ──────────────────────────
 DAILY_RUN_HOUR_UTC = 12  # 6 PM IST = 12:30 UTC; run at 12 UTC
