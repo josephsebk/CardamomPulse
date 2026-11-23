@@ -522,8 +522,25 @@ def _export_insights(conn, now_iso: str):
     _write_json(EXPORT_DIR / "insights.json", insights)
 
 
+def _json_safe(obj):
+    """Replace non-finite floats (NaN/inf) with None, recursively.
+
+    json.dump writes NaN as a bare `NaN` token, which is not valid JSON: the
+    browser's r.json() rejects the whole file and the page silently drops it.
+    validation_log rows from before interval bounds were stored read back as
+    NaN via read_sql, so track_record.json would break as soon as new rows mix in.
+    """
+    if isinstance(obj, float):  # includes np.float64
+        return obj if np.isfinite(obj) else None
+    if isinstance(obj, dict):
+        return {k: _json_safe(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_json_safe(v) for v in obj]
+    return obj
+
+
 def _write_json(path, data):
-    """Write JSON with pretty printing."""
+    """Write JSON with pretty printing (strictly valid: no NaN/inf)."""
     with open(str(path), "w") as f:
-        json.dump(data, f, indent=2, default=str)
+        json.dump(_json_safe(data), f, indent=2, default=str, allow_nan=False)
     log.info(f"  Wrote {path.name}")

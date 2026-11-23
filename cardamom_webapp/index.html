@@ -1309,7 +1309,9 @@ function renderDashboard(data) {
 function renderTrackRecord(tr, dash) {
   const version = dash?.model_version || tr?.model_version || (dash?.forecasts?.[0]?.model_version) || "v3.0";
   const ov = tr?.overall || {};
-  const nTotal = ov.total_predictions || 0;
+  // overall comes from _horizon_metrics, which reports its sample size as `n`
+  // (the sample the MAPE / direction stats below are computed over).
+  const nTotal = ov.n || 0;
 
   if ($("model-version-sub")) {
     $("model-version-sub").textContent =
