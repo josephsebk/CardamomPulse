@@ -43,7 +43,11 @@ def step_init():
 def step_collect():
     """Collect all data sources."""
     from pipeline.collectors.auction import collect_auction
-    from pipeline.collectors.weather import collect_weather_idukki, collect_weather_guatemala
+    from pipeline.collectors.weather import (
+        collect_weather_idukki,
+        collect_weather_guatemala,
+        collect_weather_forecast,
+    )
     from pipeline.collectors.finance import collect_finance
     from pipeline.collectors.enso import collect_enso
     from pipeline.collectors.trade import (
@@ -55,6 +59,7 @@ def step_collect():
     collect_auction()
     collect_weather_idukki()
     collect_weather_guatemala()
+    collect_weather_forecast()
     collect_finance()
     collect_enso()
     collect_guatemala_exports()
@@ -94,17 +99,17 @@ def step_validate(today: str):
     if not results:
         log.info("  No predictions to validate today")
         return
-    # The first run after the v2.3 settlement fix backfills every forecast a
-    # prior exact-date-match run skipped, so cap the per-row detail.
     for r in results[-20:]:
         settled = ("" if r["actual_date"] == r["date"]
                    else f" (settled {r['actual_date']})")
         naive = ("" if r["naive_abs_error"] is None else
                  f" naive_err=₹{r['naive_abs_error']:.0f}"
                  f" {'WIN' if r['beat_naive'] else 'loss'}")
+        band = ("" if r.get("in_interval") is None else
+                f" {'IN-BAND' if r['in_interval'] else 'OUT-BAND'}")
         log.info(f"  {r['horizon_days']}d: pred=₹{r['predicted']:.0f} "
                  f"actual=₹{r['actual']:.0f} err={r['pct_error']:.1%}"
-                 f"{naive}{settled}")
+                 f"{naive}{band}{settled}")
     if len(results) > 20:
         log.info(f"  ... and {len(results) - 20} earlier forecasts backfilled")
 
@@ -115,10 +120,15 @@ def step_train(daily, weekly, monthly):
     log.info("═══ STEP 4a: TRAIN ═══")
     results = train_all(daily, weekly, monthly)
     for horizon, info in results.items():
+        if not isinstance(info, dict):
+            continue
         cv = info.get("cv", {})
-        if cv:
-            log.info(f"  {horizon}: MAPE={cv.get('mape', 0):.3f} "
-                     f"MAE={cv.get('mae', 0):.1f} R²={cv.get('r2', 0):.3f}")
+        if cv and "mape" in cv:
+            log.info(
+                f"  {horizon}: MAPE={cv.get('mape', 0):.3f} "
+                f"MAE={cv.get('mae', 0):.1f} skill={cv.get('skill', float('nan')):+.3f} "
+                f"lam={cv.get('shrinkage_lam', 1.0):.2f}"
+            )
     return results
 
 

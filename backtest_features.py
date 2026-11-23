@@ -1,259 +1,162 @@
 #!/usr/bin/env python3
 """
-Backtest: Compare baseline (T1+T2 only) vs enhanced (T1+T2+T3+T4) feature sets
-for all short-horizon models (1d–14d).
-
-Also backtests 90d and regime models with T4 added.
+Backtest: Compare v3.0 feature tiers (T1+T2 vs +Weather vs +Macro vs full v3.0
+horizon-matched feature sets) across 1d–90d and the 6m bear-regime classifier.
 """
 
 import logging
+
 import numpy as np
-import pandas as pd
-from pipeline.assemble import build_daily_df, resample_weekly, resample_monthly
+
+from pipeline.assemble import build_daily_df, resample_monthly, resample_weekly
+from pipeline.config import RECENCY_HALFLIFE_DAYS, WF_CONFIG
 from pipeline.features import (
-    add_tier1, add_tier2, add_tier3, add_tier4,
-    T1_FEATURES, T2_FEATURES_DAILY, T3_FEATURES, T4_FEATURES,
-    T2_FEATURES_MONTHLY, T5_FEATURES, T6_FEATURES,
+    T1_FEATURES,
+    T2_FEATURES_DAILY,
+    T2_FEATURES_MONTHLY,
+    T3_FEATURES,
+    T4_FEATURES,
+    T5_FEATURES,
+    T6_FEATURES,
+    add_tier1,
+    add_tier2,
+    add_tier3,
+    add_tier4,
+    add_tier5,
+    add_tier6,
 )
 from pipeline.models import (
-    walk_forward_cv, make_return_target, select_features,
-    _gbr_short, _gbr_7d, _gbr_14d,
-    _bayesian_90d, _gbc_regime, FEATS_90D, FEATS_REGIME,
+    FEATS_14D,
+    FEATS_28D,
+    FEATS_90D,
+    FEATS_REGIME,
+    FEATS_SHORT,
+    _bayesian_90d,
+    _gbr_shallow,
+    _huber_short,
+    _logreg_regime,
+    _ridge_med,
+    _ridge_short,
+    make_return_target,
+    make_return_target_calendar,
+    walk_forward_cv,
 )
-from pipeline.config import WF_CONFIG, FEATURE_SELECTION_K
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
 log = logging.getLogger(__name__)
 
-# ── Build data ────────────────────────────────────────────────────────────
-log.info("Assembling data...")
-daily_raw = build_daily_df()
-monthly_raw = resample_monthly(daily_raw)
 
-# ── Prepare daily DataFrame with ALL tiers ────────────────────────────────
-daily = daily_raw.copy()
-add_tier1(daily)
-add_tier2(daily)
-add_tier3(daily, is_monthly=False)
-add_tier4(daily)
-
-# ── Prepare monthly DataFrame with ALL tiers ──────────────────────────────
-monthly = monthly_raw.copy()
-add_tier1(monthly, vol_col="sold_kg", arr_col="arrived_kg")
-add_tier2(monthly)
-add_tier3(monthly, is_monthly=True)
-add_tier4(monthly)
-# T5 and T6 for 90d/regime
-from pipeline.features import add_tier5, add_tier6
-add_tier5(monthly)
-add_tier6(monthly)
+def available(df, feat_list, min_non_null=20):
+    return [f for f in feat_list if f in df.columns and int(df[f].notna().sum()) >= min_non_null]
 
 
-def available(df, feat_list):
-    return [f for f in feat_list if f in df.columns]
+def main():
+    log.info("Assembling data...")
+    daily = build_daily_df()
+    weekly = resample_weekly(daily)
+    monthly = resample_monthly(daily)
 
+    for frame, freq in [(daily, "daily"), (weekly, "weekly"), (monthly, "monthly")]:
+        add_tier1(frame, freq=freq)
+        add_tier2(frame, freq=freq)
+        add_tier3(frame, freq=freq)
+        add_tier4(frame, freq=freq)
+    add_tier5(monthly)
+    add_tier6(monthly, freq="monthly")
 
-# ── Define feature sets ───────────────────────────────────────────────────
+    wf_daily = WF_CONFIG["daily"]
+    wf_weekly = WF_CONFIG["weekly"]
+    wf_monthly = WF_CONFIG["monthly"]
 
-# BASELINE: what the models currently use
-baseline_feats_short = available(daily, T1_FEATURES + T2_FEATURES_DAILY[:5])  # 1d-7d
-baseline_feats_14d   = available(daily, T1_FEATURES + T2_FEATURES_DAILY)      # 14d
+    print("\n" + "=" * 96)
+    print("BACKTEST v3.0: Stationary Horizon-Matched Feature Sets — Leak-Free Walk-Forward CV")
+    print("=" * 96)
+    print(f"\n{'Horizon':<8} {'Variant':<26} {'#Feats':>6} {'MAPE':>8} {'Naive':>8} {'Skill':>8} {'TheilU':>7} {'Folds':>6}")
+    print("-" * 82)
 
-# ENHANCED: add weather (T3) + macro (T4)
-enhanced_feats_short = available(daily, T1_FEATURES + T2_FEATURES_DAILY[:5] + T3_FEATURES + T4_FEATURES)
-enhanced_feats_14d   = available(daily, T1_FEATURES + T2_FEATURES_DAILY + T3_FEATURES + T4_FEATURES)
+    base_short = available(daily, FEATS_SHORT)
+    plus_t3 = available(daily, FEATS_SHORT + T3_FEATURES)
+    plus_t4 = available(daily, FEATS_SHORT + T4_FEATURES)
+    v3_14d = available(daily, FEATS_14D)
 
-# WEATHER ONLY variant: T1 + T2 + T3
-weather_feats_short  = available(daily, T1_FEATURES + T2_FEATURES_DAILY[:5] + T3_FEATURES)
-weather_feats_14d    = available(daily, T1_FEATURES + T2_FEATURES_DAILY + T3_FEATURES)
+    for h in [1, 3, 7]:
+        tcol = f"target_{h}d"
+        daily[tcol] = make_return_target_calendar(daily, h)
+        hl = RECENCY_HALFLIFE_DAYS["daily"]
+        for label, feats, fn in [
+            ("v3 Short (Huber)", base_short, lambda _h=h: _huber_short(_h)),
+            ("v3 Short (Ridge)", base_short, lambda _h=h: _ridge_short(_h)),
+            ("+Weather (Ridge)", plus_t3, lambda _h=h: _ridge_short(_h)),
+            ("+Macro (Ridge)", plus_t4, lambda _h=h: _ridge_short(_h)),
+        ]:
+            cv = walk_forward_cv(daily, feats, tcol, fn, **wf_daily, purge=h, halflife_days=hl)
+            print(f"{f'{h}d':<8} {label:<26} {len(feats):>6} {cv['mape']:>8.4f} {cv['naive_mape']:>8.4f} "
+                  f"{cv['skill']:>+8.3f} {cv['theil_u']:>7.3f} {cv['folds']:>6}")
+        print()
 
-# MACRO ONLY variant: T1 + T2 + T4
-macro_feats_short    = available(daily, T1_FEATURES + T2_FEATURES_DAILY[:5] + T4_FEATURES)
-macro_feats_14d      = available(daily, T1_FEATURES + T2_FEATURES_DAILY + T4_FEATURES)
-
-# ── 90d and Regime: baseline vs enhanced with T4 ─────────────────────────
-baseline_90d   = available(monthly, FEATS_90D)  # current: no T4
-enhanced_90d   = available(monthly, FEATS_90D + T4_FEATURES)  # add T4
-
-baseline_regime = available(monthly, FEATS_REGIME)  # current: no T4
-enhanced_regime = available(monthly, FEATS_REGIME + T4_FEATURES)  # add T4
-
-# ── PERMUTATION-SELECTED: full candidate pool, ranked by walk-forward
-# permutation importance (what train_all uses in production) ──────────────
-cand_daily = available(daily, T1_FEATURES + T2_FEATURES_DAILY + T3_FEATURES + T4_FEATURES)
-cand_monthly = available(monthly, T1_FEATURES + T2_FEATURES_MONTHLY + T3_FEATURES + T5_FEATURES + T6_FEATURES)
-
-K_SHORT = FEATURE_SELECTION_K.get("short") or 15
-K_14D = FEATURE_SELECTION_K.get("14d") or 10
-K_90D = FEATURE_SELECTION_K.get("90d") or 5
-K_REGIME = FEATURE_SELECTION_K.get("regime") or 20
-
-log.info("Running permutation feature selection (short horizon)...")
-daily["target_7d"] = make_return_target(daily, 7)
-permsel_short = select_features(daily, cand_daily, "target_7d", _gbr_7d,
-                                **WF_CONFIG["daily"], purge=7, top_k=K_SHORT)
-
-log.info("Running permutation feature selection (14d)...")
-daily["target_14d"] = make_return_target(daily, 14)
-permsel_14d = select_features(daily, cand_daily, "target_14d", _gbr_14d,
-                              **WF_CONFIG["daily"], purge=14, top_k=K_14D)
-
-
-# ── Run walk-forward CV ──────────────────────────────────────────────────
-wf_daily = WF_CONFIG["daily"]
-wf_monthly = WF_CONFIG["monthly"]
-
-print("\n" + "=" * 90)
-print("BACKTEST: Baseline vs Enhanced Feature Sets — Walk-Forward Cross-Validation")
-print("=" * 90)
-
-# ── Short horizons (1d–7d) ───────────────────────────────────────────────
-print(f"\n{'Horizon':<10} {'Variant':<20} {'#Feats':>6} {'MAPE':>8} {'MAE':>10} {'R²':>8} {'Folds':>6}")
-print("-" * 70)
-
-results = []
-
-for h in [1, 2, 3, 5, 7]:
-    target_col = f"target_{h}d"
-    daily[target_col] = make_return_target(daily, h)
-
-    model_fn = (lambda _h=h: _gbr_short(_h)) if h <= 6 else _gbr_7d
-
-    for variant, feats in [
-        ("Baseline (T1+T2)", baseline_feats_short),
-        ("+Weather (T3)", weather_feats_short),
-        ("+Macro (T4)", macro_feats_short),
-        ("+Both (T3+T4)", enhanced_feats_short),
-        (f"PermSelect top-{K_SHORT}", permsel_short),
+    daily["target_14d"] = make_return_target_calendar(daily, 14)
+    for label, feats, fn in [
+        ("v3 14d (Ridge)", v3_14d, lambda: _ridge_med(alpha=40.0)),
+        ("v3 14d (Shallow GBR)", v3_14d, lambda: _gbr_shallow(min_leaf=30, n_estimators=60)),
     ]:
-        cv = walk_forward_cv(daily, feats, target_col, model_fn,
-                             **wf_daily, purge=h, anchor_col="avg_price")
-        label = f"{h}d"
-        print(f"{label:<10} {variant:<20} {len(feats):>6} {cv['mape']:>8.3f} {cv['mae']:>10.1f} {cv['r2']:>8.3f} {cv['folds']:>6}")
-        results.append({"horizon": label, "variant": variant,
-                        "n_feats": len(feats), **cv})
+        cv = walk_forward_cv(daily, feats, "target_14d", fn, **wf_daily,
+                             purge=14, halflife_days=RECENCY_HALFLIFE_DAYS["daily"])
+        print(f"{'14d':<8} {label:<26} {len(feats):>6} {cv['mape']:>8.4f} {cv['naive_mape']:>8.4f} "
+              f"{cv['skill']:>+8.3f} {cv['theil_u']:>7.3f} {cv['folds']:>6}")
+
+    weekly["target_28d"] = make_return_target(weekly, 4)
+    v3_28d = available(weekly, FEATS_28D)
     print()
+    for label, feats, fn in [
+        ("v3 28d (Ridge)", v3_28d, lambda: _ridge_med(alpha=40.0)),
+        ("v3 28d (Shallow GBR)", v3_28d, lambda: _gbr_shallow(min_leaf=20, n_estimators=50)),
+    ]:
+        cv = walk_forward_cv(weekly, feats, "target_28d", fn, **wf_weekly,
+                             purge=4, halflife_days=RECENCY_HALFLIFE_DAYS["weekly"])
+        print(f"{'28d':<8} {label:<26} {len(feats):>6} {cv['mape']:>8.4f} {cv['naive_mape']:>8.4f} "
+              f"{cv['skill']:>+8.3f} {cv['theil_u']:>7.3f} {cv['folds']:>6}")
 
-# ── 14-day ────────────────────────────────────────────────────────────────
-for variant, feats in [
-    ("Baseline (T1+T2)", baseline_feats_14d),
-    ("+Weather (T3)", weather_feats_14d),
-    ("+Macro (T4)", macro_feats_14d),
-    ("+Both (T3+T4)", enhanced_feats_14d),
-    (f"PermSelect top-{K_14D}", permsel_14d),
-]:
-    cv = walk_forward_cv(daily, feats, "target_14d", _gbr_14d,
-                         **wf_daily, purge=14, anchor_col="avg_price")
-    print(f"{'14d':<10} {variant:<20} {len(feats):>6} {cv['mape']:>8.3f} {cv['mae']:>10.1f} {cv['r2']:>8.3f} {cv['folds']:>6}")
-    results.append({"horizon": "14d", "variant": variant,
-                    "n_feats": len(feats), **cv})
+    monthly["target_90d"] = make_return_target(monthly, 3)
+    v3_90d = available(monthly, FEATS_90D)
+    v3_90d_t4 = available(monthly, FEATS_90D + T4_FEATURES)
+    print()
+    for label, feats in [
+        ("v3 90d (BayesianRidge)", v3_90d),
+        ("v3 90d +T4 (Bayesian)", v3_90d_t4),
+    ]:
+        cv = walk_forward_cv(monthly, feats, "target_90d", _bayesian_90d, **wf_monthly,
+                             purge=3, halflife_days=RECENCY_HALFLIFE_DAYS["monthly"])
+        print(f"{'90d':<8} {label:<26} {len(feats):>6} {cv['mape']:>8.4f} {cv['naive_mape']:>8.4f} "
+              f"{cv['skill']:>+8.3f} {cv['theil_u']:>7.3f} {cv['folds']:>6}")
 
-# ── 90-day ────────────────────────────────────────────────────────────────
-print("\n" + "-" * 70)
-print("90-day model (BayesianRidge):")
-print("-" * 70)
-monthly["target_90d"] = make_return_target(monthly, 3)
-medians_base = monthly[baseline_90d].median()
-monthly_base = monthly.copy()
-monthly_base[baseline_90d] = monthly_base[baseline_90d].fillna(medians_base)
+    # Regime classifier (leak-free walk-forward with LogisticRegression Pipeline)
+    price_ref = "adj_price" if "adj_price" in monthly.columns else "avg_price"
+    monthly["fwd_6m_ret"] = (monthly[price_ref].shift(-6) / monthly[price_ref] - 1.0) * 100.0
+    monthly["bear_signal"] = (monthly["fwd_6m_ret"] < -10.0).astype(float)
+    monthly.loc[monthly["fwd_6m_ret"].isna(), "bear_signal"] = np.nan
 
-medians_enh = monthly[enhanced_90d].median()
-monthly_enh = monthly.copy()
-monthly_enh[enhanced_90d] = monthly_enh[enhanced_90d].fillna(medians_enh)
+    reg_feats = available(monthly, FEATS_REGIME)
+    df_reg = monthly.dropna(subset=["bear_signal"]).reset_index(drop=True)
+    X_all = df_reg[reg_feats].to_numpy(dtype=float)
+    y_all = df_reg["bear_signal"].to_numpy(dtype=int)
 
-monthly_sel = monthly.copy()
-monthly_sel[cand_monthly] = monthly_sel[cand_monthly].fillna(monthly[cand_monthly].median())
-log.info("Running permutation feature selection (90d)...")
-permsel_90d = select_features(monthly_sel, cand_monthly, "target_90d",
-                              _bayesian_90d, **WF_CONFIG["monthly"],
-                              purge=3, top_k=K_90D)
-
-from sklearn.preprocessing import StandardScaler
-
-for variant, feats, mdf in [
-    ("Baseline (no T4)", baseline_90d, monthly_base),
-    ("+Macro (T4)", enhanced_90d, monthly_enh),
-    (f"PermSelect top-{K_90D}", permsel_90d, monthly_sel),
-]:
-    # Scale features for BayesianRidge
-    def make_bayesian():
-        return _bayesian_90d()
-
-    cv = walk_forward_cv(mdf, feats, "target_90d", make_bayesian,
-                         **wf_monthly, purge=3, anchor_col="avg_price")
-    print(f"{'90d':<10} {variant:<20} {len(feats):>6} {cv['mape']:>8.3f} {cv['mae']:>10.1f} {cv['r2']:>8.3f} {cv['folds']:>6}")
-    results.append({"horizon": "90d", "variant": variant,
-                    "n_feats": len(feats), **cv})
-
-# ── Regime classifier ────────────────────────────────────────────────────
-print("\n" + "-" * 70)
-print("Regime classifier (GradientBoostingClassifier):")
-print("-" * 70)
-monthly["fwd_6m_ret"] = (monthly["avg_price"].shift(-6) / monthly["avg_price"] - 1) * 100
-# Mask rows whose 6-month outcome is unknown (NaN < -10 is False, not NaN)
-monthly["bear_signal"] = (monthly["fwd_6m_ret"] < -10).astype(float)
-monthly.loc[monthly["fwd_6m_ret"].isna(), "bear_signal"] = np.nan
-monthly_sel["bear_signal"] = monthly["bear_signal"]
-
-log.info("Running permutation feature selection (regime)...")
-permsel_regime = select_features(monthly_sel, cand_monthly, "bear_signal",
-                                 _gbc_regime, **WF_CONFIG["monthly"],
-                                 purge=6, top_k=K_REGIME)
-
-for variant, feats in [
-    ("Baseline (no T4)", baseline_regime),
-    ("+Macro (T4)", enhanced_regime),
-    (f"PermSelect top-{K_REGIME}", permsel_regime),
-]:
-    med = monthly[feats].median()
-    mdf = monthly.copy()
-    mdf[feats] = mdf[feats].fillna(med)
-
-    # Classification accuracy via walk-forward
-    df_clean = mdf.dropna(subset=["bear_signal"] + feats)
-    X = df_clean[feats].values
-    y = df_clean["bear_signal"].values
-    n = len(df_clean)
-
-    all_preds, all_actuals = [], []
+    preds, actuals = [], []
     i = wf_monthly["min_train"]
-    while i + wf_monthly["eval_win"] <= n:
-        train_end = i - 6  # purge must cover the 6-month target horizon
-        X_tr, y_tr = X[:train_end], y[:train_end]
-        X_te, y_te = X[i:i + wf_monthly["eval_win"]], y[i:i + wf_monthly["eval_win"]]
-        if len(X_tr) < 20 or len(X_te) == 0:
-            i += wf_monthly["step"]
-            continue
-        m = _gbc_regime()
-        m.fit(X_tr, y_tr)
-        preds = m.predict(X_te)
-        all_preds.extend(preds)
-        all_actuals.extend(y_te)
+    while i + wf_monthly["eval_win"] <= len(df_reg):
+        train_end = i - 6
+        if train_end >= 24 and len(np.unique(y_all[:train_end])) >= 2:
+            m = _logreg_regime()
+            m.fit(X_all[:train_end], y_all[:train_end])
+            preds.extend(m.predict(X_all[i:i + wf_monthly["eval_win"]]))
+            actuals.extend(y_all[i:i + wf_monthly["eval_win"]])
         i += wf_monthly["step"]
 
-    if all_preds:
-        acc = np.mean(np.array(all_preds) == np.array(all_actuals))
-        print(f"{'regime':<10} {variant:<20} {len(feats):>6} {'accuracy':>8} {acc:>10.3f}")
-    results.append({"horizon": "regime", "variant": variant,
-                    "n_feats": len(feats), "accuracy": acc if all_preds else None})
+    if preds:
+        acc = float(np.mean(np.array(preds) == np.array(actuals)))
+        print(f"\nRegime (L2 LogisticRegression, {len(reg_feats)} feats): walk-forward accuracy = {acc:.3f} (n={len(preds)})")
+
+    print("\nDone.")
 
 
-# ── Summary ───────────────────────────────────────────────────────────────
-print("\n" + "=" * 90)
-print("IMPROVEMENT SUMMARY (MAPE reduction = better)")
-print("=" * 90)
-print(f"\n{'Horizon':<10} {'Baseline MAPE':>14} {'Enhanced MAPE':>14} {'Improvement':>12} {'Better?':>8}")
-print("-" * 60)
-
-for h in ["1d", "2d", "3d", "5d", "7d", "14d", "90d"]:
-    base = [r for r in results if r["horizon"] == h and "Baseline" in r["variant"]]
-    enh = [r for r in results if r["horizon"] == h and "Both" in r["variant"] or
-           (r["horizon"] == h and "+Macro" in r["variant"] and h == "90d")]
-    if base and enh:
-        b_mape = base[0]["mape"]
-        e_mape = enh[-1]["mape"]
-        improvement = (b_mape - e_mape) / b_mape * 100
-        better = "YES" if e_mape < b_mape else "no"
-        print(f"{h:<10} {b_mape:>14.3f} {e_mape:>14.3f} {improvement:>11.1f}% {better:>8}")
-
-print("\nDone.")
+if __name__ == "__main__":
+    main()

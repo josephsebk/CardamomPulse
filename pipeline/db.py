@@ -14,41 +14,54 @@ def get_conn() -> sqlite3.Connection:
 
 
 def init_db():
-    """Create all tables if they don't exist."""
+    """Create all tables if they don't exist and run idempotent migrations."""
     conn = get_conn()
     cur = conn.cursor()
 
     cur.execute("""
     CREATE TABLE IF NOT EXISTS auction_daily (
-        date        TEXT PRIMARY KEY,
-        lots        REAL,
-        arrived_kg  REAL,
-        sold_kg     REAL,
-        avg_price   REAL,
-        max_price   REAL,
-        n_auctions      REAL,
-        price_disp_cv   REAL,
-        price_range_pct REAL,
-        unsold_pct      REAL,
-        avg_lot_kg      REAL
+        date             TEXT PRIMARY KEY,
+        lots             REAL,
+        arrived_kg       REAL,
+        sold_kg          REAL,
+        avg_price        REAL,
+        max_price        REAL,
+        n_auctions       REAL,
+        price_disp_cv    REAL,
+        price_range_pct  REAL,
+        unsold_pct       REAL,
+        avg_lot_kg       REAL,
+        adj_price        REAL,
+        house_effect_log REAL,
+        grade_spread_pct REAL
     )""")
 
-    # Migration for pre-existing databases (e.g. the CI cache): add the
-    # microstructure columns if the table predates them
+    # Migration for pre-existing databases (e.g. CI cache)
     existing = {r[1] for r in cur.execute("PRAGMA table_info(auction_daily)")}
-    for col in ["n_auctions", "price_disp_cv", "price_range_pct",
-                "unsold_pct", "avg_lot_kg"]:
+    for col in [
+        "n_auctions", "price_disp_cv", "price_range_pct",
+        "unsold_pct", "avg_lot_kg",
+        "adj_price", "house_effect_log", "grade_spread_pct",
+    ]:
         if col not in existing:
             cur.execute(f"ALTER TABLE auction_daily ADD COLUMN {col} REAL")
 
     cur.execute("""
+    CREATE TABLE IF NOT EXISTS auction_house_effects (
+        auctioneer   TEXT PRIMARY KEY,
+        premium_pct  REAL,
+        n_obs        INTEGER,
+        updated_at   TEXT DEFAULT (datetime('now'))
+    )""")
+
+    cur.execute("""
     CREATE TABLE IF NOT EXISTS weather_idukki (
-        date            TEXT PRIMARY KEY,
+        date             TEXT PRIMARY KEY,
         precipitation_mm REAL,
-        rain_mm         REAL,
-        temp_max_c      REAL,
-        temp_min_c      REAL,
-        humidity_pct    REAL
+        rain_mm          REAL,
+        temp_max_c       REAL,
+        temp_min_c       REAL,
+        humidity_pct     REAL
     )""")
 
     cur.execute("""
@@ -58,6 +71,15 @@ def init_db():
         gt_rain_mm          REAL,
         gt_temp_max_c       REAL,
         gt_temp_min_c       REAL
+    )""")
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS weather_forecast (
+        date                  TEXT PRIMARY KEY,
+        idukki_fcst_rain_14d  REAL,
+        idukki_fcst_temp_14d  REAL,
+        gt_fcst_rain_14d      REAL,
+        gt_fcst_temp_14d      REAL
     )""")
 
     cur.execute("""
@@ -106,14 +128,14 @@ def init_db():
 
     cur.execute("""
     CREATE TABLE IF NOT EXISTS festival_calendar (
-        date            TEXT PRIMARY KEY,
-        wedding_season  INTEGER,
-        harvest_season  INTEGER,
-        peak_harvest    INTEGER,
-        pre_eid_period  INTEGER,
+        date              TEXT PRIMARY KEY,
+        wedding_season    INTEGER,
+        harvest_season    INTEGER,
+        peak_harvest      INTEGER,
+        pre_eid_period    INTEGER,
         pre_diwali_period INTEGER,
-        pre_onam_period INTEGER,
-        xmas_newyear    INTEGER
+        pre_onam_period   INTEGER,
+        xmas_newyear      INTEGER
     )""")
 
     cur.execute("""
@@ -132,12 +154,12 @@ def init_db():
 
     cur.execute("""
     CREATE TABLE IF NOT EXISTS regime_ledger (
-        id              INTEGER PRIMARY KEY AUTOINCREMENT,
-        forecast_date   TEXT NOT NULL UNIQUE,
+        id               INTEGER PRIMARY KEY AUTOINCREMENT,
+        forecast_date    TEXT NOT NULL UNIQUE,
         bear_probability REAL NOT NULL,
-        regime_label    TEXT,
-        model_version   TEXT,
-        created_at      TEXT DEFAULT (datetime('now'))
+        regime_label     TEXT,
+        model_version    TEXT,
+        created_at       TEXT DEFAULT (datetime('now'))
     )""")
 
     cur.execute("""
@@ -153,19 +175,34 @@ def init_db():
         anchor_price    REAL,
         naive_abs_error REAL,
         naive_pct_error REAL,
+        lower_bound     REAL,
+        upper_bound     REAL,
+        in_interval     INTEGER,
         created_at      TEXT DEFAULT (datetime('now')),
         UNIQUE(date, horizon_days)
     )""")
 
-    # Migration for databases created before v2.3. actual_date records which
-    # auction actually settled the forecast (target dates without an auction
-    # are settled by the next one), and the anchor/naive columns store the
-    # random-walk benchmark so skill scores can be reported.
     existing_val = {r[1] for r in cur.execute("PRAGMA table_info(validation_log)")}
-    for col, coltype in [("actual_date", "TEXT"), ("anchor_price", "REAL"),
-                         ("naive_abs_error", "REAL"), ("naive_pct_error", "REAL")]:
+    for col, coltype in [
+        ("actual_date", "TEXT"),
+        ("anchor_price", "REAL"),
+        ("naive_abs_error", "REAL"),
+        ("naive_pct_error", "REAL"),
+        ("lower_bound", "REAL"),
+        ("upper_bound", "REAL"),
+        ("in_interval", "INTEGER"),
+    ]:
         if col not in existing_val:
             cur.execute(f"ALTER TABLE validation_log ADD COLUMN {col} {coltype}")
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS conformal_state (
+        horizon_days       INTEGER PRIMARY KEY,
+        alpha_t            REAL NOT NULL,
+        n_updates          INTEGER DEFAULT 0,
+        empirical_coverage REAL,
+        updated_at         TEXT DEFAULT (datetime('now'))
+    )""")
 
     conn.commit()
     conn.close()

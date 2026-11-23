@@ -2,7 +2,7 @@
 
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 import numpy as np
 import pandas as pd
@@ -11,20 +11,11 @@ from pipeline.db import get_conn
 
 log = logging.getLogger(__name__)
 
-# Most-recent validated forecasts summarised per horizon in track_record.json
 TRACK_RECORD_WINDOW = 30
 
 
 def _horizon_metrics(subset: pd.DataFrame) -> dict:
-    """Summarise validated forecasts against the naive baseline.
-
-    A price-level MAPE on its own flatters the models: forecasts are built as
-    anchor*exp(return), so the last known auction price supplies most of the
-    apparent accuracy and the number looks good even when the model adds
-    nothing. `skill` (1 - MAE/MAE_naive) and `theil_u` (RMSE ratio) measure
-    the part the model actually contributes; both are reported so the headline
-    error can never be read in isolation.
-    """
+    """Summarise validated forecasts against the naive baseline + interval coverage."""
     n = len(subset)
     metrics = {
         "n": n,
@@ -35,9 +26,15 @@ def _horizon_metrics(subset: pd.DataFrame) -> dict:
         "naive_mape": None, "naive_mae": None, "naive_rmse": None,
         "skill": None, "theil_u": None, "beat_naive_rate": None,
         "directional_accuracy": None,
+        "interval_coverage": None, "interval_n": 0,
     }
 
-    # naive columns are absent on rows validated before the v2.3 migration
+    if "in_interval" in subset.columns:
+        cov = subset["in_interval"].dropna()
+        if not cov.empty:
+            metrics["interval_coverage"] = round(float(cov.mean()), 3)
+            metrics["interval_n"] = int(len(cov))
+
     if "naive_abs_error" not in subset.columns:
         return metrics
     paired = subset.dropna(subset=["naive_abs_error", "naive_pct_error"])
@@ -53,11 +50,12 @@ def _horizon_metrics(subset: pd.DataFrame) -> dict:
     metrics["naive_mae"] = round(naive_mae, 1)
     metrics["naive_rmse"] = round(naive_rmse, 1)
     if naive_mae > 0:
-        metrics["skill"] = round(1 - model_mae / naive_mae, 3)
+        metrics["skill"] = round(1.0 - model_mae / naive_mae, 3)
     if naive_rmse > 0:
         metrics["theil_u"] = round(model_rmse / naive_rmse, 3)
     metrics["beat_naive_rate"] = round(
-        float((paired["abs_error"] < paired["naive_abs_error"]).mean()), 3)
+        float((paired["abs_error"] < paired["naive_abs_error"]).mean()), 3
+    )
 
     directional = paired.dropna(subset=["anchor_price"])
     if not directional.empty:
@@ -72,9 +70,9 @@ def export_json():
     """Generate all JSON files consumed by the web dashboard."""
     ensure_dirs()
     conn = get_conn()
+    now_iso = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
-    # ── 1. dashboard.json — main dashboard payload ───────────────────
-    # Latest price
+    # ── 1. dashboard.json ────────────────────────────────────────────
     latest = pd.read_sql(
         "SELECT * FROM auction_daily ORDER BY date DESC LIMIT 30", conn
     )
@@ -88,7 +86,6 @@ def export_json():
     daily_change = spot["avg_price"] - prev["avg_price"]
     daily_change_pct = daily_change / prev["avg_price"] * 100 if prev["avg_price"] else 0
 
-    # Latest forecasts
     forecasts = pd.read_sql(
         """SELECT * FROM forecast_ledger
            WHERE forecast_date = (SELECT MAX(forecast_date) FROM forecast_ledger)
@@ -109,7 +106,6 @@ def export_json():
             entry["upper_bound"] = f["upper_bound"]
         forecast_list.append(entry)
 
-    # Latest regime
     regime_row = pd.read_sql(
         "SELECT * FROM regime_ledger ORDER BY forecast_date DESC LIMIT 1", conn
     )
@@ -122,16 +118,20 @@ def export_json():
             "forecast_date": r["forecast_date"],
         }
 
+    spot_payload = {
+        "date": spot["date"],
+        "avg_price": spot["avg_price"],
+        "max_price": spot["max_price"],
+        "daily_change": round(daily_change, 1),
+        "daily_change_pct": round(daily_change_pct, 2),
+        "volume_kg": spot["sold_kg"],
+    }
+    if "adj_price" in spot.index and pd.notna(spot["adj_price"]):
+        spot_payload["adj_price"] = round(float(spot["adj_price"]), 1)
+
     dashboard = {
-        "updated_at": datetime.utcnow().isoformat() + "Z",
-        "spot_price": {
-            "date": spot["date"],
-            "avg_price": spot["avg_price"],
-            "max_price": spot["max_price"],
-            "daily_change": round(daily_change, 1),
-            "daily_change_pct": round(daily_change_pct, 2),
-            "volume_kg": spot["sold_kg"],
-        },
+        "updated_at": now_iso,
+        "spot_price": spot_payload,
         "forecasts": forecast_list,
         "regime": regime,
         "model_version": MODEL_VERSION,
@@ -145,17 +145,12 @@ def export_json():
         conn,
     )
     history = history.sort_values("date")
-    history_list = history.to_dict(orient="records")
     _write_json(EXPORT_DIR / "price_history.json", {
-        "updated_at": datetime.utcnow().isoformat() + "Z",
-        "prices": history_list,
+        "updated_at": now_iso,
+        "prices": history.to_dict(orient="records"),
     })
 
-    # ── 3. track_record.json — validation metrics ────────────────────
-    # Read the whole log, not a global LIMIT: the per-horizon window below
-    # needs its own most-recent rows. A shared LIMIT 200 split across ~10
-    # horizons capped each one at ~20, so the advertised 30-observation
-    # window was never actually reached.
+    # ── 3. track_record.json — validation + online ACI metrics ───────
     validations = pd.read_sql(
         "SELECT * FROM validation_log ORDER BY date DESC", conn
     )
@@ -163,35 +158,55 @@ def export_json():
         "SELECT COUNT(*) AS n FROM validation_log", conn
     )["n"].iloc[0])
 
+    try:
+        aci_df = pd.read_sql(
+            "SELECT horizon_days, alpha_t, n_updates, empirical_coverage "
+            "FROM conformal_state ORDER BY horizon_days",
+            conn,
+        )
+        aci_state = {
+            str(int(r["horizon_days"])): {
+                "alpha_t": r["alpha_t"],
+                "n_updates": int(r["n_updates"]),
+                "empirical_coverage": r["empirical_coverage"],
+            }
+            for _, r in aci_df.iterrows()
+        }
+    except Exception:
+        aci_state = {}
+
     if not validations.empty:
         metrics_by_horizon = {}
-        for horizon in validations["horizon_days"].unique():
+        for horizon in sorted(validations["horizon_days"].unique()):
             subset = validations[validations["horizon_days"] == horizon]
             metrics_by_horizon[str(int(horizon))] = _horizon_metrics(
-                subset.head(TRACK_RECORD_WINDOW))
+                subset.head(TRACK_RECORD_WINDOW)
+            )
 
         track_record = {
-            "updated_at": datetime.utcnow().isoformat() + "Z",
+            "updated_at": now_iso,
+            "model_version": MODEL_VERSION,
             "total_predictions": total_predictions,
             "window": TRACK_RECORD_WINDOW,
             "metrics_by_horizon": metrics_by_horizon,
             "overall": _horizon_metrics(validations),
+            "aci_state": aci_state,
             "recent_validations": validations.head(30).to_dict(orient="records"),
         }
     else:
         track_record = {
-            "updated_at": datetime.utcnow().isoformat() + "Z",
+            "updated_at": now_iso,
+            "model_version": MODEL_VERSION,
             "total_predictions": 0,
             "window": TRACK_RECORD_WINDOW,
             "metrics_by_horizon": {},
             "overall": None,
+            "aci_state": aci_state,
             "recent_validations": [],
         }
     _write_json(EXPORT_DIR / "track_record.json", track_record)
 
-    # ── 4. archive.csv — historical actuals + predictions ────────────
-    # Include all auction dates (with any matching 7-day prediction),
-    # plus forward forecasts whose target dates have no auction yet.
+    # ── 4. archive.csv ───────────────────────────────────────────────
     archive = pd.read_sql(
         """SELECT a.date,
                   a.avg_price AS actual_avg_price_inr_per_kg,
@@ -216,18 +231,15 @@ def export_json():
     )
     archive.to_csv(str(EXPORT_DIR / "archive.csv"), index=False)
 
-    # ── 5. insights.json — market analysis for Insights page ─────
-    _export_insights(conn)
+    # ── 5. insights.json ─────────────────────────────────────────────
+    _export_insights(conn, now_iso)
 
     conn.close()
     log.info(f"Exported JSON + CSV to {EXPORT_DIR}")
 
 
-def _export_insights(conn):
-    """Build insights.json from full price history and external data."""
-    import numpy as np
-
-    # --- Full price history ---
+def _export_insights(conn, now_iso: str):
+    """Build insights.json from full price history, external data, and house premiums."""
     prices = pd.read_sql(
         "SELECT date, avg_price, max_price, sold_kg, arrived_kg FROM auction_daily ORDER BY date",
         conn,
@@ -239,9 +251,7 @@ def _export_insights(conn):
     prices["date"] = pd.to_datetime(prices["date"])
     prices["year"] = prices["date"].dt.year
     prices["month"] = prices["date"].dt.month
-    prices["month_name"] = prices["date"].dt.strftime("%b")
 
-    # --- 1. Price history timeline (yearly summaries) ---
     yearly = prices.groupby("year").agg(
         avg_price=("avg_price", "mean"),
         max_price=("max_price", "max"),
@@ -249,39 +259,38 @@ def _export_insights(conn):
         total_volume_kg=("sold_kg", "sum"),
         trading_days=("date", "count"),
     ).reset_index()
-    yearly = yearly[yearly["trading_days"] >= 30]  # skip partial years
+    yearly = yearly[yearly["trading_days"] >= 30]
 
-    yearly_timeline = []
-    for _, row in yearly.iterrows():
-        yearly_timeline.append({
+    yearly_timeline = [
+        {
             "year": int(row["year"]),
             "avg_price": round(float(row["avg_price"]), 0),
             "max_price": round(float(row["max_price"]), 0),
             "min_price": round(float(row["min_price"]), 0),
             "total_volume_mt": round(float(row["total_volume_kg"]) / 1000, 0),
-        })
+        }
+        for _, row in yearly.iterrows()
+    ]
 
-    # --- 2. Monthly seasonality (avg across all years) ---
     monthly_avg = prices.groupby("month")["avg_price"].mean()
     grand_mean = prices["avg_price"].mean()
+    month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     seasonality = []
     for m in range(1, 13):
         avg = monthly_avg.get(m, grand_mean)
         deviation = (avg - grand_mean) / grand_mean * 100
         seasonality.append({
             "month": m,
-            "month_name": ["Jan","Feb","Mar","Apr","May","Jun",
-                           "Jul","Aug","Sep","Oct","Nov","Dec"][m-1],
+            "month_name": month_names[m - 1],
             "avg_price": round(float(avg), 0),
             "deviation_pct": round(float(deviation), 1),
         })
 
-    # Best / worst months
     sorted_months = sorted(seasonality, key=lambda x: x["deviation_pct"], reverse=True)
     best_months = [m["month_name"] for m in sorted_months[:3]]
     worst_months = [m["month_name"] for m in sorted_months[-3:]]
 
-    # --- 3. Key price regimes ---
     regimes = [
         {
             "name": "Gradual Rise",
@@ -326,16 +335,13 @@ def _export_insights(conn):
             regime["trough_price"] = round(float(subset["avg_price"].min()), 0)
             change = (subset["avg_price"].iloc[-1] - subset["avg_price"].iloc[0]) / subset["avg_price"].iloc[0] * 100
             regime["change_pct"] = round(float(change), 1)
-        # Clean internal fields
         del regime["start"]
         del regime["end"]
 
-    # --- 4. Key drivers analysis ---
-    # ENSO correlation
+    # Drivers
     enso = pd.read_sql("SELECT * FROM enso_monthly ORDER BY year, season", conn)
     enso_insight = None
     if not enso.empty:
-        # Get latest ENSO reading
         latest_enso = enso.iloc[-1]
         phase = "El Nino" if latest_enso["anomaly"] > 0.5 else (
             "La Nina" if latest_enso["anomaly"] < -0.5 else "Neutral"
@@ -348,10 +354,7 @@ def _export_insights(conn):
                            "El Nino (drier) tends to be manageable with LOWER prices.",
         }
 
-    # Guatemala trade
-    guatemala = pd.read_sql(
-        "SELECT * FROM trade_guatemala ORDER BY period", conn
-    )
+    guatemala = pd.read_sql("SELECT * FROM trade_guatemala ORDER BY period", conn)
     guatemala_insight = None
     if not guatemala.empty and len(guatemala) >= 12:
         gt = guatemala.copy()
@@ -364,28 +367,22 @@ def _export_insights(conn):
         guatemala_insight = {
             "recent_12m_qty_mt": round(float(gt_recent_12) / 1000, 0) if gt_recent_12 else None,
             "yoy_change_pct": yoy_change,
+            "latest_period": str(gt["period"].iloc[-1]),
             "impact_note": "Guatemala supplies 60-70% of global cardamom exports. "
                            "The 2024-25 thrips crisis collapsed exports, driving Indian prices up.",
         }
 
-    # Rainfall
-    weather = pd.read_sql(
-        "SELECT date, rain_mm FROM weather_idukki ORDER BY date DESC LIMIT 90", conn
-    )
+    weather = pd.read_sql("SELECT date, rain_mm FROM weather_idukki ORDER BY date DESC LIMIT 90", conn)
     rainfall_insight = None
     if not weather.empty:
-        total_rain_90d = weather["rain_mm"].sum()
         rainfall_insight = {
-            "last_90d_rain_mm": round(float(total_rain_90d), 0),
+            "last_90d_rain_mm": round(float(weather["rain_mm"].sum()), 0),
             "impact_note": "Idukki receives 2,500-3,500mm annually. "
                            "Excess monsoon rain causes flooding and crop damage. "
                            "Deficit stress reduces yields.",
         }
 
-    # USD/INR
-    finance = pd.read_sql(
-        "SELECT date, usdinr FROM finance_daily ORDER BY date DESC LIMIT 30", conn
-    )
+    finance = pd.read_sql("SELECT date, usdinr FROM finance_daily ORDER BY date DESC LIMIT 30", conn)
     usdinr_insight = None
     if not finance.empty:
         latest_fx = finance.iloc[0]["usdinr"]
@@ -398,24 +395,24 @@ def _export_insights(conn):
                            "boosting export demand and supporting prices.",
         }
 
-    drivers = {
-        "enso": enso_insight,
-        "guatemala_supply": guatemala_insight,
-        "rainfall": rainfall_insight,
-        "exchange_rate": usdinr_insight,
-    }
+    # Causal auction house premium hierarchy (for farmer selling decisions)
+    try:
+        houses_df = pd.read_sql(
+            "SELECT auctioneer, premium_pct, n_obs FROM auction_house_effects "
+            "ORDER BY premium_pct DESC",
+            conn,
+        )
+        house_premiums = houses_df.to_dict(orient="records")
+    except Exception:
+        house_premiums = []
 
-    # --- 5. Planting cycle analysis (best/worst years to plant) ---
-    # A farmer who plants in year Y harvests in Y+3 and sells for ~5 years (Y+3 to Y+7).
-    # Best planting years = years where the 3-7 year forward avg price was highest.
     planting_analysis = []
     for _, row in yearly.iterrows():
         y = int(row["year"])
-        # Forward 3-7 year window (harvest period)
         harvest_years = yearly[(yearly["year"] >= y + 3) & (yearly["year"] <= y + 7)]
         if len(harvest_years) >= 2:
             fwd_avg = harvest_years["avg_price"].mean()
-            cost_at_planting = 250 + (y - 2014) * 30  # rough cost escalation
+            cost_at_planting = 250 + (y - 2014) * 30
             roi = (fwd_avg - cost_at_planting) / cost_at_planting * 100
             planting_analysis.append({
                 "planting_year": y,
@@ -423,36 +420,23 @@ def _export_insights(conn):
                 "avg_harvest_price": round(float(fwd_avg), 0),
                 "estimated_roi_pct": round(float(roi), 0),
             })
-
     sorted_planting = sorted(planting_analysis, key=lambda x: x["avg_harvest_price"], reverse=True)
 
-    # --- 6. Cost floor analysis ---
-    # MGNREGA base wages and typical farm labour multiplier
-    base_year = 2014
-    base_wage = 212  # Kerala MGNREGA 2014
-    wage_growth = 0.052  # 5.2% CAGR
+    base_year, base_wage, wage_growth = 2014, 212, 0.052
     current_year = prices["date"].max().year
-    labour_multiplier = 1.7  # farm labour premium over MGNREGA
-    labour_share = 0.62  # labour = 62% of total cost
-
-    cost_floor_history = []
-    for y in range(base_year, current_year + 2):
-        mgnrega = base_wage * (1 + wage_growth) ** (y - base_year)
-        farm_wage = mgnrega * labour_multiplier
-        total_cost = farm_wage / labour_share  # ₹/day implies cost/kg via yield conversion
-        # Approximate cost/kg: ~₹350 base in 2014, scaling with wage
-        cost_per_kg = 350 * (1 + wage_growth) ** (y - base_year)
-        cost_floor_history.append({
+    cost_floor_history = [
+        {
             "year": y,
-            "mgnrega_wage": round(float(mgnrega), 0),
-            "estimated_cost_per_kg": round(float(cost_per_kg), 0),
-        })
+            "mgnrega_wage": round(float(base_wage * (1 + wage_growth) ** (y - base_year)), 0),
+            "estimated_cost_per_kg": round(float(350 * (1 + wage_growth) ** (y - base_year)), 0),
+        }
+        for y in range(base_year, current_year + 2)
+    ]
 
-    current_cost = cost_floor_history[-2]["estimated_cost_per_kg"]  # last full year
+    current_cost = cost_floor_history[-2]["estimated_cost_per_kg"]
     current_price = float(prices["avg_price"].iloc[-1])
     price_to_cost = round(current_price / current_cost, 1) if current_cost else None
 
-    # --- 7. Farmer-relevant Q&A ---
     farmer_qa = [
         {
             "question": "When is the best time to sell my harvest?",
@@ -489,12 +473,12 @@ def _export_insights(conn):
             "answer": "Watch for three signals: (1) Guatemala export volumes recovering — "
                       "this would increase global supply, (2) Indian auction volumes rising sharply — "
                       "indicating new domestic supply, (3) Google Trends 'cardamom plantation' interest "
-                      "declining — suggesting planting wave is maturing. Current regime risk is LOW.",
+                      "declining — suggesting planting wave is maturing.",
             "category": "risk",
         },
         {
             "question": "What is the cost floor for cardamom farming?",
-            "answer": f"The estimated production cost is ~₹{int(current_cost)}/kg (2025), rising ~5% "
+            "answer": f"The estimated production cost is ~₹{int(current_cost)}/kg, rising ~5% "
                       f"per year with labour inflation. Current prices at ₹{int(current_price)}/kg are "
                       f"{price_to_cost}x the cost floor. Prices rarely stay below 1.5x cost for long "
                       f"because farmers abandon cultivation, reducing future supply.",
@@ -502,9 +486,8 @@ def _export_insights(conn):
         },
     ]
 
-    # --- Assemble insights ---
     insights = {
-        "updated_at": datetime.utcnow().isoformat() + "Z",
+        "updated_at": now_iso,
         "price_timeline": {
             "yearly_summary": yearly_timeline,
             "date_range": {
@@ -521,7 +504,13 @@ def _export_insights(conn):
             "worst_months": worst_months,
         },
         "regimes": regimes,
-        "drivers": drivers,
+        "drivers": {
+            "enso": enso_insight,
+            "guatemala_supply": guatemala_insight,
+            "rainfall": rainfall_insight,
+            "exchange_rate": usdinr_insight,
+        },
+        "auction_house_premiums": house_premiums,
         "planting_analysis": {
             "best_years": sorted_planting[:3] if sorted_planting else [],
             "worst_years": sorted_planting[-3:] if len(sorted_planting) >= 3 else [],

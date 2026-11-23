@@ -1,75 +1,49 @@
 #!/usr/bin/env python3
 """
-Backtest: do mean-reversion terms produce a model that beats a random walk?
+Backtest: evaluate v3.0 causal house-mix-adjusted index, leak-free regularized
+models, and shrinkage against the naive random-walk baseline.
 
-Motivation. The auction series is not a random walk — lag-1 return
-autocorrelation is about -0.13 (~7 SE, n=3150) and variance ratios run
-0.69-0.87 across q=2..60, i.e. persistent multi-scale mean reversion. That
-is genuine and not a composition artifact: rebuilding the index with
-auctioneer fixed effects (21 auctioneers, effects spanning 6.1%) makes the
-reversion *stronger*, not weaker, which is the opposite of what a
-lot-composition story predicts.
-
-The open question is whether that unconditional structure can be turned into
-a forecast that beats "assume no change". An earlier single-window test
-(fit pre-2026, scored on Feb-Aug 2026) suggested yes. It does not survive
-walk-forward validation across the full history and all regimes — that window
-was one regime, with n=25-35 at the long horizons.
-
-This script runs the honest version: walk-forward CV over 2014-2026 with
-calendar-aligned targets, scoring every feature set against the naive
-baseline on its own evaluation rows.
+Walk-forward CV over 2014-2026 with calendar-aligned targets, scoring every
+model/feature configuration against the naive persistence baseline on the exact
+same evaluation rows.
 
 Needs only the local auction XLS — no network.
 
 Usage:
   python3 backtest_mean_reversion.py            # 1, 7, 14, 28, 90 day horizons
-  python3 backtest_mean_reversion.py --quick    # skip the slow daily GBR runs
+  python3 backtest_mean_reversion.py --quick    # only 1d and 7d horizons
 """
 
 import argparse
 
 import numpy as np
-from sklearn.linear_model import Ridge
 
 from pipeline.assemble import resample_monthly, resample_weekly
 from pipeline.collectors.auction import aggregate_daily, load_xls_fallback
-from pipeline.config import WF_CONFIG
+from pipeline.config import RECENCY_HALFLIFE_DAYS, WF_CONFIG
 from pipeline.features import add_tier1
 from pipeline.models import (
-    _bayesian_90d, _gbr_28d, _gbr_7d, _gbr_short,
-    make_return_target, make_return_target_calendar, walk_forward_cv,
+    _bayesian_90d,
+    _gbr_shallow,
+    _huber_short,
+    _ridge_med,
+    _ridge_short,
+    make_return_target,
+    make_return_target_calendar,
+    walk_forward_cv,
 )
 
 
-def add_reversion_terms(df, windows):
-    """Deviation of the CURRENT price from its own trailing mean.
-
-    T1 computes every feature on price.shift(1), so the models never see the
-    price the forecast is actually anchored on — they are asked to predict the
-    move starting from a level they cannot observe. Today's auction has closed
-    by the 6PM IST run and predict_all already anchors on it, so using it here
-    is causal.
-    """
-    lp = np.log(df["avg_price"])
-    names = []
-    for w in windows:
-        col = f"dev_{w}"
-        df[col] = lp - lp.rolling(w, min_periods=max(2, w // 2)).mean()
-        names.append(col)
-    df["ret_1"] = lp.diff()
-    names.append("ret_1")
-    return names
-
-
 def usable(df, feats, floor):
-    return [c for c in feats if df[c].notna().sum() > floor]
+    return [c for c in feats if c in df.columns and df[c].notna().sum() > floor]
 
 
-def report(label, df, feats, target_col, model_fn, cfg, purge, anchor="avg_price"):
-    cv = walk_forward_cv(df, feats, target_col, model_fn, **cfg, purge=purge,
-                         anchor_col=anchor)
-    print(f"  {label:<30} {cv['mape']:>7.4f} {cv['naive_mape']:>7.4f} "
+def report(label, df, feats, target_col, model_fn, cfg, purge, anchor="adj_price", halflife=None):
+    cv = walk_forward_cv(
+        df, feats, target_col, model_fn, **cfg,
+        purge=purge, anchor_col=anchor, halflife_days=halflife,
+    )
+    print(f"  {label:<34} {cv['mape']:>7.4f} {cv['naive_mape']:>7.4f} "
           f"{cv['skill']:>+8.3f} {cv['theil_u']:>7.3f} "
           f"{cv.get('dir_acc', float('nan')):>6.2f} {cv['folds']:>6}")
     return cv
@@ -79,66 +53,63 @@ def main(quick=False):
     daily = aggregate_daily(load_xls_fallback())
     weekly, monthly = resample_weekly(daily), resample_monthly(daily)
 
-    t1_d = usable(daily, add_tier1(daily), 500)
-    mr_d = add_reversion_terms(daily, [5, 10, 20, 60])
-    daily["zscore_20"] = daily["dev_20"] / np.log(
-        daily["avg_price"]).diff().rolling(20, min_periods=10).std().clip(lower=1e-6)
-    mr_d.append("zscore_20")
+    t1_d = usable(daily, add_tier1(daily, freq="daily"), 500)
+    t1_w = usable(weekly, add_tier1(weekly, freq="weekly"), 100)
+    t1_m = usable(monthly, add_tier1(monthly, freq="monthly"), 25)
 
-    t1_w = usable(weekly, add_tier1(weekly), 100)
-    mr_w = add_reversion_terms(weekly, [3, 6, 12])
-    t1_m = usable(monthly, add_tier1(monthly), 25)
-    mr_m = add_reversion_terms(monthly, [3, 6, 12])
+    mr_cols = [c for c in ["ret_1", "dev_ma_1", "dev_ma_2", "dev_ma_3", "zscore_ma3", "house_effect_log"] if c in daily.columns]
+    mr_w = [c for c in ["ret_1", "dev_ma_1", "dev_ma_2", "dev_ma_3"] if c in weekly.columns]
+    mr_m = [c for c in ["ret_1", "dev_ma_1", "dev_ma_2", "dev_ma_3"] if c in monthly.columns]
 
     print(f"daily {daily.shape} | weekly {weekly.shape} | monthly {monthly.shape}")
-    print("\nWalk-forward CV. skill = 1 - MAE/MAE_naive; >0 beats the random walk.")
-    print("Each row is scored against the naive baseline on its own eval rows,")
-    print("so skill is comparable across sets even where MAPE is not.\n")
-    header = (f"  {'feature set':<30} {'MAPE':>7} {'naive':>7} {'skill':>8} "
+    print("\nWalk-forward CV (v3.0 leak-free Pipeline + house-mix-adjusted index).")
+    print("skill = 1 - MAE/MAE_naive; >0 beats the random walk.\n")
+    header = (f"  {'configuration':<34} {'MAPE':>7} {'naive':>7} {'skill':>8} "
               f"{'TheilU':>7} {'dir':>6} {'folds':>6}")
 
-    for h in ([7] if quick else [1, 7, 14]):
+    for h in ([1, 7] if quick else [1, 7, 14]):
         print(f"{h}-day"); print(header)
-        daily[f"t{h}"] = make_return_target_calendar(daily, h)
-        gbr = (lambda _h=h: _gbr_short(_h)) if h < 7 else _gbr_7d
-        report("T1 only (current design)", daily, t1_d, f"t{h}", gbr,
-               WF_CONFIG["daily"], h)
-        report("T1 + reversion", daily, t1_d + mr_d, f"t{h}", gbr,
-               WF_CONFIG["daily"], h)
-        report("reversion only (GBR)", daily, mr_d, f"t{h}", gbr,
-               WF_CONFIG["daily"], h)
-        report("reversion only (ridge)", daily, mr_d, f"t{h}",
-               lambda: Ridge(alpha=1.0), WF_CONFIG["daily"], h)
+        daily[f"t{h}_raw"] = make_return_target_calendar(daily, h, price_col="avg_price")
+        daily[f"t{h}_adj"] = make_return_target_calendar(daily, h, price_col="adj_price")
+        hl = RECENCY_HALFLIFE_DAYS["daily"]
+
+        report("T1 Huber (raw avg_price)", daily, t1_d, f"t{h}_raw",
+               lambda _h=h: _huber_short(_h), WF_CONFIG["daily"], h, anchor="avg_price", halflife=hl)
+        report("T1 Huber (adj_price)", daily, t1_d, f"t{h}_adj",
+               lambda _h=h: _huber_short(_h), WF_CONFIG["daily"], h, anchor="adj_price", halflife=hl)
+        report("T1 Ridge (adj_price)", daily, t1_d, f"t{h}_adj",
+               lambda _h=h: _ridge_short(_h), WF_CONFIG["daily"], h, anchor="adj_price", halflife=hl)
+        report("Reversion+House Ridge (adj_price)", daily, mr_cols, f"t{h}_adj",
+               lambda _h=h: _ridge_short(_h), WF_CONFIG["daily"], h, anchor="adj_price", halflife=hl)
+        if h == 14:
+            report("T1 Shallow GBR (adj_price)", daily, t1_d, f"t{h}_adj",
+                   lambda: _gbr_shallow(min_leaf=30, n_estimators=60),
+                   WF_CONFIG["daily"], h, anchor="adj_price", halflife=hl)
         print()
 
-    weekly["t28"] = make_return_target(weekly, 4)   # calendar-resampled frame
-    print("28-day"); print(header)
-    report("T1 only (current design)", weekly, t1_w, "t28", _gbr_28d,
-           WF_CONFIG["weekly"], 4)
-    report("T1 + reversion", weekly, t1_w + mr_w, "t28", _gbr_28d,
-           WF_CONFIG["weekly"], 4)
-    report("reversion only (ridge)", weekly, mr_w, "t28",
-           lambda: Ridge(alpha=1.0), WF_CONFIG["weekly"], 4)
+    if not quick:
+        weekly["t28"] = make_return_target(weekly, 4, price_col="adj_price")
+        print("28-day"); print(header)
+        hl28 = RECENCY_HALFLIFE_DAYS["weekly"]
+        report("T1 Ridge (adj_price)", weekly, t1_w, "t28",
+               lambda: _ridge_med(alpha=40.0), WF_CONFIG["weekly"], 4, anchor="adj_price", halflife=hl28)
+        report("T1 Shallow GBR (adj_price)", weekly, t1_w, "t28",
+               lambda: _gbr_shallow(min_leaf=20, n_estimators=50),
+               WF_CONFIG["weekly"], 4, anchor="adj_price", halflife=hl28)
+        report("Reversion Ridge (adj_price)", weekly, mr_w, "t28",
+               lambda: _ridge_med(alpha=20.0), WF_CONFIG["weekly"], 4, anchor="adj_price", halflife=hl28)
 
-    monthly["t90"] = make_return_target(monthly, 3)
-    print("\n90-day"); print(header)
-    report("T1 only (current design)", monthly, t1_m, "t90", _bayesian_90d,
-           WF_CONFIG["monthly"], 3)
-    report("T1 + reversion", monthly, t1_m + mr_m, "t90", _bayesian_90d,
-           WF_CONFIG["monthly"], 3)
-    report("reversion only (bayes)", monthly, mr_m, "t90", _bayesian_90d,
-           WF_CONFIG["monthly"], 3)
-    report("reversion only (ridge)", monthly, mr_m, "t90",
-           lambda: Ridge(alpha=1.0), WF_CONFIG["monthly"], 3)
-
-    print("\nRead the skill column. On the full history no configuration beats the")
-    print("naive baseline; the simplest ones merely match it, while the")
-    print("feature-heavy models are far worse. Reversion is real in the series")
-    print("but does not survive as a tradeable forecast edge.")
+        monthly["t90"] = make_return_target(monthly, 3, price_col="adj_price")
+        print("\n90-day"); print(header)
+        hl90 = RECENCY_HALFLIFE_DAYS["monthly"]
+        report("T1 BayesianRidge (adj_price)", monthly, t1_m, "t90",
+               _bayesian_90d, WF_CONFIG["monthly"], 3, anchor="adj_price", halflife=hl90)
+        report("Reversion BayesianRidge", monthly, mr_m, "t90",
+               _bayesian_90d, WF_CONFIG["monthly"], 3, anchor="adj_price", halflife=hl90)
 
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--quick", action="store_true",
-                   help="only the 7-day daily horizon (the daily GBR runs are slow)")
+                   help="only run 1d and 7d horizons")
     main(**vars(p.parse_args()))

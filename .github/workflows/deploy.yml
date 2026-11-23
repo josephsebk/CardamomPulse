@@ -79,6 +79,8 @@ jobs:
       - name: Run data pipeline
         if: github.event_name != 'push'
         id: pipeline
+        env:
+          COMTRADE_API_KEY: ${{ secrets.COMTRADE_API_KEY }}
         run: python -m pipeline.run_daily ${{ steps.flags.outputs.args }}
 
       - name: Commit updated data

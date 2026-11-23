@@ -643,7 +643,7 @@
       </div>
       <div class="kpi-detail" style="display:flex;align-items:center;gap:4px;margin-top:8px;">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        <span id="kpi-pred-accuracy">High Accuracy</span>
+        <span id="kpi-pred-accuracy">80% band: --</span>
       </div>
     </div>
 
@@ -897,13 +897,13 @@
      ═══════════════════════════════════════════════════════════════════ -->
 <div class="page" id="page-intelligence">
 
-  <div class="verified-badge">
+  <div class="verified-badge" id="perf-verified-badge">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-    VERIFIED MODEL
+    <span id="perf-badge-text">LIVE VALIDATED TRACK RECORD</span>
   </div>
 
   <div class="model-title">Model Performance</div>
-  <div class="model-subtitle">Historical accuracy tracking for the Alleppey Green Small Cardamom price prediction model (v2.4).</div>
+  <div class="model-subtitle" id="model-version-sub">Live out-of-sample accuracy tracking for the Alleppey Green Small Cardamom price prediction model.</div>
 
   <!-- METRIC CARDS -->
   <div class="metric-grid">
@@ -913,11 +913,11 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12l3 3 5-6"/></svg>
       </div>
       <div class="metric-big">
-        88%
-        <span class="kpi-badge green">+2.4%</span>
+        <span id="perf-dir-acc">--</span>
+        <span class="kpi-badge orange" id="perf-dir-badge">--</span>
       </div>
       <div class="metric-label">Directional Accuracy</div>
-      <div class="metric-desc">Percentage of predictions that correctly forecast the price movement direction (up/down).</div>
+      <div class="metric-desc" id="perf-dir-desc">Share of validated forecasts that predicted the correct price move direction vs 50% baseline.</div>
     </div>
 
     <!-- MAPE -->
@@ -926,30 +926,30 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><text x="5" y="18" font-size="16" font-weight="700" fill="currentColor" stroke="none">%</text></svg>
       </div>
       <div class="metric-big">
-        9.2%
-        <span class="kpi-badge red">&darr;-0.5%</span>
+        <span id="perf-mape">--</span>
+        <span class="kpi-badge orange" id="perf-mape-badge">--</span>
       </div>
       <div class="metric-label">MAPE (Mean Abs. % Error)</div>
-      <div class="metric-desc">Average percentage difference between predicted and actual prices. Lower is better.</div>
+      <div class="metric-desc" id="perf-mape-desc">Measured across all settled forecasts vs naive persistence baseline. Lower is better.</div>
     </div>
 
-    <!-- Confidence Score -->
+    <!-- Skill & Conformal Calibration -->
     <div class="card metric-card">
       <div class="metric-icon green">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
       </div>
-      <div class="metric-big" style="color:var(--green-text)">High</div>
-      <div class="metric-label">Confidence Score</div>
+      <div class="metric-big" id="perf-skill-verdict" style="color:var(--ink)">--</div>
+      <div class="metric-label" id="perf-skill-label">Skill vs Random Walk</div>
       <div style="margin-top:10px;">
         <div class="conf-row">
-          <span class="conf-label">Data Completeness</span>
-          <div class="conf-bar"><div class="conf-fill" style="width:99.8%;background:var(--green-accent)"></div></div>
-          <span class="conf-value" style="color:var(--green-text)">99.8%</span>
+          <span class="conf-label">Beat Naive Rate</span>
+          <div class="conf-bar"><div class="conf-fill" id="perf-beat-bar" style="width:0%;background:var(--green-accent)"></div></div>
+          <span class="conf-value" id="perf-beat-val">--</span>
         </div>
         <div class="conf-row">
-          <span class="conf-label">Model Drift</span>
-          <div class="conf-bar"><div class="conf-fill" style="width:25%;background:var(--orange)"></div></div>
-          <span class="conf-value" style="color:var(--orange-text)">Low</span>
+          <span class="conf-label" id="perf-cov-label">80% Band Coverage</span>
+          <div class="conf-bar"><div class="conf-fill" id="perf-cov-bar" style="width:0%;background:var(--orange)"></div></div>
+          <span class="conf-value" id="perf-cov-val">--</span>
         </div>
       </div>
     </div>
@@ -1173,6 +1173,10 @@ async function loadAll() {
     renderDashboard(dashboardData);
   }
 
+  if (window._trackRecord || dashboardData) {
+    try { renderTrackRecord(window._trackRecord, dashboardData); } catch(e) { console.warn("Track record:", e.message); }
+  }
+
   if (histRes.status === "fulfilled" && histRes.value) {
     priceHistory = histRes.value.prices || [];
     // Re-render dashboard with price history now available (fixes 14-day range, YTD badge)
@@ -1233,6 +1237,14 @@ function renderDashboard(data) {
     const predChange = ((fc.predicted_price - spot.avg_price) / spot.avg_price * 100);
     const predSign = predChange >= 0 ? "+" : "";
     $("kpi-pred-badge").textContent = predSign + predChange.toFixed(1) + "%";
+    $("kpi-pred-badge").className = "kpi-badge " + (predChange >= 0 ? "green" : "red");
+    if (fc.lower_bound != null && fc.upper_bound != null) {
+      $("kpi-pred-accuracy").textContent = `80% band: ${INR(fc.lower_bound)} – ${INR(fc.upper_bound)}`;
+    } else if (window._trackRecord?.overall?.mape != null) {
+      $("kpi-pred-accuracy").textContent = `Live MAPE: ${(window._trackRecord.overall.mape * 100).toFixed(1)}%`;
+    } else {
+      $("kpi-pred-accuracy").textContent = `Horizon: ${fc.horizon_days}d (${fc.model_version || ""})`;
+    }
   }
 
   // 14-Day range
@@ -1284,11 +1296,98 @@ function renderDashboard(data) {
 
   // YTD badge
   if (priceHistory.length > 0) {
-    const janEntries = priceHistory.filter(p => p.date.startsWith("2026-01"));
+    const latestYear = (spot.date || "").slice(0, 4) || String(new Date().getFullYear());
+    const janEntries = priceHistory.filter(p => p.date.startsWith(latestYear + "-01"));
     const firstOfYear = janEntries.length > 0 ? janEntries[0].avg_price : priceHistory[0].avg_price;
     const ytd = ((spot.avg_price - firstOfYear) / firstOfYear * 100);
     $("ytd-badge").textContent = (ytd >= 0 ? "+" : "") + ytd.toFixed(1) + "% YTD";
     $("ytd-badge").className = "kpi-badge " + (ytd >= 0 ? "green" : "red");
+  }
+}
+
+// ── Live Track Record binding (Model Performance page) ─────
+function renderTrackRecord(tr, dash) {
+  const version = dash?.model_version || tr?.model_version || (dash?.forecasts?.[0]?.model_version) || "v3.0";
+  const ov = tr?.overall || {};
+  const nTotal = ov.total_predictions || 0;
+
+  if ($("model-version-sub")) {
+    $("model-version-sub").textContent =
+      `Live out-of-sample accuracy tracking for the Alleppey Green Small Cardamom model (${version}${nTotal ? `, n=${nTotal.toLocaleString("en-IN")} settled forecasts` : ""}).`;
+  }
+
+  if (!nTotal) {
+    if ($("perf-dir-acc")) $("perf-dir-acc").textContent = "—";
+    if ($("perf-mape")) $("perf-mape").textContent = "—";
+    if ($("perf-skill-verdict")) $("perf-skill-verdict").textContent = "Collecting";
+    return;
+  }
+
+  // 1. Directional Accuracy
+  const dirPct = ov.directional_accuracy != null ? ov.directional_accuracy * 100 : null;
+  if (dirPct != null && $("perf-dir-acc")) {
+    $("perf-dir-acc").textContent = dirPct.toFixed(1) + "%";
+    const edge = dirPct - 50;
+    const badge = $("perf-dir-badge");
+    badge.textContent = (edge >= 0 ? "+" : "") + edge.toFixed(1) + "% vs 50%";
+    badge.className = "kpi-badge " + (edge >= 2 ? "green" : edge >= -2 ? "orange" : "red");
+    $("perf-dir-desc").textContent =
+      `Correctly predicted up/down direction on ${dirPct.toFixed(1)}% of ${nTotal.toLocaleString("en-IN")} settled forecasts.`;
+  }
+
+  // 2. MAPE vs Naive Persistence
+  const mapePct = ov.mape != null ? ov.mape * 100 : null;
+  const naivePct = ov.naive_mape != null ? ov.naive_mape * 100 : null;
+  if (mapePct != null && $("perf-mape")) {
+    $("perf-mape").textContent = mapePct.toFixed(2) + "%";
+    const badge = $("perf-mape-badge");
+    if (naivePct != null) {
+      const diff = mapePct - naivePct;
+      badge.textContent = (diff <= 0 ? "" : "+") + diff.toFixed(2) + "% vs naive";
+      badge.className = "kpi-badge " + (diff <= 0 ? "green" : diff <= 0.5 ? "orange" : "red");
+      $("perf-mape-desc").textContent =
+        `Model MAPE ${mapePct.toFixed(2)}% vs naive persistence ${naivePct.toFixed(2)}% (MAE ${INR(ov.mae)} vs ${INR(ov.naive_mae)}).`;
+    } else {
+      badge.textContent = `MAE ${INR(ov.mae)}`;
+      badge.className = "kpi-badge orange";
+    }
+  }
+
+  // 3. Skill Score, Beat-Naive Rate, and Conformal Coverage
+  const skill = ov.skill;
+  const theil = ov.theil_u;
+  if (skill != null && $("perf-skill-verdict")) {
+    const skillPct = (skill * 100).toFixed(1);
+    const sign = skill >= 0 ? "+" : "";
+    $("perf-skill-verdict").textContent = `${sign}${skillPct}%`;
+    $("perf-skill-verdict").style.color =
+      skill > 0.01 ? "var(--green-text)" : skill >= -0.02 ? "var(--orange-text)" : "var(--red-text)";
+    $("perf-skill-label").textContent =
+      `Skill vs Random Walk${theil != null ? ` (Theil U: ${theil.toFixed(2)})` : ""}`;
+  }
+
+  if (ov.beat_naive_rate != null) {
+    const beatPct = Math.max(0, Math.min(100, ov.beat_naive_rate * 100));
+    $("perf-beat-bar").style.width = beatPct.toFixed(1) + "%";
+    $("perf-beat-bar").style.background = beatPct >= 50 ? "var(--green-accent)" : "var(--orange)";
+    $("perf-beat-val").textContent = beatPct.toFixed(1) + "%";
+    $("perf-beat-val").style.color = beatPct >= 50 ? "var(--green-text)" : "var(--orange-text)";
+  }
+
+  if (ov.interval_coverage != null) {
+    const covPct = Math.max(0, Math.min(100, ov.interval_coverage * 100));
+    const inTarget = covPct >= 72 && covPct <= 88;
+    $("perf-cov-bar").style.width = covPct.toFixed(1) + "%";
+    $("perf-cov-bar").style.background = inTarget ? "var(--green-accent)" : "var(--orange)";
+    $("perf-cov-val").textContent = covPct.toFixed(1) + "%";
+    $("perf-cov-val").style.color = inTarget ? "var(--green-text)" : "var(--orange-text)";
+  } else if (theil != null) {
+    $("perf-cov-label").textContent = "Theil's U (<1 beats naive)";
+    const barW = Math.max(5, Math.min(100, (1 / Math.max(theil, 0.5)) * 75));
+    $("perf-cov-bar").style.width = barW.toFixed(1) + "%";
+    $("perf-cov-bar").style.background = theil <= 1.0 ? "var(--green-accent)" : "var(--orange)";
+    $("perf-cov-val").textContent = theil.toFixed(2);
+    $("perf-cov-val").style.color = theil <= 1.0 ? "var(--green-text)" : "var(--orange-text)";
   }
 }
 
@@ -1372,22 +1471,38 @@ function renderForecastChart() {
   const labels = last30.map(p => p.date);
   const actual = last30.map(p => p.avg_price);
   const forecast = new Array(last30.length).fill(null);
+  const bandUpper = new Array(last30.length).fill(null);
+  const bandLower = new Array(last30.length).fill(null);
 
   // Compute price levels from recent history
   const recentPrices = last30.map(p => p.avg_price);
-  const currentPrice = recentPrices[recentPrices.length - 1];
   const recentHigh = Math.max(...recentPrices);
   const recentLow = Math.min(...recentPrices);
 
+  let hasBands = false;
   if (dashboardData?.forecasts) {
-    // Connect forecast line from last actual point
-    forecast[forecast.length - 1] = actual[actual.length - 1];
+    const anchor = actual[actual.length - 1];
+    forecast[forecast.length - 1] = anchor;
+    bandUpper[bandUpper.length - 1] = anchor;
+    bandLower[bandLower.length - 1] = anchor;
     dashboardData.forecasts.forEach(f => {
       labels.push(f.target_date);
       actual.push(null);
       forecast.push(f.predicted_price);
+      if (f.upper_bound != null && f.lower_bound != null) {
+        hasBands = true;
+        bandUpper.push(f.upper_bound);
+        bandLower.push(f.lower_bound);
+      } else {
+        bandUpper.push(null);
+        bandLower.push(null);
+      }
     });
   }
+
+  const allY = [...recentPrices, ...forecast, ...(hasBands ? [...bandUpper, ...bandLower] : [])].filter(v => v != null);
+  const yMin = Math.min(...allY) * 0.97;
+  const yMax = Math.max(...allY) * 1.03;
 
   // Price level lines plugin
   const priceLevelsPlugin = {
@@ -1413,7 +1528,6 @@ function renderForecastChart() {
         c.moveTo(area.left, yPx);
         c.lineTo(area.right, yPx);
         c.stroke();
-        // Label
         c.globalAlpha = 0.8;
         c.font = "600 9px system-ui, sans-serif";
         c.fillStyle = lv.color;
@@ -1425,37 +1539,63 @@ function renderForecastChart() {
     }
   };
 
+  const datasets = [
+    {
+      label: "Price",
+      data: actual,
+      borderColor: "#1a472a",
+      borderWidth: 2.5,
+      tension: 0.3,
+      fill: true,
+      backgroundColor: "rgba(26,71,42,0.06)",
+      pointRadius: 0,
+      pointHitRadius: 8
+    }
+  ];
+
+  if (hasBands) {
+    datasets.push(
+      {
+        label: "80% Band (High)",
+        data: bandUpper,
+        borderColor: "rgba(34,197,94,0.35)",
+        borderWidth: 1,
+        borderDash: [3, 3],
+        tension: 0.3,
+        pointRadius: 0,
+        fill: "+1",
+        backgroundColor: "rgba(34,197,94,0.12)"
+      },
+      {
+        label: "80% Band (Low)",
+        data: bandLower,
+        borderColor: "rgba(34,197,94,0.35)",
+        borderWidth: 1,
+        borderDash: [3, 3],
+        tension: 0.3,
+        pointRadius: 0,
+        fill: false
+      }
+    );
+  }
+
+  datasets.push({
+    label: "Forecast",
+    data: forecast,
+    borderColor: "#22c55e",
+    borderWidth: 2.5,
+    tension: 0.3,
+    borderDash: [6, 4],
+    pointRadius: 3,
+    pointBackgroundColor: "#22c55e",
+    fill: false
+  });
+
   const ctx = $("chart-forecast").getContext("2d");
   if (chartForecast) chartForecast.destroy();
   chartForecast = new Chart(ctx, {
     type: "line",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "Price",
-          data: actual,
-          borderColor: "#1a472a",
-          borderWidth: 2.5,
-          tension: 0.3,
-          fill: true,
-          backgroundColor: "rgba(26,71,42,0.06)",
-          pointRadius: 0,
-          pointHitRadius: 8
-        },
-        {
-          label: "Forecast",
-          data: forecast,
-          borderColor: "#22c55e",
-          borderWidth: 2.5,
-          tension: 0.3,
-          borderDash: [6, 4],
-          pointRadius: 3,
-          pointBackgroundColor: "#22c55e",
-          fill: false
-        }
-      ]
-    },
+    data: { labels, datasets },
     options: {
       responsive: true,
       maintainAspectRatio: false,
@@ -1465,16 +1605,23 @@ function renderForecastChart() {
         y: {
           ticks: { callback: v => INR(v), font: { size: 10 }, color: "#9ca3af" },
           grid: { color: "#f3f4f6" },
-          min: recentLow * 0.97,
-          max: recentHigh * 1.03
+          min: yMin,
+          max: yMax
         }
       },
       plugins: {
         legend: {
           display: true, position: "top", align: "end",
-          labels: { boxWidth: 10, font: { size: 10 }, usePointStyle: true, pointStyle: "line" }
+          labels: {
+            boxWidth: 10, font: { size: 10 }, usePointStyle: true, pointStyle: "line",
+            filter: item => item.text !== "80% Band (Low)"
+          }
         },
-        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ": " + INR(ctx.parsed.y) } }
+        tooltip: {
+          callbacks: {
+            label: ctx => ctx.parsed.y != null ? ctx.dataset.label + ": " + INR(ctx.parsed.y) : null
+          }
+        }
       }
     },
     plugins: [priceLevelsPlugin]
@@ -1715,6 +1862,9 @@ function renderLedger() {
   forwardForecasts.forEach(f => {
     const d = new Date(f.target_date + "T00:00:00");
     const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    const bandHtml = (f.lower_bound != null && f.upper_bound != null)
+      ? `<div style="font-size:10px;color:var(--muted);font-weight:400;">${INR(f.lower_bound)} – ${INR(f.upper_bound)}</div>`
+      : "";
     const tr = document.createElement("tr");
     tr.style.background = "#f8faf8";
     tr.innerHTML = `
@@ -1722,7 +1872,7 @@ function renderLedger() {
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         ${dateStr} <span style="font-size:10px;color:var(--muted);margin-left:4px;">${f.horizon_days}d</span>
       </div></td>
-      <td class="ledger-price">${INR(f.predicted_price)}</td>
+      <td class="ledger-price">${INR(f.predicted_price)}${bandHtml}</td>
       <td class="ledger-price" style="color:var(--muted)">—</td>
       <td class="ledger-delta" style="color:var(--muted)">—</td>
       <td>—</td>
