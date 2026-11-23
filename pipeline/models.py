@@ -130,8 +130,11 @@ def _recency_weights(dates, halflife_days: float) -> np.ndarray:
     n = len(dates)
     if n == 0 or not halflife_days or halflife_days <= 0:
         return np.ones(n, dtype=float)
-    ts = pd.to_datetime(dates)
-    age_days = (ts.max() - ts).dt.days.to_numpy(dtype=float)
+    # Callers pass numpy arrays, which pd.to_datetime turns into a
+    # DatetimeIndex; TimedeltaIndex has no .dt accessor, so divide by a
+    # one-day Timedelta instead (works for Index and Series alike).
+    ts = pd.DatetimeIndex(pd.to_datetime(dates))
+    age_days = np.asarray((ts.max() - ts) / pd.Timedelta(days=1), dtype=float)
     age_days = np.clip(age_days, 0.0, None)
     w = np.exp(-np.log(2.0) * age_days / float(halflife_days))
     mean_w = float(np.mean(w))
