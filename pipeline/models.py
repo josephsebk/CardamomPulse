@@ -130,8 +130,11 @@ def _recency_weights(dates, halflife_days: float) -> np.ndarray:
     n = len(dates)
     if n == 0 or not halflife_days or halflife_days <= 0:
         return np.ones(n, dtype=float)
-    ts = pd.to_datetime(dates)
-    age_days = (ts.max() - ts).dt.days.to_numpy(dtype=float)
+    # Callers pass numpy arrays, which pd.to_datetime turns into a
+    # DatetimeIndex; TimedeltaIndex has no .dt accessor, so divide by a
+    # one-day Timedelta instead (works for Index and Series alike).
+    ts = pd.DatetimeIndex(pd.to_datetime(dates))
+    age_days = np.asarray((ts.max() - ts) / pd.Timedelta(days=1), dtype=float)
     age_days = np.clip(age_days, 0.0, None)
     w = np.exp(-np.log(2.0) * age_days / float(halflife_days))
     mean_w = float(np.mean(w))
@@ -777,6 +780,7 @@ def train_all(
         log.info(f"Regime model trained on {len(df_tr)} monthly rows")
 
     joblib.dump(conformal, str(MODELS_DIR / "conformal.pkl"))
+    _reseed_aci_state(conformal)
     joblib.dump({
         "model_version": MODEL_VERSION,
         "target": "log_return_adj_v3",
@@ -838,6 +842,40 @@ def load_models() -> dict:
 
 
 # ── Online ACI state reader ──────────────────────────────────────────────
+
+def _reseed_aci_state(conformal: dict) -> None:
+    """Reset the live Online ACI state to each horizon's freshly calibrated alpha_t.
+
+    Without this, validate.py cold-starts alpha_t at CONFORMAL_ALPHA (0.20)
+    rather than the calibrated value, and once a conformal_state row exists it
+    overrides every later retrain's calibration for good. Calibration already
+    ends in a prequential ACI alpha over the full history, so each retrain
+    restarts the online state there and ACI adapts from it between retrains.
+    """
+    rows = []
+    for key, band in (conformal or {}).items():
+        if not band or "alpha_t" not in band or not str(key).endswith("d"):
+            continue
+        try:
+            rows.append((int(str(key)[:-1]), round(float(band["alpha_t"]), 5)))
+        except ValueError:
+            continue
+    if not rows:
+        return
+    try:
+        conn = get_conn()
+        conn.executemany(
+            """INSERT OR REPLACE INTO conformal_state
+               (horizon_days, alpha_t, n_updates, empirical_coverage, updated_at)
+               VALUES (?, ?, 0, NULL, datetime('now'))""",
+            rows,
+        )
+        conn.commit()
+        conn.close()
+        log.info(f"Reseeded Online ACI state for {len(rows)} horizons from calibration")
+    except Exception as e:  # a state write must never sink a completed retrain
+        log.warning(f"Could not reseed Online ACI state ({e})")
+
 
 def _load_aci_alphas() -> dict[int, float]:
     """Read live per-horizon Online ACI alpha_t overrides from SQLite."""
@@ -921,10 +959,12 @@ def predict_all(
         if len(priced) == 0 or not available:
             return None, None, None
         row = priced[available].ffill().iloc[-1:].copy()
+        # None lets resolve_return_band fall back to the band's calibration
+        # median vol; the daily-scale floor would collapse weekly/monthly bands.
         vol = (
             float(priced["rvol_long"].ffill().iloc[-1])
             if "rvol_long" in priced.columns and priced["rvol_long"].notna().any()
-            else CONFORMAL_VOL_FLOOR
+            else None
         )
         return row.values, float(priced[pcol].iloc[-1]), vol
 

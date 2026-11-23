@@ -234,6 +234,13 @@ def calibrate(
         return None
     q_lo_s, q_hi_s = band_s
     med_vol = float(np.median(cal_vols))
+    # Lower clamp for the inference-time vol scale. CONFORMAL_VOL_FLOOR is on
+    # the daily-return scale, so it never binds for weekly/monthly frames; when
+    # current vol drops below anything calibration has seen, scaling the
+    # normalized quantile by it extrapolates the band to implausibly narrow
+    # widths (a ±4% 90d band against a 13.5% median 90d move). Never scale
+    # below the calibration set's 10th-percentile vol.
+    vol_lo = float(np.percentile(cal_vols, 10))
 
     return {
         "scaled": True,
@@ -243,6 +250,7 @@ def calibrate(
         "q_lo": float(q_lo_s * med_vol),
         "q_hi": float(q_hi_s * med_vol),
         "median_vol": med_vol,
+        "vol_lo": vol_lo,
         "vol_floor": float(CONFORMAL_VOL_FLOOR),
         "scores": [round(float(x), 5) for x in cal_scores],
         "alpha": float(alpha),
@@ -274,7 +282,9 @@ def resolve_return_band(
         if (current_vol is not None and np.isfinite(current_vol) and current_vol > 0)
         else med_vol
     )
-    vol = max(vol, vol_floor)
+    # Records from before vol_lo existed fall back to half the median vol.
+    vol_lo = float(band.get("vol_lo", 0.5 * med_vol))
+    vol = max(vol, vol_floor, vol_lo)
 
     scores = band.get("scores")
     eff_alpha = alpha_override if alpha_override is not None else band.get("alpha_t", band.get("alpha", CONFORMAL_ALPHA))

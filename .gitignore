@@ -21,3 +21,6 @@ __pycache__/
 data/cardamom.db
 data/models/
 data/pipeline.log
+
+# Local secrets (e.g. COMTRADE_API_KEY; see .env.example)
+.env

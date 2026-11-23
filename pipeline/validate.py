@@ -7,6 +7,7 @@ import pandas as pd
 from pipeline.config import (
     CONFORMAL_ACI_GAMMA,
     CONFORMAL_ALPHA,
+    MODEL_VERSION,
     TARGET_MATCH_TOLERANCE_DAYS,
 )
 from pipeline.conformal import update_aci_alpha
@@ -57,11 +58,17 @@ def backfill_naive_baseline(conn, prices) -> int:
 
 
 def _update_online_aci_state(conn, settled_rows: list[dict]) -> None:
-    """Apply Online Adaptive Conformal Inference updates per horizon from newly settled rows."""
+    """Apply Online Adaptive Conformal Inference updates per horizon from newly settled rows.
+
+    Only forecasts made by the current MODEL_VERSION feed the state: a hit or
+    miss against another version's bands says nothing about how the current
+    bands are calibrated (e.g. v2.4-era forecasts settling after a v3 deploy).
+    """
     by_h: dict[int, list[int]] = {}
     for r in settled_rows:
-        if r.get("in_interval") is not None:
-            by_h.setdefault(int(r["horizon_days"]), []).append(int(r["in_interval"]))
+        if r.get("in_interval") is None or r.get("model_version") != MODEL_VERSION:
+            continue
+        by_h.setdefault(int(r["horizon_days"]), []).append(int(r["in_interval"]))
 
     if not by_h:
         return
@@ -127,7 +134,8 @@ def validate_predictions(
 
     pending = pd.read_sql(
         """SELECT f.forecast_date, f.target_date, f.horizon_days,
-                  f.predicted_price, f.lower_bound, f.upper_bound
+                  f.predicted_price, f.lower_bound, f.upper_bound,
+                  f.model_version
            FROM forecast_ledger f
            LEFT JOIN validation_log v
              ON v.date = f.target_date AND v.horizon_days = f.horizon_days
@@ -224,6 +232,7 @@ def validate_predictions(
             "naive_abs_error": round(naive_abs, 1) if naive_abs is not None else None,
             "beat_naive": (naive_abs is not None and abs_error < naive_abs),
             "in_interval": in_interval,
+            "model_version": row.get("model_version"),
         })
 
     conn.commit()
