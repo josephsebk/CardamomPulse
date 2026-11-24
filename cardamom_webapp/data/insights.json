@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-24T00:12:02.672452Z",
+  "updated_at": "2026-11-24T22:41:01.050292Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -7,7 +7,7 @@
         "avg_price": 632.0,
         "max_price": 1176.0,
         "min_price": 570.0,
-        "total_volume_mt": 17519.0
+        "total_volume_mt": 17242.0
       },
       {
         "year": 2016,
@@ -56,21 +56,21 @@
         "avg_price": 903.0,
         "max_price": 2555.0,
         "min_price": 771.0,
-        "total_volume_mt": 31267.0
+        "total_volume_mt": 31227.0
       },
       {
         "year": 2023,
-        "avg_price": 1444.0,
+        "avg_price": 1445.0,
         "max_price": 4006.0,
         "min_price": 868.0,
-        "total_volume_mt": 28512.0
+        "total_volume_mt": 28476.0
       },
       {
         "year": 2024,
         "avg_price": 2122.0,
         "max_price": 4002.0,
         "min_price": 1316.0,
-        "total_volume_mt": 26636.0
+        "total_volume_mt": 26548.0
       },
       {
         "year": 2025,
@@ -84,13 +84,13 @@
         "avg_price": 2770.0,
         "max_price": 7070.0,
         "min_price": 1999.0,
-        "total_volume_mt": 27238.0
+        "total_volume_mt": 27385.0
       }
     ],
     "date_range": {
       "start": "2014-11-07",
-      "end": "2026-11-23",
-      "total_trading_days": 3229
+      "end": "2026-11-24",
+      "total_trading_days": 3230
     },
     "all_time_high": 4675.0,
     "all_time_low": 495.0
@@ -100,7 +100,7 @@
       {
         "month": 1,
         "month_name": "Jan",
-        "avg_price": 1734.0,
+        "avg_price": 1733.0,
         "deviation_pct": 7.9
       },
       {
@@ -131,13 +131,13 @@
         "month": 6,
         "month_name": "Jun",
         "avg_price": 1503.0,
-        "deviation_pct": -6.4
+        "deviation_pct": -6.5
       },
       {
         "month": 7,
         "month_name": "Jul",
-        "avg_price": 1637.0,
-        "deviation_pct": 1.9
+        "avg_price": 1638.0,
+        "deviation_pct": 2.0
       },
       {
         "month": 8,
@@ -155,13 +155,13 @@
         "month": 10,
         "month_name": "Oct",
         "avg_price": 1606.0,
-        "deviation_pct": -0.0
+        "deviation_pct": -0.1
       },
       {
         "month": 11,
         "month_name": "Nov",
-        "avg_price": 1631.0,
-        "deviation_pct": 1.5
+        "avg_price": 1635.0,
+        "deviation_pct": 1.8
       },
       {
         "month": 12,
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 2847.0,
+      "end_price": 2830.0,
       "peak_price": 3320.0,
       "trough_price": 1205.0,
-      "change_pct": 111.5
+      "change_pct": 110.1
     }
   ],
   "drivers": {
@@ -245,46 +245,51 @@
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
-      "current_rate": 92.67,
-      "monthly_change_pct": -2.39,
+      "current_rate": 92.9,
+      "monthly_change_pct": -2.15,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
   "auction_house_premiums": [
     {
       "auctioneer": "Mas Enterprises, Vandanmettu",
-      "premium_pct": 0.45,
-      "n_obs": 393
+      "premium_pct": 0.23,
+      "n_obs": 392
     },
     {
       "auctioneer": "SPECIALITY INDIAN FOOD PARKS EXPORTS PRIVATE LIMITED",
-      "premium_pct": 0.26,
+      "premium_pct": 0.13,
       "n_obs": 38
     },
     {
-      "auctioneer": "KOKO SPICES PRIVATE LIMITED",
-      "premium_pct": 0.2,
-      "n_obs": 27
-    },
-    {
       "auctioneer": "IDUKKI Dist.TRADITIONAL CARDAMOM PRODUCER COMPANY Ltd",
-      "premium_pct": 0.19,
+      "premium_pct": 0.1,
       "n_obs": 359
     },
     {
-      "auctioneer": "IDUKKI MAHILA CARDAMOM PRODUCER COMPANY LIMITED",
-      "premium_pct": 0.09,
-      "n_obs": 61
-    },
-    {
-      "auctioneer": "RNS SPICES",
-      "premium_pct": 0.09,
-      "n_obs": 71
+      "auctioneer": "KOKO SPICES PRIVATE LIMITED",
+      "premium_pct": 0.07,
+      "n_obs": 27
     },
     {
       "auctioneer": "The Kerala Cardamom Processing and Marketing Company Limited, Thekkady",
-      "premium_pct": 0.08,
+      "premium_pct": 0.05,
       "n_obs": 377
+    },
+    {
+      "auctioneer": "RNS SPICES",
+      "premium_pct": 0.05,
+      "n_obs": 71
+    },
+    {
+      "auctioneer": "IDUKKI MAHILA CARDAMOM PRODUCER COMPANY LIMITED",
+      "premium_pct": 0.04,
+      "n_obs": 60
+    },
+    {
+      "auctioneer": "The Cardamom Processing & Marketing Co-Operative Society Ltd, Kumily",
+      "premium_pct": 0.0,
+      "n_obs": 63
     },
     {
       "auctioneer": "STATE TRADING CORPORATION",
@@ -297,63 +302,58 @@
       "n_obs": 177
     },
     {
-      "auctioneer": "The Cardamom Processing & Marketing Co-Operative Society Ltd, Kumily",
-      "premium_pct": 0.0,
-      "n_obs": 63
-    },
-    {
       "auctioneer": "SUGANDHAGIRI SPICES PROMOTERS&TRADERS Pvt Ltd",
-      "premium_pct": -0.02,
-      "n_obs": 400
+      "premium_pct": -0.01,
+      "n_obs": 396
     },
     {
       "auctioneer": "South Indian Green Cardamom Company Ltd, Kochi",
-      "premium_pct": -0.06,
-      "n_obs": 394
-    },
-    {
-      "auctioneer": "Spice More Trading Company, Kumily",
-      "premium_pct": -0.09,
-      "n_obs": 224
-    },
-    {
-      "auctioneer": "Header Systems (India) Limited, Nedumkandam",
-      "premium_pct": -0.1,
-      "n_obs": 415
+      "premium_pct": -0.03,
+      "n_obs": 393
     },
     {
       "auctioneer": "THE CARDAMOM PLANTERS MARKETING CO-OPERATIVE SOCIETY LIMITED",
-      "premium_pct": -0.11,
-      "n_obs": 323
+      "premium_pct": -0.05,
+      "n_obs": 320
+    },
+    {
+      "auctioneer": "Spice More Trading Company, Kumily",
+      "premium_pct": -0.05,
+      "n_obs": 224
     },
     {
       "auctioneer": "CLIMATE NATURAL SPICES PRIVATE LIMITED",
-      "premium_pct": -0.11,
+      "premium_pct": -0.05,
       "n_obs": 40
     },
     {
-      "auctioneer": "Green House Cardamom Mktg.India Pvt. Ltd",
-      "premium_pct": -0.14,
-      "n_obs": 400
+      "auctioneer": "Header Systems (India) Limited, Nedumkandam",
+      "premium_pct": -0.05,
+      "n_obs": 415
     },
     {
       "auctioneer": "SOUTH INDIAN CARDAMOM ONLINE AUCTION PRIVATE LIMITED",
-      "premium_pct": -0.15,
+      "premium_pct": -0.07,
       "n_obs": 68
     },
     {
       "auctioneer": "Green Cardamom Trading Company",
-      "premium_pct": -0.22,
+      "premium_pct": -0.08,
       "n_obs": 141
     },
     {
+      "auctioneer": "Green House Cardamom Mktg.India Pvt. Ltd",
+      "premium_pct": -0.09,
+      "n_obs": 400
+    },
+    {
       "auctioneer": "Cardamom Planters' Association, Santhanpara",
-      "premium_pct": -1.15,
+      "premium_pct": -0.6,
       "n_obs": 340
     },
     {
       "auctioneer": "CARDAMOM GROWERSFOREVER PRIVATE LIMITED",
-      "premium_pct": -1.17,
+      "premium_pct": -0.63,
       "n_obs": 372
     }
   ],
@@ -500,7 +500,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg, rising ~5% per year with labour inflation. Current prices at \u20b92847/kg are 4.4x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg, rising ~5% per year with labour inflation. Current prices at \u20b92829/kg are 4.4x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
