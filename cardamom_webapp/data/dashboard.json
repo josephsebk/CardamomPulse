@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-23T11:15:36.359928Z",
+  "updated_at": "2026-11-24T00:12:02.672452Z",
   "spot_price": {
     "date": "2026-11-23",
     "avg_price": 2847.38,
@@ -85,10 +85,10 @@
     {
       "horizon_days": 90,
       "target_date": "2027-02-21",
-      "predicted_price": 3049.2,
+      "predicted_price": 3049.1,
       "model_version": "v3.0",
       "lower_bound": 2652.2,
-      "upper_bound": 3540.2
+      "upper_bound": 3540.1
     }
   ],
   "regime": {

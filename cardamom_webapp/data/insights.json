@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-23T11:15:36.359928Z",
+  "updated_at": "2026-11-24T00:12:02.672452Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -7,7 +7,7 @@
         "avg_price": 632.0,
         "max_price": 1176.0,
         "min_price": 570.0,
-        "total_volume_mt": 17242.0
+        "total_volume_mt": 17519.0
       },
       {
         "year": 2016,
@@ -56,21 +56,21 @@
         "avg_price": 903.0,
         "max_price": 2555.0,
         "min_price": 771.0,
-        "total_volume_mt": 31227.0
+        "total_volume_mt": 31267.0
       },
       {
         "year": 2023,
-        "avg_price": 1445.0,
+        "avg_price": 1444.0,
         "max_price": 4006.0,
         "min_price": 868.0,
-        "total_volume_mt": 28476.0
+        "total_volume_mt": 28512.0
       },
       {
         "year": 2024,
         "avg_price": 2122.0,
         "max_price": 4002.0,
         "min_price": 1316.0,
-        "total_volume_mt": 26548.0
+        "total_volume_mt": 26636.0
       },
       {
         "year": 2025,
@@ -100,7 +100,7 @@
       {
         "month": 1,
         "month_name": "Jan",
-        "avg_price": 1733.0,
+        "avg_price": 1734.0,
         "deviation_pct": 7.9
       },
       {
@@ -136,8 +136,8 @@
       {
         "month": 7,
         "month_name": "Jul",
-        "avg_price": 1638.0,
-        "deviation_pct": 2.0
+        "avg_price": 1637.0,
+        "deviation_pct": 1.9
       },
       {
         "month": 8,
@@ -241,55 +241,50 @@
       "impact_note": "Guatemala supplies 60-70% of global cardamom exports. The 2024-25 thrips crisis collapsed exports, driving Indian prices up."
     },
     "rainfall": {
-      "last_90d_rain_mm": 475.0,
+      "last_90d_rain_mm": 441.0,
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
-      "current_rate": 92.91,
-      "monthly_change_pct": -2.13,
+      "current_rate": 92.67,
+      "monthly_change_pct": -2.39,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
   "auction_house_premiums": [
     {
       "auctioneer": "Mas Enterprises, Vandanmettu",
-      "premium_pct": 0.24,
-      "n_obs": 392
+      "premium_pct": 0.45,
+      "n_obs": 393
     },
     {
       "auctioneer": "SPECIALITY INDIAN FOOD PARKS EXPORTS PRIVATE LIMITED",
-      "premium_pct": 0.13,
+      "premium_pct": 0.26,
       "n_obs": 38
     },
     {
-      "auctioneer": "IDUKKI Dist.TRADITIONAL CARDAMOM PRODUCER COMPANY Ltd",
-      "premium_pct": 0.1,
-      "n_obs": 359
-    },
-    {
       "auctioneer": "KOKO SPICES PRIVATE LIMITED",
-      "premium_pct": 0.07,
+      "premium_pct": 0.2,
       "n_obs": 27
     },
     {
-      "auctioneer": "RNS SPICES",
-      "premium_pct": 0.05,
-      "n_obs": 71
+      "auctioneer": "IDUKKI Dist.TRADITIONAL CARDAMOM PRODUCER COMPANY Ltd",
+      "premium_pct": 0.19,
+      "n_obs": 359
     },
     {
       "auctioneer": "IDUKKI MAHILA CARDAMOM PRODUCER COMPANY LIMITED",
-      "premium_pct": 0.04,
-      "n_obs": 60
+      "premium_pct": 0.09,
+      "n_obs": 61
+    },
+    {
+      "auctioneer": "RNS SPICES",
+      "premium_pct": 0.09,
+      "n_obs": 71
     },
     {
       "auctioneer": "The Kerala Cardamom Processing and Marketing Company Limited, Thekkady",
-      "premium_pct": 0.04,
-      "n_obs": 376
-    },
-    {
-      "auctioneer": "The Cardamom Processing & Marketing Co-Operative Society Ltd, Kumily",
-      "premium_pct": 0.0,
-      "n_obs": 63
+      "premium_pct": 0.08,
+      "n_obs": 377
     },
     {
       "auctioneer": "STATE TRADING CORPORATION",
@@ -302,58 +297,63 @@
       "n_obs": 177
     },
     {
+      "auctioneer": "The Cardamom Processing & Marketing Co-Operative Society Ltd, Kumily",
+      "premium_pct": 0.0,
+      "n_obs": 63
+    },
+    {
       "auctioneer": "SUGANDHAGIRI SPICES PROMOTERS&TRADERS Pvt Ltd",
-      "premium_pct": -0.01,
-      "n_obs": 396
+      "premium_pct": -0.02,
+      "n_obs": 400
     },
     {
       "auctioneer": "South Indian Green Cardamom Company Ltd, Kochi",
-      "premium_pct": -0.03,
-      "n_obs": 393
-    },
-    {
-      "auctioneer": "THE CARDAMOM PLANTERS MARKETING CO-OPERATIVE SOCIETY LIMITED",
-      "premium_pct": -0.05,
-      "n_obs": 320
+      "premium_pct": -0.06,
+      "n_obs": 394
     },
     {
       "auctioneer": "Spice More Trading Company, Kumily",
-      "premium_pct": -0.05,
+      "premium_pct": -0.09,
       "n_obs": 224
     },
     {
-      "auctioneer": "CLIMATE NATURAL SPICES PRIVATE LIMITED",
-      "premium_pct": -0.05,
-      "n_obs": 40
-    },
-    {
       "auctioneer": "Header Systems (India) Limited, Nedumkandam",
-      "premium_pct": -0.05,
+      "premium_pct": -0.1,
       "n_obs": 415
     },
     {
+      "auctioneer": "THE CARDAMOM PLANTERS MARKETING CO-OPERATIVE SOCIETY LIMITED",
+      "premium_pct": -0.11,
+      "n_obs": 323
+    },
+    {
+      "auctioneer": "CLIMATE NATURAL SPICES PRIVATE LIMITED",
+      "premium_pct": -0.11,
+      "n_obs": 40
+    },
+    {
       "auctioneer": "Green House Cardamom Mktg.India Pvt. Ltd",
-      "premium_pct": -0.07,
-      "n_obs": 399
+      "premium_pct": -0.14,
+      "n_obs": 400
     },
     {
       "auctioneer": "SOUTH INDIAN CARDAMOM ONLINE AUCTION PRIVATE LIMITED",
-      "premium_pct": -0.08,
+      "premium_pct": -0.15,
       "n_obs": 68
     },
     {
       "auctioneer": "Green Cardamom Trading Company",
-      "premium_pct": -0.08,
+      "premium_pct": -0.22,
       "n_obs": 141
     },
     {
       "auctioneer": "Cardamom Planters' Association, Santhanpara",
-      "premium_pct": -0.61,
+      "premium_pct": -1.15,
       "n_obs": 340
     },
     {
       "auctioneer": "CARDAMOM GROWERSFOREVER PRIVATE LIMITED",
-      "premium_pct": -0.63,
+      "premium_pct": -1.17,
       "n_obs": 372
     }
   ],
