@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-24T22:41:01.050292Z",
+  "updated_at": "2026-11-25T21:55:34.245963Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -81,15 +81,15 @@
       },
       {
         "year": 2026,
-        "avg_price": 2770.0,
+        "avg_price": 2771.0,
         "max_price": 7070.0,
         "min_price": 1999.0,
-        "total_volume_mt": 27385.0
+        "total_volume_mt": 27352.0
       }
     ],
     "date_range": {
       "start": "2014-11-07",
-      "end": "2026-11-24",
+      "end": "2026-11-25",
       "total_trading_days": 3230
     },
     "all_time_high": 4675.0,
@@ -221,10 +221,10 @@
       "driver": "Guatemala thrips crisis collapsed 46-75% of global exports",
       "direction": "up",
       "start_price": 1347.0,
-      "end_price": 2830.0,
+      "end_price": 2859.0,
       "peak_price": 3320.0,
       "trough_price": 1205.0,
-      "change_pct": 110.1
+      "change_pct": 112.3
     }
   ],
   "drivers": {
@@ -241,12 +241,12 @@
       "impact_note": "Guatemala supplies 60-70% of global cardamom exports. The 2024-25 thrips crisis collapsed exports, driving Indian prices up."
     },
     "rainfall": {
-      "last_90d_rain_mm": 441.0,
+      "last_90d_rain_mm": 390.0,
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
-      "current_rate": 92.9,
-      "monthly_change_pct": -2.15,
+      "current_rate": 92.22,
+      "monthly_change_pct": -3.12,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -267,24 +267,19 @@
       "n_obs": 359
     },
     {
+      "auctioneer": "RNS SPICES",
+      "premium_pct": 0.1,
+      "n_obs": 72
+    },
+    {
       "auctioneer": "KOKO SPICES PRIVATE LIMITED",
       "premium_pct": 0.07,
       "n_obs": 27
     },
     {
       "auctioneer": "The Kerala Cardamom Processing and Marketing Company Limited, Thekkady",
-      "premium_pct": 0.05,
-      "n_obs": 377
-    },
-    {
-      "auctioneer": "RNS SPICES",
-      "premium_pct": 0.05,
-      "n_obs": 71
-    },
-    {
-      "auctioneer": "IDUKKI MAHILA CARDAMOM PRODUCER COMPANY LIMITED",
       "premium_pct": 0.04,
-      "n_obs": 60
+      "n_obs": 376
     },
     {
       "auctioneer": "The Cardamom Processing & Marketing Co-Operative Society Ltd, Kumily",
@@ -292,14 +287,14 @@
       "n_obs": 63
     },
     {
-      "auctioneer": "STATE TRADING CORPORATION",
-      "premium_pct": 0.0,
-      "n_obs": 124
-    },
-    {
       "auctioneer": "VANDANMEDU GREEN GOLD CARDAMOM PRODUCER CoLtd",
       "premium_pct": 0.0,
       "n_obs": 177
+    },
+    {
+      "auctioneer": "STATE TRADING CORPORATION",
+      "premium_pct": 0.0,
+      "n_obs": 124
     },
     {
       "auctioneer": "SUGANDHAGIRI SPICES PROMOTERS&TRADERS Pvt Ltd",
@@ -310,6 +305,11 @@
       "auctioneer": "South Indian Green Cardamom Company Ltd, Kochi",
       "premium_pct": -0.03,
       "n_obs": 393
+    },
+    {
+      "auctioneer": "IDUKKI MAHILA CARDAMOM PRODUCER COMPANY LIMITED",
+      "premium_pct": -0.03,
+      "n_obs": 61
     },
     {
       "auctioneer": "THE CARDAMOM PLANTERS MARKETING CO-OPERATIVE SOCIETY LIMITED",
@@ -332,6 +332,11 @@
       "n_obs": 415
     },
     {
+      "auctioneer": "Green House Cardamom Mktg.India Pvt. Ltd",
+      "premium_pct": -0.07,
+      "n_obs": 399
+    },
+    {
       "auctioneer": "SOUTH INDIAN CARDAMOM ONLINE AUCTION PRIVATE LIMITED",
       "premium_pct": -0.07,
       "n_obs": 68
@@ -342,18 +347,13 @@
       "n_obs": 141
     },
     {
-      "auctioneer": "Green House Cardamom Mktg.India Pvt. Ltd",
-      "premium_pct": -0.09,
-      "n_obs": 400
-    },
-    {
       "auctioneer": "Cardamom Planters' Association, Santhanpara",
       "premium_pct": -0.6,
       "n_obs": 340
     },
     {
       "auctioneer": "CARDAMOM GROWERSFOREVER PRIVATE LIMITED",
-      "premium_pct": -0.63,
+      "premium_pct": -0.62,
       "n_obs": 372
     }
   ],
@@ -368,7 +368,7 @@
       {
         "planting_year": 2021,
         "harvest_window": "2024-2028",
-        "avg_harvest_price": 2487.0,
+        "avg_harvest_price": 2488.0,
         "estimated_roi_pct": 441.0
       },
       {
@@ -500,7 +500,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg, rising ~5% per year with labour inflation. Current prices at \u20b92829/kg are 4.4x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg, rising ~5% per year with labour inflation. Current prices at \u20b92858/kg are 4.4x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
