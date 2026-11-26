@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-25T21:55:34.245963Z",
+  "updated_at": "2026-11-26T21:49:02.297103Z",
   "price_timeline": {
     "yearly_summary": [
       {
@@ -84,13 +84,13 @@
         "avg_price": 2771.0,
         "max_price": 7070.0,
         "min_price": 1999.0,
-        "total_volume_mt": 27352.0
+        "total_volume_mt": 27427.0
       }
     ],
     "date_range": {
       "start": "2014-11-07",
-      "end": "2026-11-25",
-      "total_trading_days": 3230
+      "end": "2026-11-26",
+      "total_trading_days": 3231
     },
     "all_time_high": 4675.0,
     "all_time_low": 495.0
@@ -160,14 +160,14 @@
       {
         "month": 11,
         "month_name": "Nov",
-        "avg_price": 1635.0,
-        "deviation_pct": 1.8
+        "avg_price": 1639.0,
+        "deviation_pct": 2.0
       },
       {
         "month": 12,
         "month_name": "Dec",
         "avg_price": 1601.0,
-        "deviation_pct": -0.3
+        "deviation_pct": -0.4
       }
     ],
     "best_months": [
@@ -241,12 +241,12 @@
       "impact_note": "Guatemala supplies 60-70% of global cardamom exports. The 2024-25 thrips crisis collapsed exports, driving Indian prices up."
     },
     "rainfall": {
-      "last_90d_rain_mm": 390.0,
+      "last_90d_rain_mm": 389.0,
       "impact_note": "Idukki receives 2,500-3,500mm annually. Excess monsoon rain causes flooding and crop damage. Deficit stress reduces yields."
     },
     "exchange_rate": {
-      "current_rate": 92.22,
-      "monthly_change_pct": -3.12,
+      "current_rate": 92.43,
+      "monthly_change_pct": -2.88,
       "impact_note": "Weaker rupee makes Indian cardamom cheaper globally, boosting export demand and supporting prices."
     }
   },
@@ -258,8 +258,8 @@
     },
     {
       "auctioneer": "SPECIALITY INDIAN FOOD PARKS EXPORTS PRIVATE LIMITED",
-      "premium_pct": 0.13,
-      "n_obs": 38
+      "premium_pct": 0.15,
+      "n_obs": 39
     },
     {
       "auctioneer": "IDUKKI Dist.TRADITIONAL CARDAMOM PRODUCER COMPANY Ltd",
@@ -267,14 +267,19 @@
       "n_obs": 359
     },
     {
-      "auctioneer": "RNS SPICES",
-      "premium_pct": 0.1,
-      "n_obs": 72
-    },
-    {
       "auctioneer": "KOKO SPICES PRIVATE LIMITED",
       "premium_pct": 0.07,
       "n_obs": 27
+    },
+    {
+      "auctioneer": "RNS SPICES",
+      "premium_pct": 0.05,
+      "n_obs": 71
+    },
+    {
+      "auctioneer": "IDUKKI MAHILA CARDAMOM PRODUCER COMPANY LIMITED",
+      "premium_pct": 0.04,
+      "n_obs": 60
     },
     {
       "auctioneer": "The Kerala Cardamom Processing and Marketing Company Limited, Thekkady",
@@ -287,14 +292,14 @@
       "n_obs": 63
     },
     {
-      "auctioneer": "VANDANMEDU GREEN GOLD CARDAMOM PRODUCER CoLtd",
-      "premium_pct": 0.0,
-      "n_obs": 177
-    },
-    {
       "auctioneer": "STATE TRADING CORPORATION",
       "premium_pct": 0.0,
       "n_obs": 124
+    },
+    {
+      "auctioneer": "VANDANMEDU GREEN GOLD CARDAMOM PRODUCER CoLtd",
+      "premium_pct": 0.0,
+      "n_obs": 177
     },
     {
       "auctioneer": "SUGANDHAGIRI SPICES PROMOTERS&TRADERS Pvt Ltd",
@@ -305,11 +310,6 @@
       "auctioneer": "South Indian Green Cardamom Company Ltd, Kochi",
       "premium_pct": -0.03,
       "n_obs": 393
-    },
-    {
-      "auctioneer": "IDUKKI MAHILA CARDAMOM PRODUCER COMPANY LIMITED",
-      "premium_pct": -0.03,
-      "n_obs": 61
     },
     {
       "auctioneer": "THE CARDAMOM PLANTERS MARKETING CO-OPERATIVE SOCIETY LIMITED",
@@ -353,8 +353,8 @@
     },
     {
       "auctioneer": "CARDAMOM GROWERSFOREVER PRIVATE LIMITED",
-      "premium_pct": -0.62,
-      "n_obs": 372
+      "premium_pct": -0.67,
+      "n_obs": 373
     }
   ],
   "planting_analysis": {
@@ -362,7 +362,7 @@
       {
         "planting_year": 2022,
         "harvest_window": "2025-2029",
-        "avg_harvest_price": 2670.0,
+        "avg_harvest_price": 2671.0,
         "estimated_roi_pct": 445.0
       },
       {
@@ -500,7 +500,7 @@
     },
     {
       "question": "What is the cost floor for cardamom farming?",
-      "answer": "The estimated production cost is ~\u20b9643/kg, rising ~5% per year with labour inflation. Current prices at \u20b92858/kg are 4.4x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
+      "answer": "The estimated production cost is ~\u20b9643/kg, rising ~5% per year with labour inflation. Current prices at \u20b92859/kg are 4.4x the cost floor. Prices rarely stay below 1.5x cost for long because farmers abandon cultivation, reducing future supply.",
       "category": "economics"
     }
   ]
