@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
 
     steps:
       - uses: actions/checkout@v4
@@ -48,14 +48,18 @@ jobs:
         if: github.event_name != 'push'
         run: pip install -r requirements.txt
 
+      # Restore and save are separate steps: actions/cache@v4 only saves in its
+      # post step when the whole job succeeds, so a failure in the later Pages
+      # deploy silently discarded that day's DB (forecast ledger, validations,
+      # ACI state) and the next run restored the day before.
       - name: Restore pipeline cache (DB + models)
         if: github.event_name != 'push'
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: |
             data/cardamom.db
             data/models/
-          key: pipeline-${{ github.run_number }}
+          key: pipeline-${{ github.run_number }}-${{ github.run_attempt }}
           restore-keys: |
             pipeline-
 
@@ -97,6 +101,16 @@ jobs:
             echo "::notice::No data changes to commit"
           fi
 
+      # !cancelled(): persist the DB even if the commit/push above failed.
+      - name: Save pipeline cache (DB + models)
+        if: "!cancelled() && github.event_name != 'push' && steps.pipeline.outcome == 'success'"
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            data/cardamom.db
+            data/models/
+          key: pipeline-${{ github.run_number }}-${{ github.run_attempt }}
+
       # ═══════════════════════════════════════════════════════════════
       # DEPLOY TO GITHUB PAGES (always runs)
       # ═══════════════════════════════════════════════════════════════
@@ -112,6 +126,20 @@ jobs:
         with:
           path: _site
 
+      # GitHub's artifact API intermittently fails to see an artifact uploaded
+      # the same second ("Fetching artifact metadata failed ... No artifacts
+      # named github-pages"), which failed the 2026-11-24 and 11-26 runs. Retry
+      # once after a pause; a second failure still fails the job.
       - name: Deploy to GitHub Pages
         id: deployment
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+
+      - name: Wait before retrying Pages deploy
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 30
+
+      - name: Deploy to GitHub Pages (retry)
+        id: deployment_retry
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@v4
